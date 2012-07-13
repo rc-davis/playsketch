@@ -140,6 +140,18 @@
     return __persistentStoreCoordinator;
 }
 
+
+-(PSDrawingGroup*) rootDrawingGroup
+{
+	NSManagedObjectContext *context = self.managedObjectContext;
+	NSFetchRequest* request = [NSFetchRequest fetchRequestWithEntityName:@"PSDrawingGroup"];
+	request.fetchLimit = 1;
+	request.predicate = [NSPredicate predicateWithFormat:@"rootGroup == YES"];
+	NSArray* allRootGroups = [context executeFetchRequest:request error:nil];
+	return allRootGroups && allRootGroups.count > 0 ? [allRootGroups objectAtIndex:0] : nil;
+}
+
+
 #pragma mark - Application's Documents directory
 
 // Returns the URL to the application's Documents directory.
