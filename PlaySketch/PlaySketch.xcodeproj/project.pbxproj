@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		46BF25A615B0253400834681 /* PSDrawingItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 46BF25A515B0253400834681 /* PSDrawingItem.m */; };
+		46BF25A915B0257600834681 /* PSDrawingGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = 46BF25A815B0257600834681 /* PSDrawingGroup.m */; };
 		46F7A63915B014E700C7B374 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46F7A63815B014E700C7B374 /* UIKit.framework */; };
 		46F7A63B15B014E700C7B374 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46F7A63A15B014E700C7B374 /* Foundation.framework */; };
 		46F7A63D15B014E700C7B374 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46F7A63C15B014E700C7B374 /* CoreGraphics.framework */; };
@@ -35,6 +37,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		46BF25A415B0253400834681 /* PSDrawingItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PSDrawingItem.h; path = PlaySketch/PSDrawingItem.h; sourceTree = "<group>"; };
+		46BF25A515B0253400834681 /* PSDrawingItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PSDrawingItem.m; path = PlaySketch/PSDrawingItem.m; sourceTree = "<group>"; };
+		46BF25A715B0257600834681 /* PSDrawingGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PSDrawingGroup.h; path = PlaySketch/PSDrawingGroup.h; sourceTree = "<group>"; };
+		46BF25A815B0257600834681 /* PSDrawingGroup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PSDrawingGroup.m; path = PlaySketch/PSDrawingGroup.m; sourceTree = "<group>"; };
 		46F7A63415B014E700C7B374 /* PlaySketch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PlaySketch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		46F7A63815B014E700C7B374 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		46F7A63A15B014E700C7B374 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -82,6 +88,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		46BF259A15B0241A00834681 /* Data Model */ = {
+			isa = PBXGroup;
+			children = (
+				46BF25A415B0253400834681 /* PSDrawingItem.h */,
+				46BF25A515B0253400834681 /* PSDrawingItem.m */,
+				46F7A64C15B014E700C7B374 /* PlaySketch.xcdatamodeld */,
+				46BF25A715B0257600834681 /* PSDrawingGroup.h */,
+				46BF25A815B0257600834681 /* PSDrawingGroup.m */,
+			);
+			name = "Data Model";
+			path = ..;
+			sourceTree = "<group>";
+		};
 		46F7A62915B014E600C7B374 = {
 			isa = PBXGroup;
 			children = (
@@ -119,7 +138,7 @@
 			children = (
 				46F7A64915B014E700C7B374 /* PSAppDelegate.h */,
 				46F7A64A15B014E700C7B374 /* PSAppDelegate.m */,
-				46F7A64C15B014E700C7B374 /* PlaySketch.xcdatamodeld */,
+				46BF259A15B0241A00834681 /* Data Model */,
 				46F7A64115B014E700C7B374 /* Supporting Files */,
 			);
 			path = PlaySketch;
@@ -266,6 +285,8 @@
 				46F7A64715B014E700C7B374 /* main.m in Sources */,
 				46F7A64B15B014E700C7B374 /* PSAppDelegate.m in Sources */,
 				46F7A64E15B014E700C7B374 /* PlaySketch.xcdatamodeld in Sources */,
+				46BF25A615B0253400834681 /* PSDrawingItem.m in Sources */,
+				46BF25A915B0257600834681 /* PSDrawingGroup.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -449,7 +470,8 @@
 				46F7A64D15B014E700C7B374 /* PlaySketch.xcdatamodel */,
 			);
 			currentVersion = 46F7A64D15B014E700C7B374 /* PlaySketch.xcdatamodel */;
-			path = PlaySketch.xcdatamodeld;
+			name = PlaySketch.xcdatamodeld;
+			path = PlaySketch/PlaySketch.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};
