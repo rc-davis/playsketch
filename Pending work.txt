@@ -1,27 +1,15 @@
 
 
-- Configure basic Core Data model:
-
-	Drawing group
-		children groups
-		drawing item set
-		position info
-		
-		
-
-- Create GLKit view controller & view, set to root item
-
-
-- Render lines (with temp lines)
-
-
+- Find a way to store points in CoreData (translate properties in class!)
 - Use view's touches to create new lines
+- Start to animate lines
 
+- port basemodel semantics
+	- timeline
+	- relative locations etc
+	- playback
+	- animation
 
-- animations....
-
-
-- Multiple documents (with their own root stores, etc)
 
 Should create a container view controller (custom uiviewcontroller subclass) to contain our GLview.
 See: http://developer.apple.com/library/ios/#documentation/uikit/reference/UIViewController_Class/Reference/Reference.html
@@ -33,5 +21,16 @@ LATER
 
 Do prettier lines (use point sprite brush instead of line drawings)
 
+
+
+========
+EVEN LATER
+========
+- Multiple documents (with their own root stores, etc)
+
+
+========
+NOTES
+========
 This is the style guide people should follow:
 https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/CodingGuidelines/CodingGuidelines.html
