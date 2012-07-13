@@ -1,0 +1,21 @@
+
+
+- Configure basic Core Data model:
+
+	Drawing group
+		children groups
+		drawing item set
+		position info
+		
+		
+
+- Create GLKit view controller & view, set to root item
+
+
+- Render lines
+
+
+- Use view's touches to create new lines
+
+
+- 
