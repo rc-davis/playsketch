@@ -8,7 +8,12 @@
 
 #import <UIKit/UIKit.h>
 #import <GLKit/GLKit.h>
+#import "PSDrawingGroup.h"
+#import "PSDrawingItem.h"
+
 
 @interface PSAnimationRenderingController : GLKViewController
+
+@property(nonatomic,retain) PSDrawingGroup* rootGroup;
 
 @end
