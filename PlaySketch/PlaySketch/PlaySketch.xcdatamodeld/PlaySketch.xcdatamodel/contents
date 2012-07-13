@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model name="Test1.xcdatamodel" userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="1" systemVersion="11A491" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
-    <elements/>
+<model name="" userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="1171" systemVersion="11E53" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
+    <entity name="PSDrawingGroup" representedClassName="DrawingGroup" syncable="YES">
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="rootGroup" attributeType="Boolean" defaultValueString="NO" indexed="YES" syncable="YES"/>
+        <relationship name="children" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="PSDrawingGroup" inverseName="parent" inverseEntity="PSDrawingGroup" syncable="YES"/>
+        <relationship name="parent" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="PSDrawingGroup" inverseName="children" inverseEntity="PSDrawingGroup" syncable="YES"/>
+    </entity>
+    <entity name="PSDrawingItem" syncable="YES"/>
+    <elements>
+        <element name="PSDrawingGroup" positionX="160" positionY="192" width="128" height="105"/>
+        <element name="PSDrawingItem" positionX="160" positionY="192" width="128" height="45"/>
+    </elements>
 </model>
