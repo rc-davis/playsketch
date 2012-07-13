@@ -9,10 +9,13 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 
-@class DrawingGroup;
+@class PSDrawingGroup;
 
 @interface PSDrawingItem : NSManagedObject
 
-@property (nonatomic, retain) DrawingGroup *group;
+@property (nonatomic, retain) PSDrawingGroup *group;
+@property(nonatomic) CGPoint* points;
+
+-(void)render;
 
 @end
