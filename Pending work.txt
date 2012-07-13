@@ -12,10 +12,26 @@
 - Create GLKit view controller & view, set to root item
 
 
-- Render lines
+- Render lines (with temp lines)
 
 
 - Use view's touches to create new lines
 
 
-- 
+- animations....
+
+
+- Multiple documents (with their own root stores, etc)
+
+Should create a container view controller (custom uiviewcontroller subclass) to contain our GLview.
+See: http://developer.apple.com/library/ios/#documentation/uikit/reference/UIViewController_Class/Reference/Reference.html
+
+
+=========
+LATER
+=========
+
+Do prettier lines (use point sprite brush instead of line drawings)
+
+This is the style guide people should follow:
+https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/CodingGuidelines/CodingGuidelines.html
