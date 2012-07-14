@@ -1,4 +1,6 @@
 
+- Explore: using msmutabledata's bytes as line point backing (avoiding weird copy back/forward stuff)
+
 - Use view's touches to create new lines
 - Start to animate lines
 
