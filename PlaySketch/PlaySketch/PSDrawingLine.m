@@ -56,7 +56,6 @@
 -(void)awakeFromFetch
 {
 	[super awakeFromFetch];
-	NSLog(@"Line Awaking from fetch");
 	[self copyPointsIntoObjectCache];	
 }
 
@@ -68,7 +67,6 @@
 - (void)awakeFromInsert
 {
 	[super awakeFromInsert];
-	NSLog(@"Line Awaking from insert");
 	[self copyPointsIntoObjectCache];
 }
 
@@ -79,7 +77,6 @@
 */
 - (void)awakeFromSnapshotEvents:(NSSnapshotEventType)flags
 {
-	NSLog(@"Line Awaking from snapshot event");
 	[super awakeFromSnapshotEvents:flags];
 	PS_NOT_YET_IMPLEMENTED();
 }
@@ -91,7 +88,6 @@
 */
 - (void)willSave
 {
-	NSLog(@"Line preparing for save");
 	[self copyPointsOutOfObjectCache];
 }
 
