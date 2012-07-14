@@ -11,15 +11,8 @@
  
  */
 
-#import <Availability.h>
 
-#ifndef __IPHONE_3_0
-#warning "This project uses features only available in iOS SDK 3.0 and later."
-#endif
-
-#ifdef __OBJC__
-    #import <UIKit/UIKit.h>
-    #import <Foundation/Foundation.h>
-    #import <CoreData/CoreData.h>
-	#import "PSHelpers.h"
-#endif
+//TODO: conditionally remove this in non-debug builds
+#define PS_ASSERT( expr, message) NSAssert( expr, message);
+#define PS_ASSERT1( expr, message, arg) NSAssert1( expr, message, arg);
+#define PS_NOT_YET_IMPLEMENTED() NSAssert(NO, @"NOT YET IMPLEMENTED" );
