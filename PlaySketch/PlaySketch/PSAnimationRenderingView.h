@@ -14,10 +14,11 @@
 #import <GLKit/GLKit.h>
 #import "PSDrawingGroup.h"
 #import "PSDrawingLine.h"
+#import "PSAnimationRenderingController.h"
 
 @interface PSAnimationRenderingView : GLKView
 
-@property(nonatomic,retain)PSDrawingGroup* currentGroup;
+@property(nonatomic,weak) IBOutlet PSAnimationRenderingController* parentController;
 @property(nonatomic,retain)PSDrawingLine* currentLine;
 
 @end

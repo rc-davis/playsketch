@@ -16,7 +16,7 @@
 #import "PSAppDelegate.h"
 
 @implementation PSAnimationRenderingView
-@synthesize currentGroup = _currentGroup;
+@synthesize parentController = _parentController;
 @synthesize currentLine = _currentLine;
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
@@ -26,7 +26,7 @@
 
 	self.currentLine = (PSDrawingLine*)[NSEntityDescription 
 										insertNewObjectForEntityForName:@"PSDrawingLine" inManagedObjectContext:context];
-	self.currentLine.group = self.currentGroup;
+	self.currentLine.group = self.parentController.rootGroup;
 	
 }		
 -(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
@@ -35,7 +35,7 @@
 	CGPoint p = [touch locationInView:self];
 	p.y = self.bounds.size.height - p.y;
 	[self.currentLine addLineFrom:CGPointZero to:p];
-	
+
 }
 
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
