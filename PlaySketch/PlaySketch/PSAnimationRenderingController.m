@@ -13,6 +13,7 @@
 
 #import "PSAnimationRenderingController.h"
 #import "PSAppDelegate.h"
+#import "PSAnimationRenderingView.h"
 
 
 /* Private Interface */
@@ -96,14 +97,12 @@
 			 NSLog(@"Failed to save context!: %@", [error localizedDescription]);
 		
 		self.rootGroup = newRoot;
+		
+		[context save:nil]; //TODO: catch error
 
-	}	
-	
-	//TEMP: add one drawing line
-	PSDrawingLine* newItem = (PSDrawingLine*)[NSEntityDescription 
-												insertNewObjectForEntityForName:@"PSDrawingLine" inManagedObjectContext:context];
-	newItem.group = self.rootGroup;
-	[context save:nil];
+	}		
+
+	((PSAnimationRenderingView*)self.view).currentGroup = self.rootGroup;
 
 }
 
@@ -125,6 +124,12 @@
 	
 	for(PSDrawingLine* drawingItem in group.drawingLines)
 	{
+		//This call makes sure that our object is fetched into memory
+		//It is only necessary because we are caching the points ourselves
+		//Usually this is done automatically when you access properties on the object
+		//TODO: take this out of the draw loop into somewhere else...
+		[drawingItem willAccessValueForKey:nil];
+	
 		[drawingItem render];
 	}
 	
@@ -194,35 +199,15 @@
 
 @implementation PSDrawingLine ( renderingCategory )
 -(void)render
-{
-	CGPoint* points = self.points;
-	
-	if(points == nil)
-	{
-		points = (CGPoint*)malloc(500 * sizeof(CGPoint));
-		
-		CGPoint current = CGPointZero;
-		
-		for(int i = 0; i < 500; i++)
-		{
-			points[i] = current;
-			current.x += rand()%2;
-			current.y += rand()%2;
-		}
-		
-		self.points = points;
-	}
-	
-	
-	//3. Supply the vertices
+{	
+	//Set the vertices
 	glEnableVertexAttribArray(GLKVertexAttribPosition);
 	glVertexAttribPointer(GLKVertexAttribPosition, 2, GL_FLOAT, GL_FALSE, 0,(void *)points );
 	
+	//Draw the vertices
+	glDrawArrays(GL_LINE_STRIP, 0, pointCount);
 	
-	//4. Draw hte actual vertices
-	glDrawArrays(GL_LINE_STRIP, 0, 500);
-	
-	//5. Clean up
+	//Release our vertex array
 	glDisableVertexAttribArray(GLKVertexAttribPosition);
 	
 }

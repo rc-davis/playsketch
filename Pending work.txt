@@ -1,7 +1,11 @@
 
-- Explore: using msmutabledata's bytes as line point backing (avoiding weird copy back/forward stuff)
+- erase button
 
-- Use view's touches to create new lines
+
+Should create a container view controller (custom uiviewcontroller subclass) to contain our GLview.
+See: http://developer.apple.com/library/ios/#documentation/uikit/reference/UIViewController_Class/Reference/Reference.html
+
+
 - Start to animate lines
 
 - port basemodel semantics
@@ -10,9 +14,6 @@
 	- playback
 	- animation
 
-
-Should create a container view controller (custom uiviewcontroller subclass) to contain our GLview.
-See: http://developer.apple.com/library/ios/#documentation/uikit/reference/UIViewController_Class/Reference/Reference.html
 
 
 - Keep verifying the right copyright info is on files
@@ -35,6 +36,11 @@ LATER
 
 Do prettier lines (use point sprite brush instead of line drawings)
 
+- drawing should throw away points that are too near the previous one
+
+- drawing should be prettier and use a stamp
+
+- Explore: using msmutabledata's bytes as line point backing (avoiding weird copy back/forward stuff)
 
 
 ========
