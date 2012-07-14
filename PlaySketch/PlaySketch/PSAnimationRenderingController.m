@@ -95,8 +95,8 @@
 	}	
 	
 	//TEMP: add one drawing line
-	PSDrawingItem* newItem = (PSDrawingItem*)[NSEntityDescription 
-												insertNewObjectForEntityForName:@"PSDrawingItem" inManagedObjectContext:context];
+	PSDrawingLine* newItem = (PSDrawingLine*)[NSEntityDescription 
+												insertNewObjectForEntityForName:@"PSDrawingLine" inManagedObjectContext:context];
 	newItem.group = self.rootGroup;
 	[context save:nil];
 
@@ -118,7 +118,7 @@
 	//TODO: PUSH
 	//self.effect.transform.modelviewMatrix = self.modelMatrix;
 	
-	for(PSDrawingItem* drawingItem in group.drawingItems)
+	for(PSDrawingLine* drawingItem in group.drawingLines)
 	{
 		[drawingItem render];
 	}
@@ -136,7 +136,7 @@
 -(void)updateGroup:(PSDrawingGroup*)group withTimeInterval:(NSTimeInterval)timeSinceLastUpdate
 {
 	// Update our drawing Items
-	for(PSDrawingItem* drawingItem in group.drawingItems)
+	for(PSDrawingLine* drawingItem in group.drawingLines)
 		;//TODO: [drawingItem update]
 		
 	// Recurse down to the children
@@ -187,7 +187,7 @@
 	
 	------------*/
 
-@implementation PSDrawingItem ( renderingCategory )
+@implementation PSDrawingLine ( renderingCategory )
 -(void)render
 {
 	CGPoint* points = self.points;

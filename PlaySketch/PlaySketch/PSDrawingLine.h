@@ -16,7 +16,7 @@
 
 @class PSDrawingGroup;
 
-@interface PSDrawingItem : NSManagedObject
+@interface PSDrawingLine : NSManagedObject
 
 @property (nonatomic, retain) PSDrawingGroup *group;
 @property(nonatomic) CGPoint* points;

@@ -11,11 +11,11 @@
  
  */
 
-#import "PSDrawingItem.h"
+#import "PSDrawingLine.h"
 #import "PSDrawingGroup.h"
 #import <GLKit/GLKit.h>
 
-@implementation PSDrawingItem
+@implementation PSDrawingLine
 @synthesize points = _points;
 
 @dynamic group;

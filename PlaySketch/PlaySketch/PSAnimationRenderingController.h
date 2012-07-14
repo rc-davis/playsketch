@@ -14,7 +14,7 @@
 #import <UIKit/UIKit.h>
 #import <GLKit/GLKit.h>
 #import "PSDrawingGroup.h"
-#import "PSDrawingItem.h"
+#import "PSDrawingLine.h"
 
 
 @interface PSAnimationRenderingController : GLKViewController
@@ -25,6 +25,6 @@
 
 
 // Use categories to add a render function to our drawing items
-@interface PSDrawingItem ( renderingCategory )
+@interface PSDrawingLine ( renderingCategory )
 - (void) render;
 @end

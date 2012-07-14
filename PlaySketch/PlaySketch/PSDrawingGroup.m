@@ -13,7 +13,7 @@
 
 #import "PSDrawingGroup.h"
 #import "PSDrawingGroup.h"
-#import "PSDrawingItem.h"
+#import "PSDrawingLine.h"
 
 
 @implementation PSDrawingGroup
@@ -22,6 +22,6 @@
 @dynamic rootGroup;
 @dynamic children;
 @dynamic parent;
-@dynamic drawingItems;
+@dynamic drawingLines;
 
 @end

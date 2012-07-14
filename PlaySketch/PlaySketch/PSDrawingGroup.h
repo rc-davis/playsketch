@@ -14,15 +14,15 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 
-@class PSDrawingGroup, PSDrawingItem;
+@class PSDrawingGroup, PSDrawingLine;
 
 @interface PSDrawingGroup : NSManagedObject
 
 @property (nonatomic, retain) NSString * name;
 @property (nonatomic, retain) NSNumber * rootGroup;
 @property (nonatomic, retain) NSSet *children;
-@property (nonatomic, retain) PSDrawingItem *parent;
-@property (nonatomic, retain) NSSet *drawingItems;
+@property (nonatomic, retain) PSDrawingLine *parent;
+@property (nonatomic, retain) NSSet *drawingLines;
 @end
 
 @interface PSDrawingGroup (CoreDataGeneratedAccessors)
@@ -32,9 +32,9 @@
 - (void)addChildren:(NSSet *)values;
 - (void)removeChildren:(NSSet *)values;
 
-- (void)addDrawingItemsObject:(PSDrawingItem *)value;
-- (void)removeDrawingItemsObject:(PSDrawingItem *)value;
-- (void)addDrawingItems:(NSSet *)values;
-- (void)removeDrawingItems:(NSSet *)values;
+- (void)addDrawingLinesObject:(PSDrawingLine *)value;
+- (void)removeDrawingLinesObject:(PSDrawingLine *)value;
+- (void)addDrawingLines:(NSSet *)values;
+- (void)removeDrawingLines:(NSSet *)values;
 
 @end
