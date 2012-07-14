@@ -18,9 +18,12 @@
 
 /* Private Interface */
 @interface PSAnimationRenderingController ()
+
 @property (strong, nonatomic, retain) EAGLContext* context;
 @property (strong, retain) GLKBaseEffect* effect;
+
 @end
+
 
 
 /* Begin Implementation */
@@ -75,99 +78,125 @@
 }
 
 
-/*	------------
- 
-	Update & Rendering Code!
-	Here we walk the tree of PSDrawingGroups and render them
-	We are centralizing all of this code here to keep it out of the data model classes
-	TODO: Should these be plain C functions to avoid the overhead of objective-C message passing
-	in the highly time-sensitive render loops?
-
-	------------*/
-
--(void)renderGroup:(PSDrawingGroup*)group
-{
-	//TODO: PUSH
-	//self.effect.transform.modelviewMatrix = self.modelMatrix;
-	
-	for(PSDrawingLine* drawingItem in group.drawingLines)
-	{
-		//This call makes sure that our object is fetched into memory
-		//It is only necessary because we are caching the points ourselves
-		//Usually this is done automatically when you access properties on the object
-		//TODO: take this out of the draw loop into somewhere else...
-		[drawingItem willAccessValueForKey:nil];
-	
-		[drawingItem render];
-	}
-	
-	// Recurse down to the children
-	for (PSDrawingGroup* child in group.children)
-	{
-		[self renderGroup:child];
-	}
-	
-	//TODO: POP
-}
-
-
--(void)updateGroup:(PSDrawingGroup*)group withTimeInterval:(NSTimeInterval)timeSinceLastUpdate
-{
-	// Update our drawing Items
-	for(PSDrawingLine* drawingItem in group.drawingLines)
-		;//TODO: [drawingItem update]
-		
-	// Recurse down to the children
-	for (PSDrawingGroup* child in group.children)
-	{
-		[self updateGroup:child withTimeInterval:timeSinceLastUpdate];
-	}
-}
-
 
 /*	------------
  
-	Delegate methods from the GLKView to do our rendering
+ Delegate methods from the GLKView which trigger our rendering
  
-	------------*/
+ ------------*/
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect {    
-
+	
     glClearColor(0.5, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT);    
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
 	
 	// Try to do as much rendering setup as possible so we don't have to call it on every iteration
-	[self.effect prepareToDraw];
 	self.effect.useConstantColor = YES;
 	self.effect.constantColor = GLKVector4Make(0.0, 1.0, 1.0, 0.5);
+	self.effect.transform.modelviewMatrix = GLKMatrix4Identity;
 
-	[self renderGroup:self.rootGroup];
+	[self.rootGroup renderGroupWithEffect:self.effect];
+
 }
 
 - (void)update
 {
-	[self updateGroup:self.rootGroup withTimeInterval:self.timeSinceLastUpdate];
+	[self.rootGroup updateWithTimeInterval:self.timeSinceLastUpdate];
 }
- 
-
-
 
 @end
 
 
 /*	------------
+ 
+	Update & Rendering Code!
+	We are centralizing all of the rendering code here to keep it out of the data model classes
+	PSDrawingGroups set the transforms, trigger their drawing/lines to render,
+	then recurse.
+ 
+	(We are dynamically adding methods to the group and line classes using the 
+	objective-c feature called "Categories")
 
-	Define the actual rendering code for the classes we are drawing here.
-	(We can dynamically add methods to a class using the objective-c feature called "Categories")
-	TODO: would really like to be able to do this with less message passing
-	
+	TODO: Should these be plain C functions to avoid the overhead of objective-C message passing
+	in the highly time-sensitive render loops?
+	At least with much less message passing
+
 	------------*/
 
+
+@implementation PSDrawingGroup ( renderingCategory )
+- (void) renderGroupWithEffect:(GLKBaseEffect*)effect
+{
+	//Push Matrix
+	GLKMatrix4 previousMatrix = effect.transform.modelviewMatrix;
+	effect.transform.modelviewMatrix = GLKMatrix4Multiply(previousMatrix, 
+														  currentModelViewMatrix);
+	[effect prepareToDraw];	
+
+	
+	//Draw our own drawingLines
+	for(PSDrawingLine* drawingItem in self.drawingLines)
+	{
+		//This call makes sure that our object is fetched into memory
+		//It is only necessary because we are caching the points ourselves
+		//Usually this is done automatically when you access properties on the object
+		//TODO: take this out of the draw loop into somewhere else...
+		[drawingItem willAccessValueForKey:nil];	
+
+		[drawingItem render];
+	}
+	
+	
+	//Recurse on child groups
+	for (PSDrawingGroup* child in self.children)
+		[child renderGroupWithEffect:effect];
+
+
+	//Pop Matrix
+	effect.transform.modelviewMatrix = previousMatrix;
+	
+}
+
+
+- (void) updateWithTimeInterval:(NSTimeInterval)timeSinceLastUpdate
+{
+	// Animate
+	currentSRTPosition.location.x += timeSinceLastUpdate * currentSRTRate.locationRate.x;
+	currentSRTPosition.location.y += timeSinceLastUpdate * currentSRTRate.locationRate.y;
+	currentSRTPosition.rotation += timeSinceLastUpdate * currentSRTRate.rotationRate;
+	//TODO: others
+
+	// Set current group matrix
+	GLKMatrix4 m = GLKMatrix4Identity;
+	//m = GLKMatrix4Scale(m, currentSRTPosition.scale, currentSRTPosition.scale, 1);
+	m = GLKMatrix4Rotate(m, currentSRTPosition.rotation, 0, 0, 1);
+	m = GLKMatrix4Translate(m, currentSRTPosition.location.x, currentSRTPosition.location.y, 0);
+	currentModelViewMatrix = m;
+
+	
+	// Recurse on our children
+	for (PSDrawingGroup* child in self.children)
+		[self updateWithTimeInterval:timeSinceLastUpdate];
+
+}
+
+@end
+
+
+/*
+	Adding a render function for the Line class.
+	The line doesn't need to deal with its geometry matrix, because the group
+	it belongs to does all of that configuration once for all of the lines that
+	are in its coordinate space.
+ 
+ */
 @implementation PSDrawingLine ( renderingCategory )
--(void)render
+- (void) render
 {	
+	//No need to worry about our model matrix since the parent group took care of it
+	
 	//Set the vertices
 	glEnableVertexAttribArray(GLKVertexAttribPosition);
 	glVertexAttribPointer(GLKVertexAttribPosition, 2, GL_FLOAT, GL_FALSE, 0,(void *)points );
@@ -180,6 +209,7 @@
 	
 }
 
-
-
 @end
+
+
+

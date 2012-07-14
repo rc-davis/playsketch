@@ -25,6 +25,13 @@
 
 
 // Use categories to add a render function to our drawing items
+// And an update function to our groups
+@interface PSDrawingGroup ( renderingCategory )
+- (void) renderGroupWithEffect:(GLKBaseEffect*)effect;
+- (void) updateWithTimeInterval:(NSTimeInterval)timeSinceLastUpdate;
+@end
+
 @interface PSDrawingLine ( renderingCategory )
 - (void) render;
 @end
+
