@@ -46,7 +46,6 @@
 	{
         NSLog(@"!!!! Failed to create an OpenGL ES context!!!!");
     }
-    
 
 	// Tell our view about the context
     GLKView *view = (GLKView *)self.view;
@@ -58,7 +57,6 @@
 	// GLKBaseEffect gives us basic texture and lights, which should be good enough
     self.effect = [[GLKBaseEffect alloc] init];
 
-	[self setOrCreateRoot];
 }
 
 
@@ -74,43 +72,6 @@
 					  self.view.bounds.origin.y + self.view.bounds.size.height,
 					  -1024, 1024);
     self.effect.transform.projectionMatrix = projectionMatrix;
-}
-
-
-// TODO: This is temporary until we have drawing functionality
-// This should be done by the parent view controller hosting us
--(void)setOrCreateRoot
-{
-	PSAppDelegate* appDelegate = (PSAppDelegate*)[[UIApplication sharedApplication] delegate];	
-	NSManagedObjectContext *context = [appDelegate managedObjectContext];
-	
-	self.rootGroup = [appDelegate rootDrawingGroup];
-	
-	//Query for a root object to see if we need to create anything	
-	if( self.rootGroup == nil )
-	{
-		//Create a new root object
-		NSLog(@"createTestData: Found NO root group, creating..." );
-		
-		PSDrawingGroup* newRoot = (PSDrawingGroup*)[NSEntityDescription 
-													insertNewObjectForEntityForName:@"PSDrawingGroup" inManagedObjectContext:context];
-		//Set its properties
-		newRoot.rootGroup = [NSNumber numberWithBool:YES];
-		newRoot.name = @"auto-generated Root";
-		
-		//Save
-		 NSError *error;
-		 if (![context save:&error])
-			 NSLog(@"Failed to save context!: %@", [error localizedDescription]);
-		
-		self.rootGroup = newRoot;
-		
-		[context save:nil]; //TODO: catch error
-
-	}		
-
-	((PSAnimationRenderingView*)self.view).currentGroup = self.rootGroup;
-
 }
 
 
