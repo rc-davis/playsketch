@@ -166,13 +166,14 @@
 	currentSRTPosition.location.x += timeSinceLastUpdate * currentSRTRate.locationRate.x;
 	currentSRTPosition.location.y += timeSinceLastUpdate * currentSRTRate.locationRate.y;
 	currentSRTPosition.rotation += timeSinceLastUpdate * currentSRTRate.rotationRate;
-	//TODO: others
+	currentSRTPosition.scale += timeSinceLastUpdate * currentSRTRate.scaleRate;
 
 	// Set current group matrix
 	GLKMatrix4 m = GLKMatrix4Identity;
-	//m = GLKMatrix4Scale(m, currentSRTPosition.scale, currentSRTPosition.scale, 1);
-	m = GLKMatrix4Rotate(m, currentSRTPosition.rotation, 0, 0, 1);
+
 	m = GLKMatrix4Translate(m, currentSRTPosition.location.x, currentSRTPosition.location.y, 0);
+	m = GLKMatrix4Scale(m, currentSRTPosition.scale, currentSRTPosition.scale, 1);
+	m = GLKMatrix4RotateWithVector3(m, currentSRTPosition.rotation, GLKVector3Make(0, 0, 1));
 	currentModelViewMatrix = m;
 
 	
@@ -195,9 +196,8 @@
 @implementation PSDrawingLine ( renderingCategory )
 - (void) render
 {	
-	//No need to worry about our model matrix since the parent group took care of it
-	
-	//Set the vertices
+
+	//Pass the vertices
 	glEnableVertexAttribArray(GLKVertexAttribPosition);
 	glVertexAttribPointer(GLKVertexAttribPosition, 2, GL_FLOAT, GL_FALSE, 0,(void *)points );
 	

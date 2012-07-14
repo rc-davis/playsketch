@@ -1,18 +1,17 @@
+	nested: translate, rotate, scale, rotate w/center, scale s/ center
 
-- erase button
+timeline & play button
+
+design data structures for timelines
 
 
-Should create a container view controller (custom uiviewcontroller subclass) to contain our GLview.
-See: http://developer.apple.com/library/ios/#documentation/uikit/reference/UIViewController_Class/Reference/Reference.html
-
-
-- Start to animate lines
 
 - port basemodel semantics
 	- timeline
 	- relative locations etc
 	- playback
 	- animation
+
 
 
 
