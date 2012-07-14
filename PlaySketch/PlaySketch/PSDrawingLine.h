@@ -25,11 +25,13 @@
 	// self.pointsAsData for persisting into our core data storage
 	CGPoint* points;
 	int pointCount;
-	int pointBufferSize;
+	int pointBufferCount;
 	
 }
 
 @property (nonatomic, retain) NSData * pointsAsData;
 @property (nonatomic, retain) PSDrawingGroup *group;
+
+-(void)addPoint:(CGPoint)p;
 
 @end

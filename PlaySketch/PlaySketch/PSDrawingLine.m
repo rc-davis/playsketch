@@ -21,51 +21,78 @@
 -(void)copyPointsOutOfObjectCache;
 @end
 
-@implementation PSDrawingLine
 
+@implementation PSDrawingLine
 @dynamic pointsAsData;
 @dynamic group;
 
 
+/*
+ Add a new point to the end of the current line
+*/
+-(void)addPoint:(CGPoint)p
+{
+	PS_ASSERT(points != nil, @"Points cache should already be allocated before adding to it");
+	
+	// Expand our buffer if it is full
+	if(pointBufferCount == pointCount)
+	{
+		NSLog(@"Reallocating points buffer for addPoint");
+		int newBufferCount = pointBufferCount * 2; // Double each time
+		points = (CGPoint*)realloc(points, newBufferCount * sizeof(CGPoint));
+		pointBufferCount = newBufferCount;
+	}
+	
+	points[pointCount] = p;
+	pointCount++;
+	
+}
+
+
+/*
+ This is called when our object comes out of storage
+ Copy our pointsAsData into our points buffer for faster access
+*/
 -(void)awakeFromFetch
 {
+	[super awakeFromFetch];
 	NSLog(@"Line Awaking from fetch");
-	// This is called when our object comes out of storage
-	// Copy our pointsAsData into our points buffer for faster access
-
 	[self copyPointsIntoObjectCache];	
 }
 
 
+/*
+ This is called the first time our object is inserted into a store
+ Create our transient C-style points here
+*/
 - (void)awakeFromInsert
 {
+	[super awakeFromInsert];
 	NSLog(@"Line Awaking from insert");
-	// This is called the first time our object is inserted into a store
-	// Create our transient C-style points here
-
 	[self copyPointsIntoObjectCache];
 }
 
 
+/*
+ This is called after undo/redo types of events
+ Copy our pointsAsData back into our points buffer after the change
+*/
 - (void)awakeFromSnapshotEvents:(NSSnapshotEventType)flags
 {
 	NSLog(@"Line Awaking from snapshot event");
-	
-	// This is called after undo/redo types of events
-	// Copy our pointsAsData back into our points buffer after the change
-	
+	[super awakeFromSnapshotEvents:flags];
 	PS_NOT_YET_IMPLEMENTED();
 }
 
 
+/*
+ This is called when it is time to save this object
+ Before the save, we copy the transient points data into the structure
+*/
 - (void)willSave
 {
 	NSLog(@"Line preparing for save");
-
-	// This is called when it is time to save this object
-	// Before the save, we copy the transient points data into the structure
 	[self copyPointsOutOfObjectCache];
-	
 }
 
 
@@ -78,14 +105,15 @@
 		int STARTING_BUFFER_SIZE = 100;
 		points = (CGPoint*)malloc(sizeof(CGPoint) * STARTING_BUFFER_SIZE);
 		pointCount = 0;
-		pointBufferSize = STARTING_BUFFER_SIZE;		
+		pointBufferCount = STARTING_BUFFER_SIZE;		
 	}
 	else
 	{
-		points = (CGPoint*)malloc( self.pointsAsData.length );
-		pointCount = self.pointsAsData.length / sizeof(CGPoint);
-		pointBufferSize = pointCount;
-		[self.pointsAsData getBytes:&points length:self.pointsAsData.length];
+		uint byteCount = self.pointsAsData.length;
+		points = (CGPoint*)malloc(byteCount);
+		memcpy(points, self.pointsAsData.bytes, byteCount);
+		pointCount = byteCount / sizeof(CGPoint);
+		pointBufferCount = pointCount;
 	}
 }
 
