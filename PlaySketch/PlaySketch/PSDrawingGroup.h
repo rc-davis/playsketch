@@ -40,4 +40,7 @@
 - (void)addDrawingLines:(NSSet *)values;
 - (void)removeDrawingLines:(NSSet *)values;
 
+//TODO TEMP
+-(void)setCurrentSRTRate:(SRTRate)r;
+
 @end

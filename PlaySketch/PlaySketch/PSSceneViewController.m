@@ -148,7 +148,28 @@
 	[rootSquare addLineFrom:CGPointZero to:CGPointMake(0,0)];
 
 	
+	//Create a subgroup
+	PSDrawingGroup* subgroup1 = (PSDrawingGroup*)[NSEntityDescription 
+												insertNewObjectForEntityForName:@"PSDrawingGroup" 
+												inManagedObjectContext:self.dataContext];
+	subgroup1.parent = rootGroup;
 	
+
+	//Add a triangle to subgroup, centered around 100,100
+	PSDrawingLine* subgroupTriangle = (PSDrawingLine*)[NSEntityDescription 
+												 insertNewObjectForEntityForName:@"PSDrawingLine" 
+												 inManagedObjectContext:self.dataContext];
+	subgroupTriangle.group = subgroup1;
+	[subgroupTriangle addLineFrom:CGPointZero to:CGPointMake(100, 100 + 50)];
+	[subgroupTriangle addLineFrom:CGPointZero to:CGPointMake(100 - 43.3012702, 100 - 25)];
+	[subgroupTriangle addLineFrom:CGPointZero to:CGPointMake(100 + 43.3012702, 100 - 25)];
+	[subgroupTriangle addLineFrom:CGPointZero to:CGPointMake(100, 100 + 50)];
+
+	
+	
+	[rootGroup setCurrentSRTRate:SRTRateMake( 0, 50, 0, 0 )];
+	[subgroup1 setCurrentSRTRate:SRTRateMake( 0, 0, 0, 5 )];
+
 }
 
 @end

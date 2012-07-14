@@ -1,4 +1,9 @@
-	nested: translate, rotate, scale, rotate w/center, scale s/ center
+
+group center points!!!
+
+w/scale + rotate + translate
++ nested scale, rotate, translate
+
 
 timeline & play button
 
