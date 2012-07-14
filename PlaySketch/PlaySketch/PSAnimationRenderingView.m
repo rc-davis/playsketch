@@ -13,25 +13,46 @@
 
 
 #import "PSAnimationRenderingView.h"
+#import "PSAppDelegate.h"
 
 @implementation PSAnimationRenderingView
+@synthesize currentGroup = _currentGroup;
+@synthesize currentLine = _currentLine;
 
-- (id)initWithFrame:(CGRect)frame
+-(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    self = [super initWithFrame:frame];
-    if (self) {
-        // Initialization code
-    }
-    return self;
+	PSAppDelegate* appDelegate = (PSAppDelegate*)[[UIApplication sharedApplication] delegate];	
+	NSManagedObjectContext *context = [appDelegate managedObjectContext];
+
+	self.currentLine = (PSDrawingLine*)[NSEntityDescription 
+										insertNewObjectForEntityForName:@"PSDrawingLine" inManagedObjectContext:context];
+	self.currentLine.group = self.currentGroup;
+	
+}		
+-(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
+{
+	UITouch* touch = [touches anyObject];
+	CGPoint p = [touch locationInView:self];
+	p.y = self.bounds.size.height - p.y;
+	[self.currentLine addLineFrom:CGPointZero to:p];
+	
 }
 
-/*
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect
+-(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    // Drawing code
+	PSAppDelegate* appDelegate = (PSAppDelegate*)[[UIApplication sharedApplication] delegate];	
+	NSManagedObjectContext *context = [appDelegate managedObjectContext];
+
+	[context save:nil];
+	
+	self.currentLine = nil;
+	
 }
-*/
+
+-(void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
+{
+	
+	
+}
 
 @end

@@ -12,7 +12,12 @@
  */
 
 #import <GLKit/GLKit.h>
+#import "PSDrawingGroup.h"
+#import "PSDrawingLine.h"
 
 @interface PSAnimationRenderingView : GLKView
+
+@property(nonatomic,retain)PSDrawingGroup* currentGroup;
+@property(nonatomic,retain)PSDrawingLine* currentLine;
 
 @end
