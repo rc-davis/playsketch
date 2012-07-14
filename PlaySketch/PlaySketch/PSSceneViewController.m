@@ -81,6 +81,8 @@
 	self.renderingController.rootGroup = [self fetchOrCreateRootGroup];
 	
 	
+	[self DEBUG_generateTestShapes:self.renderingController.rootGroup];
+	
 }
 
 
@@ -131,6 +133,23 @@
 	NSArray* allLines = [self.dataContext executeFetchRequest:requestLines error:nil];
 
 	NSLog(@"--- Context contains a total of:\nGroups:%d\nLines:%d", allGroups.count, allLines.count);
+}
+
+-(void)DEBUG_generateTestShapes:(PSDrawingGroup*) rootGroup
+{
+	//Add a square to the root group centered on 50,50
+	PSDrawingLine* rootSquare = (PSDrawingLine*)[NSEntityDescription 
+											insertNewObjectForEntityForName:@"PSDrawingLine" 
+											inManagedObjectContext:self.dataContext];
+	rootSquare.group = rootGroup;
+	[rootSquare addLineFrom:CGPointZero to:CGPointMake(0,0)];
+	[rootSquare addLineFrom:CGPointZero to:CGPointMake(100,0)];
+	[rootSquare addLineFrom:CGPointZero to:CGPointMake(100,100)];
+	[rootSquare addLineFrom:CGPointZero to:CGPointMake(0,100)];
+	[rootSquare addLineFrom:CGPointZero to:CGPointMake(0,0)];
+
+	
+	
 }
 
 @end
