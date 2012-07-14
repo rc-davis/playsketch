@@ -4,7 +4,7 @@
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="rootGroup" attributeType="Boolean" defaultValueString="NO" indexed="YES" syncable="YES"/>
         <relationship name="children" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="PSDrawingGroup" inverseName="parent" inverseEntity="PSDrawingGroup" syncable="YES"/>
-        <relationship name="drawingLines" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="PSDrawingLine" inverseName="group" inverseEntity="PSDrawingLine" syncable="YES"/>
+        <relationship name="drawingLines" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="PSDrawingLine" inverseName="group" inverseEntity="PSDrawingLine" syncable="YES"/>
         <relationship name="parent" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="PSDrawingGroup" inverseName="children" inverseEntity="PSDrawingGroup" syncable="YES"/>
     </entity>
     <entity name="PSDrawingLine" representedClassName="PSDrawingLine" syncable="YES">
@@ -13,6 +13,6 @@
     </entity>
     <elements>
         <element name="PSDrawingGroup" positionX="160" positionY="192" width="128" height="120"/>
-        <element name="PSDrawingLine" positionX="160" positionY="192" width="128" height="75"/>
+        <element name="PSDrawingLine" positionX="160" positionY="192" width="128" height="60"/>
     </elements>
 </model>
