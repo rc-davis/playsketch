@@ -179,7 +179,7 @@
 	
 	// Recurse on our children
 	for (PSDrawingGroup* child in self.children)
-		[self updateWithTimeInterval:timeSinceLastUpdate];
+		[child updateWithTimeInterval:timeSinceLastUpdate];
 
 }
 
