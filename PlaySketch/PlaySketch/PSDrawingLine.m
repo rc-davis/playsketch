@@ -30,7 +30,7 @@
 /*
  Add a new point to the end of the current line
 */
--(void)addPoint:(CGPoint)p
+-(void)addLineFrom:(CGPoint)from to:(CGPoint)to
 {
 	PS_ASSERT(points != nil, @"Points cache should already be allocated before adding to it");
 	
@@ -43,7 +43,7 @@
 		pointBufferCount = newBufferCount;
 	}
 	
-	points[pointCount] = p;
+	points[pointCount] = to;
 	pointCount++;
 	
 }
