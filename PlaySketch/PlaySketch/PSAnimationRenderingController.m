@@ -172,3 +172,51 @@
 
 
 @end
+
+
+/*	------------
+
+	Define the actual rendering code for the classes we are drawing here.
+	(We can dynamically add methods to a class using the objective-c feature called "Categories")
+	TODO: would really like to be able to do this with less message passing
+	
+	------------*/
+
+@implementation PSDrawingItem ( renderingCategory )
+-(void)render
+{
+	CGPoint* points = self.points;
+	
+	if(points == nil)
+	{
+		points = (CGPoint*)malloc(500 * sizeof(CGPoint));
+		
+		CGPoint current = CGPointZero;
+		
+		for(int i = 0; i < 500; i++)
+		{
+			points[i] = current;
+			current.x += rand()%2;
+			current.y += rand()%2;
+		}
+		
+		self.points = points;
+	}
+	
+	
+	//3. Supply the vertices
+	glEnableVertexAttribArray(GLKVertexAttribPosition);
+	glVertexAttribPointer(GLKVertexAttribPosition, 2, GL_FLOAT, GL_FALSE, 0,(void *)points );
+	
+	
+	//4. Draw hte actual vertices
+	glDrawArrays(GL_LINE_STRIP, 0, 500);
+	
+	//5. Clean up
+	glDisableVertexAttribArray(GLKVertexAttribPosition);
+	
+}
+
+
+
+@end

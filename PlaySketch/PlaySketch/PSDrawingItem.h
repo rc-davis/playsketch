@@ -16,6 +16,4 @@
 @property (nonatomic, retain) PSDrawingGroup *group;
 @property(nonatomic) CGPoint* points;
 
--(void)render;
-
 @end

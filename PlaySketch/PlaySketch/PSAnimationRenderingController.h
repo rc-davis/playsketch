@@ -17,3 +17,9 @@
 @property(nonatomic,retain) PSDrawingGroup* rootGroup;
 
 @end
+
+
+// Use categories to add a render function to our drawing items
+@interface PSDrawingItem ( renderingCategory )
+- (void) render;
+@end
