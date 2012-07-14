@@ -102,9 +102,9 @@
 		46BF259A15B0241A00834681 /* Data Model */ = {
 			isa = PBXGroup;
 			children = (
+				46F7A64C15B014E700C7B374 /* PlaySketch.xcdatamodeld */,
 				46BF25A415B0253400834681 /* PSDrawingItem.h */,
 				46BF25A515B0253400834681 /* PSDrawingItem.m */,
-				46F7A64C15B014E700C7B374 /* PlaySketch.xcdatamodeld */,
 				46BF25A715B0257600834681 /* PSDrawingGroup.h */,
 				46BF25A815B0257600834681 /* PSDrawingGroup.m */,
 			);

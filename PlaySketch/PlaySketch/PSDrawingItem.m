@@ -1,10 +1,15 @@
-//
-//  PSDrawingItem.m
-//  PlaySketch
-//
-//  Created by Ryder Ziola on 12-07-13.
-//  Copyright (c) 2012 Singapore Management University. All rights reserved.
-//
+/*
+ 
+ --------------
+ Copyright 2012 Singapore Management University
+ 
+ This Source Code Form is subject to the terms of the
+ Mozilla Public License, v. 2.0. If a copy of the MPL was
+ not distributed with this file, You can obtain one at
+ http://mozilla.org/MPL/2.0/.
+ --------------
+ 
+ */
 
 #import "PSDrawingItem.h"
 #import "PSDrawingGroup.h"
