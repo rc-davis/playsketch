@@ -107,8 +107,6 @@
 				46F7A64C15B014E700C7B374 /* PlaySketch.xcdatamodeld */,
 				46BF25A715B0257600834681 /* PSDrawingGroup.h */,
 				46BF25A815B0257600834681 /* PSDrawingGroup.m */,
-				46BF25AD15B02B5C00834681 /* PSAnimationRenderingController.h */,
-				46BF25AE15B02B5C00834681 /* PSAnimationRenderingController.m */,
 			);
 			name = "Data Model";
 			path = ..;
@@ -120,6 +118,16 @@
 				46BF25AB15B0266A00834681 /* SketchInterface.storyboard */,
 			);
 			name = Interface;
+			path = ..;
+			sourceTree = "<group>";
+		};
+		46BF25BD15B11BC100834681 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				46BF25AD15B02B5C00834681 /* PSAnimationRenderingController.h */,
+				46BF25AE15B02B5C00834681 /* PSAnimationRenderingController.m */,
+			);
+			name = Controllers;
 			path = ..;
 			sourceTree = "<group>";
 		};
@@ -162,6 +170,7 @@
 			children = (
 				46F7A64915B014E700C7B374 /* PSAppDelegate.h */,
 				46F7A64A15B014E700C7B374 /* PSAppDelegate.m */,
+				46BF25BD15B11BC100834681 /* Controllers */,
 				46BF25AA15B0263C00834681 /* Interface */,
 				46BF259A15B0241A00834681 /* Data Model */,
 				46F7A64115B014E700C7B374 /* Supporting Files */,
