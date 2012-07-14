@@ -1,15 +1,10 @@
-/*
- 
- --------------
- Copyright 2012 Singapore Management University
- 
- This Source Code Form is subject to the terms of the
- Mozilla Public License, v. 2.0. If a copy of the MPL was
- not distributed with this file, You can obtain one at
- http://mozilla.org/MPL/2.0/.
- --------------
- 
- */
+//
+//  PSDrawingGroup.h
+//  PlaySketch
+//
+//  Created by Ryder Ziola on 12-07-14.
+//  Copyright (c) 2012 Singapore Management University. All rights reserved.
+//
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
@@ -20,9 +15,11 @@
 
 @property (nonatomic, retain) NSString * name;
 @property (nonatomic, retain) NSNumber * rootGroup;
+@property (nonatomic, retain) UNKNOWN_TYPE currentSRTLocation;
+@property (nonatomic, retain) UNKNOWN_TYPE currentSRTSpeed;
 @property (nonatomic, retain) NSSet *children;
-@property (nonatomic, retain) PSDrawingLine *parent;
 @property (nonatomic, retain) NSSet *drawingLines;
+@property (nonatomic, retain) PSDrawingGroup *parent;
 @end
 
 @interface PSDrawingGroup (CoreDataGeneratedAccessors)
