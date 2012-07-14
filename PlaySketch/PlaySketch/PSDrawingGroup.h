@@ -8,15 +8,21 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
+#import "PSPrimitiveDataStructs.h"
 
 @class PSDrawingGroup, PSDrawingLine;
 
 @interface PSDrawingGroup : NSManagedObject
+{
+	// These are transient properties which are not stored in the model
+	SRTPosition currentSRTPosition;
+	SRTRate currentSRTRate;
+	GLKMatrix4 currentModelViewMatrix;
+
+}
 
 @property (nonatomic, retain) NSString * name;
 @property (nonatomic, retain) NSNumber * rootGroup;
-@property (nonatomic, retain) UNKNOWN_TYPE currentSRTLocation;
-@property (nonatomic, retain) UNKNOWN_TYPE currentSRTSpeed;
 @property (nonatomic, retain) NSSet *children;
 @property (nonatomic, retain) NSSet *drawingLines;
 @property (nonatomic, retain) PSDrawingGroup *parent;

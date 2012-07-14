@@ -15,10 +15,18 @@
 
 @dynamic name;
 @dynamic rootGroup;
-@dynamic currentSRTLocation;
-@dynamic currentSRTSpeed;
 @dynamic children;
 @dynamic drawingLines;
 @dynamic parent;
+
+
+- (void)awakeFromInsert
+{
+	// TODO TEMP: Setting these explicitly
+	// Make sure we are pulling these out of a time-indexed list
+	currentSRTPosition = SRTPositionMake( 0, 0, 1, 0, 0, 0);
+	currentSRTRate = SRTRateMake( 20, 50, 0, 0 );
+}
+
 
 @end
