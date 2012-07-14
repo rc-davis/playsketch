@@ -57,17 +57,24 @@
 	// Create a default "effect" for rendering
 	// GLKBaseEffect gives us basic texture and lights, which should be good enough
     self.effect = [[GLKBaseEffect alloc] init];
-    GLKMatrix4 projectionMatrix = GLKMatrix4MakeOrtho(
-								self.view.bounds.origin.x,
-								self.view.bounds.origin.x + self.view.bounds.size.width,
-								self.view.bounds.origin.y,
-								self.view.bounds.origin.y + self.view.bounds.size.height,
-								-1024, 1024);
-    self.effect.transform.projectionMatrix = projectionMatrix;
 
 	[self setOrCreateRoot];
 }
 
+
+/*
+	Generate our projection matrix in response to updates to our view's coordinates
+*/
+- (void)viewDidLayoutSubviews
+{
+    GLKMatrix4 projectionMatrix = GLKMatrix4MakeOrtho(
+					  self.view.bounds.origin.x,
+					  self.view.bounds.origin.x + self.view.bounds.size.width,
+					  self.view.bounds.origin.y,
+					  self.view.bounds.origin.y + self.view.bounds.size.height,
+					  -1024, 1024);
+    self.effect.transform.projectionMatrix = projectionMatrix;
+}
 
 
 // TODO: This is temporary until we have drawing functionality
