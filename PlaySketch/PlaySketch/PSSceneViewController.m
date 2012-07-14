@@ -80,9 +80,6 @@
 	// 2. Fetch a new one
 	self.renderingController.rootGroup = [self fetchOrCreateRootGroup];
 	
-	
-	[self DEBUG_generateTestShapes:self.renderingController.rootGroup];
-	
 }
 
 
@@ -135,8 +132,10 @@
 	NSLog(@"--- Context contains a total of:\nGroups:%d\nLines:%d", allGroups.count, allLines.count);
 }
 
--(void)DEBUG_generateTestShapes:(PSDrawingGroup*) rootGroup
+-(IBAction)DEBUG_generateTestShapes:(id)sender
 {
+	PSDrawingGroup* rootGroup = self.renderingController.rootGroup;
+	
 	//Add a square to the root group centered on 50,50
 	PSDrawingLine* rootSquare = (PSDrawingLine*)[NSEntityDescription 
 											insertNewObjectForEntityForName:@"PSDrawingLine" 
