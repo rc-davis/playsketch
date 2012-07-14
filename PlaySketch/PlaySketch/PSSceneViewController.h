@@ -19,4 +19,6 @@
 
 @property(nonatomic,retain)IBOutlet PSAnimationRenderingController* renderingController;
 
+-(IBAction)eraseAll:(id)sender;
+
 @end

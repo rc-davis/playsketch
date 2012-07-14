@@ -42,7 +42,11 @@
 	// Add the renderingview to our viewcontroller hierarchy
 	[self addChildViewController:self.renderingController];
 	[self.renderingController viewDidLoad];
-		NSLog(@"chid added!");
+	
+
+	// Bind our rendering Controller to the root group we want to use
+	self.renderingController.rootGroup = [self fetchOrCreateRootGroup];
+
 }
 
 - (void)viewDidUnload
@@ -55,6 +59,30 @@
 {
 	return UIInterfaceOrientationIsLandscape(interfaceOrientation);
 }
+
+
+-(IBAction)eraseAll:(id)sender
+{
+	NSLog(@"Before Erasing:");
+	[self DEBUG_printContextTotalObjectCount];
+	
+
+	// 1. Erase everything descendent from our current root controller
+	PSDrawingGroup* rootGroup = self.renderingController.rootGroup;
+	self.renderingController.rootGroup = nil;
+	[self.dataContext deleteObject:rootGroup];
+	
+
+	NSLog(@"After Erasing");
+	[self DEBUG_printContextTotalObjectCount];
+
+	
+	// 2. Fetch a new one
+	self.renderingController.rootGroup = [self fetchOrCreateRootGroup];
+	
+	
+}
+
 
 -(PSDrawingGroup*)fetchOrCreateRootGroup
 {
@@ -74,9 +102,11 @@
 		PSDrawingGroup* newRoot = (PSDrawingGroup*)[NSEntityDescription 
 													insertNewObjectForEntityForName:@"PSDrawingGroup" 
 													inManagedObjectContext:self.dataContext];
+
 		//Set its properties
 		newRoot.rootGroup = [NSNumber numberWithBool:YES];
 		newRoot.name = @"New Auto-generated Root";
+		
 		//Save
 		NSError *error;
 		if (![self.dataContext save:&error])
@@ -89,5 +119,18 @@
 	}
 }
 
+
+
+//TODO: temporary
+-(void)DEBUG_printContextTotalObjectCount
+{
+	NSFetchRequest* requestGroup = [NSFetchRequest fetchRequestWithEntityName:@"PSDrawingGroup"];
+	NSArray* allGroups = [self.dataContext executeFetchRequest:requestGroup error:nil];
+
+	NSFetchRequest* requestLines = [NSFetchRequest fetchRequestWithEntityName:@"PSDrawingLine"];
+	NSArray* allLines = [self.dataContext executeFetchRequest:requestLines error:nil];
+
+	NSLog(@"--- Context contains a total of:\nGroups:%d\nLines:%d", allGroups.count, allLines.count);
+}
 
 @end
