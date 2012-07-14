@@ -8,10 +8,11 @@
         <relationship name="parent" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="PSDrawingGroup" inverseName="children" inverseEntity="PSDrawingGroup" syncable="YES"/>
     </entity>
     <entity name="PSDrawingLine" representedClassName="PSDrawingLine" syncable="YES">
+        <attribute name="pointsAsData" optional="YES" attributeType="Binary" syncable="YES"/>
         <relationship name="group" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="PSDrawingGroup" inverseName="drawingLines" inverseEntity="PSDrawingGroup" syncable="YES"/>
     </entity>
     <elements>
         <element name="PSDrawingGroup" positionX="160" positionY="192" width="128" height="120"/>
-        <element name="PSDrawingLine" positionX="160" positionY="192" width="128" height="60"/>
+        <element name="PSDrawingLine" positionX="160" positionY="192" width="128" height="75"/>
     </elements>
 </model>

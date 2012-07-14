@@ -1,5 +1,4 @@
 
-- Find a way to store points in CoreData (translate properties in class!)
 - Use view's touches to create new lines
 - Start to animate lines
 
