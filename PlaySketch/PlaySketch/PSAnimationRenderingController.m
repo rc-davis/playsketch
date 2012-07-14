@@ -56,7 +56,12 @@
 	// Create a default "effect" for rendering
 	// GLKBaseEffect gives us basic texture and lights, which should be good enough
     self.effect = [[GLKBaseEffect alloc] init];
-    GLKMatrix4 projectionMatrix = GLKMatrix4MakeOrtho(0, 480, 0, 320, -1024, 1024);
+    GLKMatrix4 projectionMatrix = GLKMatrix4MakeOrtho(
+								self.view.bounds.origin.x,
+								self.view.bounds.origin.x + self.view.bounds.size.width,
+								self.view.bounds.origin.y,
+								self.view.bounds.origin.y + self.view.bounds.size.height,
+								-1024, 1024);
     self.effect.transform.projectionMatrix = projectionMatrix;
 
 	[self setOrCreateRoot];
