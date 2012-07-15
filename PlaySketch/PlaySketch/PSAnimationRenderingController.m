@@ -172,8 +172,10 @@
 	GLKMatrix4 m = GLKMatrix4Identity;
 
 	m = GLKMatrix4Translate(m, currentSRTPosition.location.x, currentSRTPosition.location.y, 0);
+//	m = GLKMatrix4Translate(m, currentSRTPosition.origin.x, currentSRTPosition.origin.y, 0);
 	m = GLKMatrix4Scale(m, currentSRTPosition.scale, currentSRTPosition.scale, 1);
-	m = GLKMatrix4RotateWithVector3(m, currentSRTPosition.rotation, GLKVector3Make(0, 0, 1));
+	m = GLKMatrix4Rotate(m, currentSRTPosition.rotation, 0, 0, 1);
+	m = GLKMatrix4Translate(m, -currentSRTPosition.origin.x, -currentSRTPosition.origin.y, 0);
 	currentModelViewMatrix = m;
 
 	

@@ -34,4 +34,9 @@
 	currentSRTRate = r;
 }
 
+-(void)setCurrentSRTPosition:(SRTPosition)p
+{
+	currentSRTPosition = p;
+}
+
 @end

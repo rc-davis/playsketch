@@ -42,5 +42,6 @@
 
 //TODO TEMP
 -(void)setCurrentSRTRate:(SRTRate)r;
+-(void)setCurrentSRTPosition:(SRTPosition)p;
 
 @end

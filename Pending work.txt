@@ -1,10 +1,4 @@
 
-group center points!!!
-
-w/scale + rotate + translate
-+ nested scale, rotate, translate
-
-
 timeline & play button
 
 design data structures for timelines
