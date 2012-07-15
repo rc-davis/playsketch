@@ -51,6 +51,15 @@
 	return newDocument;
 }
 
++(PSDrawingGroup*)newDrawingGroupWithParent:(PSDrawingGroup*)parent
+{
+	//Create a new root object
+	PSDrawingGroup* newGroup = (PSDrawingGroup*)[NSEntityDescription 
+													  insertNewObjectForEntityForName:@"PSDrawingGroup" 
+												 inManagedObjectContext:[PSDataModel context]];
+	newGroup.parent = parent;
+	return newGroup;
+}
 
 
 -(IBAction)eraseAll:(id)sender

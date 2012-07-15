@@ -33,6 +33,7 @@
 
 +(NSArray*)allDrawingDocuments;
 +(PSDrawingDocument*)newDrawingDocumentWithName:(NSString*)name;
++(PSDrawingGroup*)newDrawingGroupWithParent:(PSDrawingGroup*)parent;
 
 +(void)DEBUG_printTotalObjectCount;
 +(void)DEBUG_generateTestShapesIntoGroup:(PSDrawingGroup*)rootGroup;
