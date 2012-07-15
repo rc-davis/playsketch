@@ -28,6 +28,8 @@
 										insertNewObjectForEntityForName:@"PSDrawingLine" inManagedObjectContext:context];
 	self.currentLine.group = self.parentController.rootGroup;
 	
+	// TODO: this should be in PSDataModel and this view should be elsewhere
+	
 }		
 -(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
