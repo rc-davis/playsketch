@@ -39,9 +39,14 @@
 	PSDrawingDocument* newDocument = (PSDrawingDocument*)[NSEntityDescription 
 												insertNewObjectForEntityForName:@"PSDrawingDocument" 
 												inManagedObjectContext:[PSDataModel context]];
-	
+
 	//Set its properties
 	newDocument.name = name;
+	
+
+	//Create a root group for it
+	newDocument.rootGroup = [PSDataModel newDrawingGroupWithParent:nil];
+	
 	
 	//Save it
 	NSError *error;
