@@ -14,7 +14,6 @@ multiple documents: open up and draw (pick line color & thickness)
 - new prompts for name?
 - add name to bottom of button
 
-- shadows on buttons
 - buttons have actual images of the drawing!!!
 
 

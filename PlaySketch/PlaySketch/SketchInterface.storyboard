@@ -30,7 +30,7 @@
                                     <action selector="newDocument:" destination="cg4-D5-CV4" eventType="touchUpInside" id="IZU-aE-jsd"/>
                                 </connections>
                             </button>
-                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="nIf-Qf-Vxo">
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" id="nIf-Qf-Vxo">
                                 <rect key="frame" x="0.0" y="124" width="1024" height="500"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             </scrollView>

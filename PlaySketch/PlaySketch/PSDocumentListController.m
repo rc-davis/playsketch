@@ -13,6 +13,7 @@
 
 #import "PSDocumentListController.h"
 #import "PSDataModel.h"
+#import <QuartzCore/QuartzCore.h>
 
 @interface PSDocumentListController ()
 @property(nonatomic,retain)NSArray* documentButtons;
@@ -67,7 +68,7 @@
 	NSMutableArray* buttons = [NSMutableArray arrayWithCapacity:self.documentRoots.count];
 	
 	// Set up some size variables for doing the layout of the buttons
-	CGRect buttonFrame = CGRectMake(0, 0, 200, 400);
+	CGRect buttonFrame = CGRectMake(0, 0, 462, 300);
 	CGFloat STEPSIZE = buttonFrame.size.width + 200;
 	CGFloat centerX =  STEPSIZE/2;	
 
@@ -81,10 +82,17 @@
 	for(PSDrawingGroup* docRoot in self.documentRoots)
 	{
 		UIButton* docButton = [[UIButton alloc] initWithFrame:buttonFrame];
-		docButton.backgroundColor = [UIColor colorWithRed:0.627 green:1.000 blue:0.653 alpha:1.000];
+		docButton.backgroundColor = [UIColor colorWithRed:1.000 green:0.977 blue:0.842 alpha:1.000];
 		docButton.center = CGPointMake(centerX, self.scrollView.bounds.size.height/2.0);
 		[self.scrollView addSubview:docButton];
 		[buttons addObject:docButton];
+
+		// Add a drop shadow just because we can (take that!)
+		docButton.layer.shadowColor = [UIColor blackColor].CGColor;
+		docButton.layer.shadowOffset = CGSizeMake(0, 10);
+		docButton.layer.shadowRadius = 10.0;
+		docButton.layer.shadowOpacity = 0.5;
+		
 		centerX += STEPSIZE;
 	}
 
