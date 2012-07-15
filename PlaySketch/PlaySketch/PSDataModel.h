@@ -24,11 +24,13 @@
 
 
 #import <Foundation/Foundation.h>
+@class PSDrawingGroup;
+@class PSDrawingLine;
 
 @interface PSDataModel : NSObject
 
 
 +(NSArray*)allDrawingDocumentRoots;
-
++(PSDrawingGroup*)newDocumentRoot;
 
 @end

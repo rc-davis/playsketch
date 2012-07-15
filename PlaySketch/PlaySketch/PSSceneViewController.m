@@ -13,6 +13,7 @@
 
 #import "PSSceneViewController.h"
 #import "PSAppDelegate.h"
+#import "PSDataModel.h"
 
 @interface PSSceneViewController ()
 
@@ -106,24 +107,7 @@
 	}
 	else
 	{
-		//Create a new root object
-		PSDrawingGroup* newRoot = (PSDrawingGroup*)[NSEntityDescription 
-													insertNewObjectForEntityForName:@"PSDrawingGroup" 
-													inManagedObjectContext:self.dataContext];
-
-		//Set its properties
-		newRoot.rootGroup = [NSNumber numberWithBool:YES];
-		newRoot.name = @"New Auto-generated Root";
-		
-		//Save
-		NSError *error;
-		if (![self.dataContext save:&error])
-			NSLog(@"Failed to save context!: %@", [error localizedDescription]);
-		
-		NSLog(@"After Creating new Root Group:");
-		[self DEBUG_printContextTotalObjectCount];
-		
-		return newRoot;
+		return [PSDataModel newDocumentRoot];
 	}
 }
 
