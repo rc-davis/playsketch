@@ -28,6 +28,15 @@
 	currentSRTRate = SRTRateMake( 0, 0, 0, 0 );
 }
 
+- (void)awakeFromFetch
+{
+	// TODO TEMP: Setting these explicitly
+	// Make sure we are pulling these out of a time-indexed list
+	currentSRTPosition = SRTPositionMake( 0, 0, 1, 0, 0, 0);
+	currentSRTRate = SRTRateMake( 0, 0, 0, 0 );
+}
+
+
 // TODO TEMPORARY DELETE THIS WHEN WE HAVE A PATH
 -(void)setCurrentSRTRate:(SRTRate)r
 {
