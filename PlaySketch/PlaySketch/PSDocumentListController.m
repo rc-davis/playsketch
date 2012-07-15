@@ -15,6 +15,9 @@
 #import "PSDataModel.h"
 #import <QuartzCore/QuartzCore.h>
 
+#define CONTENT_STEP_SIZE 650.0 // The pixel-distance between two buttons
+
+
 @interface PSDocumentListController ()
 @property(nonatomic,retain)NSArray* documentButtons;
 @property(nonatomic,retain)NSArray* documentRoots;
@@ -38,6 +41,7 @@
 {
     [super viewDidLoad];
 	[self generateButtons];
+	self.scrollView.delegate = self; //So we can respond to the scroll events
 }
 
 
@@ -69,12 +73,13 @@
 	
 	// Set up some size variables for doing the layout of the buttons
 	CGRect buttonFrame = CGRectMake(0, 0, 462, 300);
-	CGFloat STEPSIZE = buttonFrame.size.width + 200;
-	CGFloat centerX =  STEPSIZE/2;	
+	CGFloat centerX =  self.scrollView.frame.size.width/2.0;
 
-	// Give the scrollview's scrolling area the right size to hold them all...
+	// Give the scrollview's scrolling area the right size to hold them all
+	// This means CONTENT_STEP_SIZE for each document + padding at the start and end to be able to center
 	CGSize newContentSize = self.scrollView.contentSize;
-	newContentSize.width = self.documentRoots.count*STEPSIZE;
+	newContentSize.width = self.documentRoots.count*CONTENT_STEP_SIZE +
+							2 * (self.scrollView.frame.size.width/2.0 - CONTENT_STEP_SIZE/2.0);
 	self.scrollView.contentSize = newContentSize;
 
 	// Create a button for each document and add to the scroll view
@@ -93,7 +98,7 @@
 		docButton.layer.shadowRadius = 10.0;
 		docButton.layer.shadowOpacity = 0.5;
 		
-		centerX += STEPSIZE;
+		centerX += CONTENT_STEP_SIZE;
 	}
 
 	self.documentButtons = buttons;
@@ -122,5 +127,25 @@
 	
 	//Todo: scroll to center on the new button
 }
+
+
+/*
+	Scrollview delegate methods
+	Implementing these let this controller respond to changes in the scrollview,
+	to keep us centred on a button
+*/
+- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
+{
+	// Find the button that is nearest to the offset the scrollview is planning on stopping at
+	int requestedIndex = round((*targetContentOffset).x/CONTENT_STEP_SIZE);
+	
+	// Validate/sanity-check it
+	requestedIndex = MAX(requestedIndex, 0);
+	requestedIndex = MIN(requestedIndex, self.documentButtons.count);
+	
+	//Update the targetContentOffset we've been given to adjust it
+	(*targetContentOffset).x = requestedIndex * CONTENT_STEP_SIZE;
+}
+
 
 @end

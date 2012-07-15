@@ -13,7 +13,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface PSDocumentListController : UIViewController
+@interface PSDocumentListController : UIViewController <UIScrollViewDelegate>
 
 @property(nonatomic,retain)IBOutlet UIScrollView* scrollView;
 
