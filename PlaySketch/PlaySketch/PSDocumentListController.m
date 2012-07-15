@@ -13,6 +13,7 @@
 
 #import "PSDocumentListController.h"
 #import "PSDataModel.h"
+#import "PSSceneViewController.h"
 #import <QuartzCore/QuartzCore.h>
 
 #define CONTENT_STEP_SIZE 650.0 // The pixel-distance between two buttons
@@ -98,6 +99,9 @@
 		docButton.layer.shadowRadius = 10.0;
 		docButton.layer.shadowOpacity = 0.5;
 		
+		//Hook up the button to call viewDocument:
+		[docButton addTarget:self action:@selector(viewDocument:) forControlEvents:UIControlEventTouchUpInside];
+		
 		centerX += CONTENT_STEP_SIZE;
 	}
 
@@ -134,8 +138,46 @@
 												offsetBeforeAddingButton.y);
 	[UIView commitAnimations];
 	
-	//Todo: scroll to center on the new button
 }
+
+
+/*
+	Show the document that corresponds to senderButton
+	Do this by looking up the document that corresponds to the button clicked,
+	then triggering the "GoToSceneViewController segue in the storyboard
+*/
+-(void)viewDocument:(id)senderButton
+{
+	// Find the index of the document that corresponds to this button
+	int index = [self.documentButtons indexOfObject:senderButton];
+	
+	if ( index >= 0 && index < self.documentRoots.count)
+	{
+		// Call the segue from the storyboard
+		PSDrawingDocument* document = [self.documentRoots objectAtIndex:index];
+		[self performSegueWithIdentifier:@"GoToSceneViewController" sender:document];
+	}
+}
+
+
+/*
+	This is called automatically each time we segue away from this view
+	We can tell which segue triggered this call by looking at [segue identifier]
+*/
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+
+	// Check if this is the segue where we are loading up a scene
+	// We are passing the document in as the sender in viewDocument:
+    if ( [[segue identifier] isEqualToString:@"GoToSceneViewController"]
+		&& [sender class] == [PSDrawingDocument class] )
+    {
+		//Set the root scene view controller from the supplied document
+		PSSceneViewController *vc = [segue destinationViewController];
+		vc.currentDocument = (PSDrawingDocument*)sender;
+    }
+}
+
 
 
 /*

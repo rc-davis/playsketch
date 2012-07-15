@@ -59,4 +59,9 @@
 }
 
 
+-(IBAction)dismissSceneView:(id)sender
+{
+	[self dismissModalViewControllerAnimated:YES];
+}
+
 @end

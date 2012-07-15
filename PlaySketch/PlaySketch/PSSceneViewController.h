@@ -23,4 +23,5 @@
 @property(nonatomic,retain)PSDrawingDocument* currentDocument;
 
 -(IBAction)play:(id)sender;
+-(IBAction)dismissSceneView:(id)sender;
 @end
