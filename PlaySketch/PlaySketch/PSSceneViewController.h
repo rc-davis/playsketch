@@ -13,13 +13,14 @@
 
 
 #import <UIKit/UIKit.h>
-#import "PSAnimationRenderingController.h"
+@class PSAnimationRenderingController;
+@class PSDrawingDocument;
+
 
 @interface PSSceneViewController : UIViewController
 
 @property(nonatomic,retain)IBOutlet PSAnimationRenderingController* renderingController;
+@property(nonatomic,retain)PSDrawingDocument* currentDocument;
 
 -(IBAction)play:(id)sender;
--(IBAction)eraseAll:(id)sender;
--(IBAction)DEBUG_generateTestShapes:(id)sender;
 @end

@@ -68,7 +68,7 @@
 	
 	
 	// Fetch a list of all the documents
-	self.documentRoots = [PSDataModel allDrawingDocumentRoots];
+	self.documentRoots = [PSDataModel allDrawingDocuments];
 	NSMutableArray* buttons = [NSMutableArray arrayWithCapacity:self.documentRoots.count];
 	
 	// Set up some size variables for doing the layout of the buttons
@@ -122,8 +122,17 @@
 
 -(IBAction)newDocument:(id)sender
 {
-	PSDrawingGroup* group = [PSDataModel newDocumentRoot];
+	[PSDataModel newDrawingDocumentWithName:@"New Animation"];
+
+	CGPoint offsetBeforeAddingButton = self.scrollView.contentOffset;
 	[self generateButtons];
+
+	//Animate motion from the offset the scrollview WAS at to center on the new document
+	self.scrollView.contentOffset = offsetBeforeAddingButton;
+	[UIView beginAnimations:@"DocumentScrollViewZoom" context:nil];
+	self.scrollView.contentOffset = CGPointMake((self.documentRoots.count - 1)*CONTENT_STEP_SIZE,
+												offsetBeforeAddingButton.y);
+	[UIView commitAnimations];
 	
 	//Todo: scroll to center on the new button
 }

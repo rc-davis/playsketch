@@ -24,13 +24,18 @@
 
 
 #import <Foundation/Foundation.h>
-@class PSDrawingGroup;
-@class PSDrawingLine;
+#import "PSDrawingDocument.h"
+#import "PSDrawingGroup.h"
+#import "PSDrawingLine.h"
 
 @interface PSDataModel : NSObject
 
 
-+(NSArray*)allDrawingDocumentRoots;
-+(PSDrawingGroup*)newDocumentRoot;
++(NSArray*)allDrawingDocuments;
++(PSDrawingDocument*)newDrawingDocumentWithName:(NSString*)name;
+
++(void)DEBUG_printTotalObjectCount;
++(void)DEBUG_generateTestShapesIntoGroup:(PSDrawingGroup*)rootGroup;
+
 
 @end
