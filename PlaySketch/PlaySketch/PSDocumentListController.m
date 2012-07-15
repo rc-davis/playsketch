@@ -45,6 +45,7 @@
     [super viewDidLoad];
 	[self generateButtons];
 	self.scrollView.delegate = self; //So we can respond to the scroll events
+	[self scrollViewDidScroll:self.scrollView];
 }
 
 
@@ -140,6 +141,9 @@
 	 CGPointMake((self.documentRoots.count - 1)*CONTENT_STEP_SIZE,
 				 offsetBeforeAddingButton.y) animated:YES];
 
+
+	//Trigger an update of our labels
+	[self scrollViewDidScroll:self.scrollView];
 	
 }
 
@@ -170,6 +174,7 @@
 	}
 }
 
+
 /*
 	Show the document that corresponds to senderButton
 	Do this by looking up the document that corresponds to the button clicked,
@@ -185,6 +190,9 @@
 		// Call the segue from the storyboard
 		PSDrawingDocument* document = [self.documentRoots objectAtIndex:index];
 		[self performSegueWithIdentifier:@"GoToSceneViewController" sender:document];
+
+		// Trigger an update of our labels
+		[self scrollViewDidScroll:self.scrollView];
 	}
 }
 
