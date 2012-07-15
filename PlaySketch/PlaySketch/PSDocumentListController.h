@@ -20,4 +20,5 @@
 @property(nonatomic,retain)IBOutlet UIButton* deleteButton;
 
 -(IBAction)newDocument:(id)sender;
+-(IBAction)deleteDocument:(id)sender;
 @end

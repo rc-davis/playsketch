@@ -143,6 +143,32 @@
 }
 
 
+-(IBAction)deleteDocument:(id)sender
+{
+	// Get the document that is nearest the center of the scrollview
+	int requestedIndex = round(self.scrollView.contentOffset.x/CONTENT_STEP_SIZE);
+	requestedIndex = MAX(requestedIndex, 0);
+	requestedIndex = MIN(requestedIndex, self.documentButtons.count - 1);
+	
+	if (requestedIndex >= 0 && requestedIndex < self.documentRoots.count)
+	{
+		//Delete it
+		CGPoint offsetBeforeDeleting = self.scrollView.contentOffset;
+		[PSDataModel deleteDrawingDocument:[self.documentRoots objectAtIndex:requestedIndex]];
+		
+		//Reload our data
+		[self generateButtons];
+		
+		// TODO: animate the delete better
+		
+		// Trigger an update of our labels
+		self.scrollView.contentOffset = offsetBeforeDeleting;
+		[self scrollViewDidEndDecelerating:self.scrollView];
+		[self scrollViewDidScroll:self.scrollView];
+		
+	}
+}
+
 /*
 	Show the document that corresponds to senderButton
 	Do this by looking up the document that corresponds to the button clicked,
