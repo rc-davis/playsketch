@@ -2,6 +2,22 @@ MILESONE 1: goal: sunday
 multiple documents: open up and draw (pick line color & thickness)
 (skeleton of better basemodel semantics)
 
+- buttons actually take you somewhere!
+- button to get back from what your'e working on
+
+- scroll centers on a button when you let go
+- left and right buttons can be centered on
+- new should zoom to newly created one
+
+- delete button (with confirm dialog?)
+
+- new prompts for name?
+- add name to bottom of button
+
+- shadows on buttons
+- buttons have actual images of the drawing!!!
+
+
 
 MILESTONE 2: goal monday morning
 select parts of the drawing and create a character which you can draw inside
