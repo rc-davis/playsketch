@@ -31,6 +31,7 @@
 @interface PSDataModel : NSObject
 
 
++(void)save;
 +(NSArray*)allDrawingDocuments;
 +(PSDrawingDocument*)newDrawingDocumentWithName:(NSString*)name;
 +(PSDrawingGroup*)newDrawingGroupWithParent:(PSDrawingGroup*)parent;

@@ -22,6 +22,11 @@
 
 @implementation PSDataModel
 
++(void)save
+{
+	[[PSDataModel context] save:nil];
+	NSLog(@"SAVING");
+}
 
 +(NSArray*)allDrawingDocuments;
 {
