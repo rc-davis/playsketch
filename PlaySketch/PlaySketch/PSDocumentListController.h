@@ -17,4 +17,5 @@
 
 @property(nonatomic,retain)IBOutlet UIScrollView* scrollView;
 
+-(IBAction)newDocument:(id)sender;
 @end

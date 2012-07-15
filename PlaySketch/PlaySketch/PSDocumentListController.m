@@ -12,6 +12,7 @@
  */
 
 #import "PSDocumentListController.h"
+#import "PSDataModel.h"
 
 @interface PSDocumentListController ()
 
@@ -26,6 +27,7 @@
     [super viewDidLoad];
 
 	// Generate a list of documents
+	NSArray* allDocuments = [PSDataModel allDrawingDocumentRoots];
 	
 	
 	// make a view for each one and add to the scroll view
@@ -43,7 +45,13 @@
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
-	return YES;
+	return UIInterfaceOrientationIsLandscape(interfaceOrientation);
+}
+
+
+-(IBAction)newDocument:(id)sender
+{
+	PSDrawingGroup* group = [PSDataModel newDocumentRoot];
 }
 
 @end

@@ -133,8 +133,6 @@
 			isa = PBXGroup;
 			children = (
 				46BF25AB15B0266A00834681 /* SketchInterface.storyboard */,
-				46C9AD1115B29BC500EF3A92 /* PSDocumentListController.h */,
-				46C9AD1215B29BC500EF3A92 /* PSDocumentListController.m */,
 				46BF25CB15B140D500834681 /* PSAnimationRenderingView.h */,
 				46BF25CC15B140D500834681 /* PSAnimationRenderingView.m */,
 			);
@@ -145,6 +143,8 @@
 		46BF25BD15B11BC100834681 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				46C9AD1115B29BC500EF3A92 /* PSDocumentListController.h */,
+				46C9AD1215B29BC500EF3A92 /* PSDocumentListController.m */,
 				46BF25CE15B1503B00834681 /* PSSceneViewController.h */,
 				46BF25CF15B1503B00834681 /* PSSceneViewController.m */,
 				46BF25AD15B02B5C00834681 /* PSAnimationRenderingController.h */,
