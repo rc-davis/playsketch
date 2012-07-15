@@ -16,7 +16,7 @@ typedef struct
 	GLKVector2 location; // in Parent's coordinates
 	float scale;
 	float rotation;
-	GLKVector2 center; //in Parent's coordinates
+	GLKVector2 origin; // point in own coordinates that location is measured to
 } SRTPosition;
 
 
@@ -31,15 +31,15 @@ typedef struct
 // Helpers for making
 
 static inline SRTPosition SRTPositionMake(float x, float y, float scale, float rotation,
-							float centerX, float centerY)
+							float originX, float originY)
 {
 	SRTPosition p;
 	p.location.x = x;
 	p.location.y = y;
 	p.scale = scale;
 	p.rotation = rotation;
-	p.center.x = centerX;
-	p.center.y = centerY;
+	p.origin.x = originX;
+	p.origin.y = originY;
 	return p;
 }
 
