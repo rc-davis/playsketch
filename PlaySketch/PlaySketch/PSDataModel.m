@@ -33,7 +33,6 @@
 	// Search the data store for all PSDrawingDocuments
 	NSFetchRequest* request = [NSFetchRequest fetchRequestWithEntityName:@"PSDrawingDocument"];
 	NSArray* allDocuments = [[PSDataModel context] executeFetchRequest:request error:nil];	
-	NSLog(@"Found %d Documents", allDocuments.count);
 	return allDocuments;
 }
 
@@ -47,19 +46,15 @@
 
 	//Set its properties
 	newDocument.name = name;
-	
 
 	//Create a root group for it
 	newDocument.rootGroup = [PSDataModel newDrawingGroupWithParent:nil];
 	
-	
-	//Save it
-	NSError *error;
-	if (![[ PSDataModel context] save:&error])
-		NSLog(@"Failed to save context!: %@", [error localizedDescription]);
+	[PSDataModel save];
 	
 	return newDocument;
 }
+
 
 +(PSDrawingGroup*)newDrawingGroupWithParent:(PSDrawingGroup*)parent
 {
@@ -72,13 +67,12 @@
 }
 
 
--(IBAction)eraseAll:(id)sender
++(void)deleteDrawingDocument:(PSDrawingDocument*)doc
 {
-	//TODO: DELETE
-	PS_NOT_YET_IMPLEMENTED();
-	
-}
+	[[PSDataModel context] deleteObject:doc];
 
+	[PSDataModel save];
+}
 
 
 /*
