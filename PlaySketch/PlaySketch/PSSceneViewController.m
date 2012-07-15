@@ -46,6 +46,7 @@
 
 	// Bind our rendering Controller to the root group we want to use
 	self.renderingController.rootGroup = [self fetchOrCreateRootGroup];
+	
 
 }
 
@@ -58,6 +59,14 @@
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
 	return UIInterfaceOrientationIsLandscape(interfaceOrientation);
+}
+
+
+
+
+-(IBAction)play:(id)sender
+{
+
 }
 
 

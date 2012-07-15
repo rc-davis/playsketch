@@ -1,7 +1,23 @@
+MILESONE 1: goal: sunday
+multiple documents: open up and draw (pick line color & thickness)
+(skeleton of better basemodel semantics)
 
-timeline & play button
 
-design data structures for timelines
+MILESTONE 2: goal monday morning
+select parts of the drawing and create a character which you can draw inside
+and return to editing on
+
+
+MILESTONE 3: goal tuesday
+aniimation widget animates drawing
+	design data structures for TimeLists
+	Implementent them in coredata
+	test TimeLists
+	basic timeline
+	
+MILESTONE 4:
+	puppets inside the animation
+
 
 
 
@@ -39,6 +55,8 @@ Do prettier lines (use point sprite brush instead of line drawings)
 - drawing should be prettier and use a stamp
 
 - Explore: using msmutabledata's bytes as line point backing (avoiding weird copy back/forward stuff)
+
+- Turn off full draw loop when we aren't animating (to maximize drawing responsiveness)
 
 
 ========

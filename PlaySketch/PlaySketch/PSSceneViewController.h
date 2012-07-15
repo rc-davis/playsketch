@@ -19,6 +19,7 @@
 
 @property(nonatomic,retain)IBOutlet PSAnimationRenderingController* renderingController;
 
+-(IBAction)play:(id)sender;
 -(IBAction)eraseAll:(id)sender;
 -(IBAction)DEBUG_generateTestShapes:(id)sender;
 @end
