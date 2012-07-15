@@ -1,13 +1,6 @@
-MILESONE 1:
-multiple documents: open up and draw (pick line color & thickness)
-(skeleton of better basemodel semantics)
-
-- delete button (with confirm dialog?)
-
-- new prompts for name?
-- add name to bottom of button
-- buttons have actual images of the drawing!!!
-
+- delete button confirm dialog
+- factor out the label setting stuff
+- factor out the selected document stuff (fake getter method)
 
 
 
@@ -66,6 +59,7 @@ Do prettier lines (use point sprite brush instead of line drawings)
 
 - Turn off full draw loop when we aren't animating (to maximize drawing responsiveness)
 
+- buttons have actual images of the drawing!!!
 
 ========
 EVEN LATER
