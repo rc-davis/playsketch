@@ -2,9 +2,6 @@ MILESONE 1:
 multiple documents: open up and draw (pick line color & thickness)
 (skeleton of better basemodel semantics)
 
-- buttons actually take you somewhere!
-- button to get back from what your'e working on
-
 - delete button (with confirm dialog?)
 
 - new prompts for name?

@@ -31,6 +31,8 @@
 @synthesize scrollView = _scrollView;
 @synthesize documentRoots = _documentRoots;
 @synthesize documentButtons = _documentButtons;
+@synthesize documentNameLabel = _documentNameLabel;
+@synthesize deleteButton = _deleteButton;
 
 
 /*
@@ -192,10 +194,69 @@
 	
 	// Validate/sanity-check it
 	requestedIndex = MAX(requestedIndex, 0);
-	requestedIndex = MIN(requestedIndex, self.documentButtons.count);
+	requestedIndex = MIN(requestedIndex, self.documentButtons.count - 1);
 	
 	//Update the targetContentOffset we've been given to adjust it
-	(*targetContentOffset).x = requestedIndex * CONTENT_STEP_SIZE;
+	(*targetContentOffset).x = requestedIndex * CONTENT_STEP_SIZE + 0.5;
+}
+
+
+/*
+	The above delegate callback (scrollViewWillEndDragging) SHOULD be all we 
+	need to make sure our scrollview snaps to a document properly.
+	It looks like there's a bug keeping it from always working, so we need to 
+	duplicate the snapping functionality here. 
+	See here for discussion of the bug:
+	http://stackoverflow.com/questions/10880434/scrollviewwillenddraggingwithvelocitytargetcontentoffset-not-working-on-the-e
+*/
+-(void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+{
+	// Find the button that is nearest to the offset the scrollview is planning on stopping at
+	int requestedIndex = round(self.scrollView.contentOffset.x/CONTENT_STEP_SIZE);
+	
+	// Validate/sanity-check it
+	requestedIndex = MAX(requestedIndex, 0);
+	requestedIndex = MIN(requestedIndex, self.documentButtons.count - 1);
+	
+	//scroll to the right location
+	[UIView beginAnimations:@"DocumentScrollViewZoom" context:nil];
+	scrollView.contentOffset = CGPointMake(requestedIndex * CONTENT_STEP_SIZE, 
+										   scrollView.contentOffset.y);
+	[UIView commitAnimations];
+}
+
+
+/*
+	Update the label and delete button to fade unless the document is directly
+	above them
+*/
+-(void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+	// Get the document that is nearest the center of the scrollview
+	int requestedIndex = round(self.scrollView.contentOffset.x/CONTENT_STEP_SIZE);
+	requestedIndex = MAX(requestedIndex, 0);
+	requestedIndex = MIN(requestedIndex, self.documentButtons.count - 1);
+	
+	//Calculate a percentage we are from the perfect center alignment for the document
+	CGFloat idealOffsetX = requestedIndex * CONTENT_STEP_SIZE;
+	CGFloat percentOfIdeal = 1 - fabs(idealOffsetX - self.scrollView.contentOffset.x)/(CONTENT_STEP_SIZE/2);
+	
+	if ( requestedIndex >= 0 && requestedIndex < self.documentRoots.count )
+	{
+		// Set the title label for the document nearest the center
+		PSDrawingDocument* document = [self.documentRoots objectAtIndex:requestedIndex];
+		self.documentNameLabel.text = document.name;
+		self.documentNameLabel.alpha = percentOfIdeal;
+		
+		// Show the delete button for it, too
+		self.deleteButton.alpha = percentOfIdeal;
+		self.deleteButton.enabled = ( percentOfIdeal > 0.8 );
+	}
+	else
+	{
+		self.documentNameLabel.alpha = 0.0;
+	}
+	
 }
 
 
