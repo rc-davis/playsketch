@@ -31,8 +31,8 @@
 @synthesize scrollView = _scrollView;
 @synthesize documentRoots = _documentRoots;
 @synthesize documentButtons = _documentButtons;
-@synthesize documentNameLabel = _documentNameLabel;
 @synthesize deleteButton = _deleteButton;
+@synthesize documentNameButton = _documentNameButton;
 
 
 /*
@@ -128,7 +128,7 @@
 
 -(IBAction)newDocument:(id)sender
 {
-	[PSDataModel newDrawingDocumentWithName:@"New Animation"];
+	[PSDataModel newDrawingDocumentWithName:@"Untitled Animation"];
 
 	CGPoint offsetBeforeAddingButton = self.scrollView.contentOffset;
 	[self generateButtons];
@@ -187,6 +187,37 @@
 	}
 }
 
+
+-(IBAction)startRenameDocument:(id)sender
+{
+	UIAlertView *alertView = [[UIAlertView alloc] 
+							  initWithTitle:@"Rename Animation"
+							  delegate:self
+							  cancelButtonTitle:@"Cancel" 
+							  otherButtonTitles:@"OK", nil];
+	alertView.alertViewStyle = UIAlertViewStylePlainTextInput;
+	[alertView show];
+}
+
+- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
+{
+	if ( buttonIndex > 0 )
+	{
+		NSString* newName = [alertView textFieldAtIndex:0].text;
+		int requestedIndex = round(self.scrollView.contentOffset.x/CONTENT_STEP_SIZE);
+		requestedIndex = MAX(requestedIndex, 0);
+		requestedIndex = MIN(requestedIndex, self.documentButtons.count - 1);
+		
+		if (newName && newName.length > 0 && 
+			requestedIndex >= 0 && requestedIndex < self.documentRoots.count)
+		{
+			PSDrawingDocument* document = [self.documentRoots objectAtIndex:requestedIndex];
+			document.name = newName;
+			[PSDataModel save];
+			[self scrollViewDidScroll:self.scrollView];
+		}
+	}
+}
 
 /*
 	This is called automatically each time we segue away from this view
@@ -271,16 +302,23 @@
 	{
 		// Set the title label for the document nearest the center
 		PSDrawingDocument* document = [self.documentRoots objectAtIndex:requestedIndex];
-		self.documentNameLabel.text = document.name;
-		self.documentNameLabel.alpha = percentOfIdeal;
+		[self.documentNameButton setTitle:document.name
+								 forState:UIControlStateNormal];
+		self.documentNameButton.alpha = percentOfIdeal;
+		self.documentNameButton.enabled = ( percentOfIdeal > 0.8);
 		
 		// Show the delete button for it, too
 		self.deleteButton.alpha = percentOfIdeal;
 		self.deleteButton.enabled = ( percentOfIdeal > 0.8 );
+		
 	}
 	else
 	{
-		self.documentNameLabel.alpha = 0.0;
+		self.documentNameButton.alpha = 0.0;
+		self.documentNameButton.enabled = NO;
+		self.deleteButton.alpha = 0;
+		self.deleteButton.enabled = NO;
+
 	}
 	
 }
