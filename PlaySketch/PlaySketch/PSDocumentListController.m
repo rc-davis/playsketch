@@ -134,11 +134,12 @@
 	[self generateButtons];
 
 	//Animate motion from the offset the scrollview WAS at to center on the new document
+
 	self.scrollView.contentOffset = offsetBeforeAddingButton;
-	[UIView beginAnimations:@"DocumentScrollViewZoom" context:nil];
-	self.scrollView.contentOffset = CGPointMake((self.documentRoots.count - 1)*CONTENT_STEP_SIZE,
-												offsetBeforeAddingButton.y);
-	[UIView commitAnimations];
+	[self.scrollView setContentOffset:
+	 CGPointMake((self.documentRoots.count - 1)*CONTENT_STEP_SIZE,
+				 offsetBeforeAddingButton.y) animated:YES];
+
 	
 }
 
@@ -192,6 +193,7 @@
 {
 	UIAlertView *alertView = [[UIAlertView alloc] 
 							  initWithTitle:@"Rename Animation"
+							  message:@"Enter a new name"
 							  delegate:self
 							  cancelButtonTitle:@"Cancel" 
 							  otherButtonTitles:@"OK", nil];
@@ -276,10 +278,9 @@
 	requestedIndex = MIN(requestedIndex, self.documentButtons.count - 1);
 	
 	//scroll to the right location
-	[UIView beginAnimations:@"DocumentScrollViewZoom" context:nil];
-	scrollView.contentOffset = CGPointMake(requestedIndex * CONTENT_STEP_SIZE, 
-										   scrollView.contentOffset.y);
-	[UIView commitAnimations];
+	[scrollView setContentOffset:CGPointMake(requestedIndex * CONTENT_STEP_SIZE, 
+										   scrollView.contentOffset.y)
+						animated:YES];
 }
 
 
