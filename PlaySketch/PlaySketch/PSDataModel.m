@@ -67,6 +67,15 @@
 }
 
 
++(PSDrawingLine*)newLineInGroup:(PSDrawingGroup*)group
+{
+	PSDrawingLine* newLine = (PSDrawingLine*)[NSEntityDescription 
+											  insertNewObjectForEntityForName:@"PSDrawingLine" inManagedObjectContext:[PSDataModel context]];
+	newLine.group = group;
+	return newLine;
+}
+
+
 +(void)deleteDrawingDocument:(PSDrawingDocument*)doc
 {
 	[[PSDataModel context] deleteObject:doc];

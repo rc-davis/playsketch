@@ -35,6 +35,7 @@
 +(NSArray*)allDrawingDocuments;
 +(PSDrawingDocument*)newDrawingDocumentWithName:(NSString*)name;
 +(PSDrawingGroup*)newDrawingGroupWithParent:(PSDrawingGroup*)parent;
++(PSDrawingLine*)newLineInGroup:(PSDrawingGroup*)group;
 +(void)deleteDrawingDocument:(PSDrawingDocument*)doc;
 
 +(void)DEBUG_printTotalObjectCount;
