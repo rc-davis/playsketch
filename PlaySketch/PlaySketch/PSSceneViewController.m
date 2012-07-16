@@ -68,4 +68,13 @@
 	[self dismissModalViewControllerAnimated:YES];
 }
 
+
+/*
+	Begins selection mode for selecting lines to put into a character
+	If already in selection mode, dismisses
+*/
+-(IBAction)toggleCharacterCreation:(id)sender
+{
+	
+}
 @end

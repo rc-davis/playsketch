@@ -26,4 +26,5 @@
 
 -(IBAction)play:(id)sender;
 -(IBAction)dismissSceneView:(id)sender;
+-(IBAction)toggleCharacterCreation:(id)sender;
 @end
