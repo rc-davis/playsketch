@@ -20,7 +20,8 @@
 @interface PSAnimationRenderingController : GLKViewController
 
 @property(nonatomic,retain) PSDrawingGroup* rootGroup;
-@property(nonatomic,retain) PSDrawingLine* selectionLine; 
+@property(nonatomic,retain) PSDrawingLine* selectionLoupeLine; 
+@property(nonatomic,retain) NSSet* selectedLines;
 
 @end
 

@@ -30,7 +30,8 @@
 @synthesize context = _context;
 @synthesize effect = _effect;
 @synthesize rootGroup = _rootGroup;
-@synthesize selectionLine = _selectionLine;
+@synthesize selectionLoupeLine = _selectionLine;
+@synthesize selectedLines = _selectedLines;
 
 
 -(BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
@@ -104,13 +105,24 @@
 	[self.rootGroup renderGroupWithEffect:self.effect];
 	
 	//Draw our selection line on top of everything
-	if(self.selectionLine)
+	if(self.selectionLoupeLine)
 	{
-		self.effect.constantColor = GLKVector4Make(1.0, 0.30, 0.05, 1.0);		
+		self.effect.constantColor = GLKVector4Make(1.0, 0.0, 0.0, 1.0);		
 		[self.effect prepareToDraw];
-		[self.selectionLine render];
+		[self.selectionLoupeLine render];
 	}
 
+	// Draw our selected lines again, with a different color to show them highlighted
+	// It may seem crazy to draw selected lines twice per frame, but my measurements
+	// showed that it is faster than the alternative, because that requires checking
+	// for EACH LINE what color it should be, then doing expensive calls into GL to
+	// set our drawing color
+	self.effect.constantColor = GLKVector4Make(1.0, 0.0, 0.0, 1.0);
+	[self.effect prepareToDraw];
+	for (PSDrawingLine* line in self.selectedLines)
+		[line render];
+	
+	
 	// Timing our draw loop
     //NSTimeInterval perfDuration = [NSDate timeIntervalSinceReferenceDate] - start;	
 	//perfSumTime += perfDuration;
