@@ -31,7 +31,6 @@
 {
 	_currentDocument = currentDocument;
 	self.renderingController.rootGroup = currentDocument.rootGroup;
-	self.drawingTouchView.currentDrawingGroup = currentDocument.rootGroup;
 }
 
 
@@ -42,7 +41,6 @@
 	// Add the renderingview to our viewcontroller hierarchy
 	[self addChildViewController:self.renderingController];
 	[self.renderingController viewDidLoad];
-	self.drawingTouchView.currentDrawingGroup = self.currentDocument.rootGroup;
 	
 }
 
@@ -75,6 +73,22 @@
 */
 -(IBAction)toggleCharacterCreation:(id)sender
 {
+	NSLog(@"start creation");
+}
+
+-(PSDrawingLine*)newLineToDrawTo:(id)drawingView
+{
+	return [PSDataModel newLineInGroup:self.currentDocument.rootGroup];
+}
+
+-(void)finishedDrawingLine:(PSDrawingLine*)line inDrawingView:(id)drawingView
+{
 	
 }
+
+-(void)cancelledDrawingLine:(PSDrawingLine*)line inDrawingView:(id)drawingView
+{
+	PS_NOT_YET_IMPLEMENTED();
+}
+
 @end

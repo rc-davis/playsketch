@@ -13,12 +13,13 @@
 
 
 #import <UIKit/UIKit.h>
+#import "PSDrawingEventsView.h"
 @class PSAnimationRenderingController;
 @class PSDrawingDocument;
-@class PSDrawingEventsView;
 
 
-@interface PSSceneViewController : UIViewController
+
+@interface PSSceneViewController : UIViewController <PSDrawingEventsViewDrawingDelegate>
 
 @property(nonatomic,retain)IBOutlet PSAnimationRenderingController* renderingController;
 @property(nonatomic,retain)IBOutlet PSDrawingEventsView* drawingTouchView;
@@ -27,4 +28,5 @@
 -(IBAction)play:(id)sender;
 -(IBAction)dismissSceneView:(id)sender;
 -(IBAction)toggleCharacterCreation:(id)sender;
+
 @end

@@ -79,6 +79,7 @@
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <connections>
                                     <outlet property="delegate" destination="RgX-PA-EXf" id="Kxl-Ot-Ofd"/>
+                                    <outlet property="drawingDelegate" destination="UPZ-Bt-XHw" id="v3D-k7-6wt"/>
                                 </connections>
                             </glkView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="mkd-yj-a7c">
@@ -163,6 +164,9 @@
         </class>
         <class className="PSDrawingEventsView" superclassName="GLKView">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/PSDrawingEventsView.h"/>
+            <relationships>
+                <relationship kind="outlet" name="drawingDelegate"/>
+            </relationships>
         </class>
         <class className="PSSceneViewController" superclassName="UIViewController">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/PSSceneViewController.h"/>
