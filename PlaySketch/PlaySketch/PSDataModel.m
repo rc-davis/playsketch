@@ -78,9 +78,28 @@
 
 +(void)deleteDrawingDocument:(PSDrawingDocument*)doc
 {
+	
 	[[PSDataModel context] deleteObject:doc];
-
 	[PSDataModel save];
+
+}
+
+
++(void)deleteDrawingGroup:(PSDrawingGroup*)group
+{
+
+	[[PSDataModel context] deleteObject:group];
+	[PSDataModel save];
+
+}
+
+
++(void)deleteDrawingLine:(PSDrawingLine*)line
+{
+
+	[[PSDataModel context] deleteObject:line];
+	[PSDataModel save];
+	
 }
 
 

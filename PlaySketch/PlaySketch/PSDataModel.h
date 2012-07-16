@@ -37,6 +37,8 @@
 +(PSDrawingGroup*)newDrawingGroupWithParent:(PSDrawingGroup*)parent;
 +(PSDrawingLine*)newLineInGroup:(PSDrawingGroup*)group;
 +(void)deleteDrawingDocument:(PSDrawingDocument*)doc;
++(void)deleteDrawingGroup:(PSDrawingGroup*)group;
++(void)deleteDrawingLine:(PSDrawingLine*)line;
 
 +(void)DEBUG_printTotalObjectCount;
 +(void)DEBUG_generateTestShapesIntoGroup:(PSDrawingGroup*)rootGroup;
