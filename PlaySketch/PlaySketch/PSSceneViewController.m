@@ -115,10 +115,7 @@
 {
 	
 	if ( line == self.renderingController.selectionLoupeLine )
-	{
 		[self.selectionHelper addLineFrom:from to:to];
-		NSLog(@"Selected %d lines", self.selectionHelper.selectedLines.count);
-	}
 	
 }
 
