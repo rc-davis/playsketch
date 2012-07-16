@@ -16,7 +16,8 @@
 #import "PSSceneViewController.h"
 #import <QuartzCore/QuartzCore.h>
 
-#define CONTENT_STEP_SIZE 650.0 // The pixel-distance between two buttons
+#define DOC_BUTTON_STEP_SIZE 650.0 // The pixel-distance between two buttons
+#define ALLOWABLE_SELECTION_OFFSET 200 // The distance away from the center of a button that is still considered selected 
 
 
 @interface PSDocumentListController ()
@@ -25,6 +26,8 @@
 
 -(void)generateButtons;
 -(void)clearButtons;
+-(PSDrawingDocument*)selectedDocument:(CGFloat*)outPercentFromCentered;
+-(void)refreshButtonAppearance;
 @end
 
 @implementation PSDocumentListController
@@ -45,7 +48,7 @@
     [super viewDidLoad];
 	[self generateButtons];
 	self.scrollView.delegate = self; //So we can respond to the scroll events
-	[self scrollViewDidScroll:self.scrollView];
+	[self refreshButtonAppearance];
 }
 
 
@@ -80,10 +83,10 @@
 	CGFloat centerX =  self.scrollView.frame.size.width/2.0;
 
 	// Give the scrollview's scrolling area the right size to hold them all
-	// This means CONTENT_STEP_SIZE for each document + padding at the start and end to be able to center
+	// This means DOC_BUTTON_STEP_SIZE for each document + padding at the start and end to be able to center
 	CGSize newContentSize = self.scrollView.contentSize;
-	newContentSize.width = self.documentRoots.count*CONTENT_STEP_SIZE +
-							2 * (self.scrollView.frame.size.width/2.0 - CONTENT_STEP_SIZE/2.0);
+	newContentSize.width = self.documentRoots.count*DOC_BUTTON_STEP_SIZE +
+							2 * (self.scrollView.frame.size.width/2.0 - DOC_BUTTON_STEP_SIZE/2.0);
 	self.scrollView.contentSize = newContentSize;
 
 	// Create a button for each document and add to the scroll view
@@ -105,7 +108,7 @@
 		//Hook up the button to call viewDocument:
 		[docButton addTarget:self action:@selector(viewDocument:) forControlEvents:UIControlEventTouchUpInside];
 		
-		centerX += CONTENT_STEP_SIZE;
+		centerX += DOC_BUTTON_STEP_SIZE;
 	}
 
 	self.documentButtons = buttons;
@@ -125,6 +128,32 @@
 }
 
 
+/*
+	We will consider the document nearest to being centered in the view to be "selected", 
+	but only if it falls within ALLOWABLE_SELECTION_OFFSET of being perfectly centered.
+	outPercentFromCentered is an optional argument to return how close we are to centered.
+	1.0 means perfectly centred, 0.0 means off by ALLOWABLE_SELECTION_OFFSET
+*/
+-(PSDrawingDocument*)selectedDocument:(CGFloat*)outPercentFromCentered
+{
+	// Get the document that is nearest the center of the scrollview
+	int currentIndex = round(self.scrollView.contentOffset.x/DOC_BUTTON_STEP_SIZE);
+	currentIndex = MAX(currentIndex, 0);
+	currentIndex = MIN(currentIndex, self.documentButtons.count - 1);
+	
+	//Calculate the percentFromCenetered
+	CGFloat idealOffsetX = currentIndex * DOC_BUTTON_STEP_SIZE;
+	CGFloat percentFromCentered = 1 - fabs(idealOffsetX - self.scrollView.contentOffset.x)/
+									ALLOWABLE_SELECTION_OFFSET;
+	if ( outPercentFromCentered )
+		*outPercentFromCentered = MAX( 0, percentFromCentered );
+	
+	// Return the document if we are close enough
+	if ( currentIndex < self.documentRoots.count && percentFromCentered > 0 )
+		return [self.documentRoots objectAtIndex:currentIndex];
+	else
+		return nil;
+}
 
 
 -(IBAction)newDocument:(id)sender
@@ -138,28 +167,22 @@
 
 	self.scrollView.contentOffset = offsetBeforeAddingButton;
 	[self.scrollView setContentOffset:
-	 CGPointMake((self.documentRoots.count - 1)*CONTENT_STEP_SIZE,
+	 CGPointMake((self.documentRoots.count - 1)*DOC_BUTTON_STEP_SIZE,
 				 offsetBeforeAddingButton.y) animated:YES];
 
-
-	//Trigger an update of our labels
-	[self scrollViewDidScroll:self.scrollView];
+	[self refreshButtonAppearance];
 	
 }
 
 
 -(IBAction)deleteDocument:(id)sender
 {
-	// Get the document that is nearest the center of the scrollview
-	int requestedIndex = round(self.scrollView.contentOffset.x/CONTENT_STEP_SIZE);
-	requestedIndex = MAX(requestedIndex, 0);
-	requestedIndex = MIN(requestedIndex, self.documentButtons.count - 1);
-	
-	if (requestedIndex >= 0 && requestedIndex < self.documentRoots.count)
+	PSDrawingDocument* docToDelete = [self selectedDocument:nil];
+	if ( docToDelete )
 	{
 		//Delete it
 		CGPoint offsetBeforeDeleting = self.scrollView.contentOffset;
-		[PSDataModel deleteDrawingDocument:[self.documentRoots objectAtIndex:requestedIndex]];
+		[PSDataModel deleteDrawingDocument:docToDelete];
 		
 		//Reload our data
 		[self generateButtons];
@@ -169,7 +192,7 @@
 		// Trigger an update of our labels
 		self.scrollView.contentOffset = offsetBeforeDeleting;
 		[self scrollViewDidEndDecelerating:self.scrollView];
-		[self scrollViewDidScroll:self.scrollView];
+		[self refreshButtonAppearance];
 		
 	}
 }
@@ -191,12 +214,14 @@
 		PSDrawingDocument* document = [self.documentRoots objectAtIndex:index];
 		[self performSegueWithIdentifier:@"GoToSceneViewController" sender:document];
 
-		// Trigger an update of our labels
-		[self scrollViewDidScroll:self.scrollView];
+		[self refreshButtonAppearance];
 	}
 }
 
 
+/*
+	Called by the button on the document name, to start renaming the selected document
+*/
 -(IBAction)startRenameDocument:(id)sender
 {
 	UIAlertView *alertView = [[UIAlertView alloc] 
@@ -209,25 +234,28 @@
 	[alertView show];
 }
 
+
+/*
+	UIAlertView delegate method
+	This is called when an alertview is dismissed by the user.
+	The only alertview that is being used here is for renaming a document
+*/
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
 {
 	if ( buttonIndex > 0 )
 	{
 		NSString* newName = [alertView textFieldAtIndex:0].text;
-		int requestedIndex = round(self.scrollView.contentOffset.x/CONTENT_STEP_SIZE);
-		requestedIndex = MAX(requestedIndex, 0);
-		requestedIndex = MIN(requestedIndex, self.documentButtons.count - 1);
+		PSDrawingDocument* document = [self selectedDocument:nil];
 		
-		if (newName && newName.length > 0 && 
-			requestedIndex >= 0 && requestedIndex < self.documentRoots.count)
+		if (newName && newName.length > 0 && document )
 		{
-			PSDrawingDocument* document = [self.documentRoots objectAtIndex:requestedIndex];
 			document.name = newName;
 			[PSDataModel save];
-			[self scrollViewDidScroll:self.scrollView];
+			[self refreshButtonAppearance];
 		}
 	}
 }
+
 
 /*
 	This is called automatically each time we segue away from this view
@@ -257,14 +285,14 @@
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
 {
 	// Find the button that is nearest to the offset the scrollview is planning on stopping at
-	int requestedIndex = round((*targetContentOffset).x/CONTENT_STEP_SIZE);
+	int requestedIndex = round((*targetContentOffset).x/DOC_BUTTON_STEP_SIZE);
 	
 	// Validate/sanity-check it
 	requestedIndex = MAX(requestedIndex, 0);
 	requestedIndex = MIN(requestedIndex, self.documentButtons.count - 1);
 	
 	//Update the targetContentOffset we've been given to adjust it
-	(*targetContentOffset).x = requestedIndex * CONTENT_STEP_SIZE + 0.5;
+	(*targetContentOffset).x = requestedIndex * DOC_BUTTON_STEP_SIZE + 0.5;
 }
 
 
@@ -279,57 +307,51 @@
 -(void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
 	// Find the button that is nearest to the offset the scrollview is planning on stopping at
-	int requestedIndex = round(self.scrollView.contentOffset.x/CONTENT_STEP_SIZE);
+	int requestedIndex = round(self.scrollView.contentOffset.x/DOC_BUTTON_STEP_SIZE);
 	
 	// Validate/sanity-check it
 	requestedIndex = MAX(requestedIndex, 0);
 	requestedIndex = MIN(requestedIndex, self.documentButtons.count - 1);
 	
 	//scroll to the right location
-	[scrollView setContentOffset:CGPointMake(requestedIndex * CONTENT_STEP_SIZE, 
+	[scrollView setContentOffset:CGPointMake(requestedIndex * DOC_BUTTON_STEP_SIZE, 
 										   scrollView.contentOffset.y)
 						animated:YES];
+}
+
+
+-(void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+	[self refreshButtonAppearance];
 }
 
 
 /*
 	Update the label and delete button to fade unless the document is directly
 	above them
-*/
--(void)scrollViewDidScroll:(UIScrollView *)scrollView
+ */
+-(void)refreshButtonAppearance
 {
-	// Get the document that is nearest the center of the scrollview
-	int requestedIndex = round(self.scrollView.contentOffset.x/CONTENT_STEP_SIZE);
-	requestedIndex = MAX(requestedIndex, 0);
-	requestedIndex = MIN(requestedIndex, self.documentButtons.count - 1);
+	CGFloat percentFromCentered;
+	PSDrawingDocument* currentDocument = [self selectedDocument:&percentFromCentered];
 	
-	//Calculate a percentage we are from the perfect center alignment for the document
-	CGFloat idealOffsetX = requestedIndex * CONTENT_STEP_SIZE;
-	CGFloat percentOfIdeal = 1 - fabs(idealOffsetX - self.scrollView.contentOffset.x)/(CONTENT_STEP_SIZE/2);
-	
-	if ( requestedIndex >= 0 && requestedIndex < self.documentRoots.count )
+	if (currentDocument)
 	{
-		// Set the title label for the document nearest the center
-		PSDrawingDocument* document = [self.documentRoots objectAtIndex:requestedIndex];
-		[self.documentNameButton setTitle:document.name
-								 forState:UIControlStateNormal];
-		self.documentNameButton.alpha = percentOfIdeal;
-		self.documentNameButton.enabled = ( percentOfIdeal > 0.8);
-		
-		// Show the delete button for it, too
-		self.deleteButton.alpha = percentOfIdeal;
-		self.deleteButton.enabled = ( percentOfIdeal > 0.8 );
-		
+		//Fade our labels according to percentFromCentered
+		[self.documentNameButton setTitle:currentDocument.name forState:UIControlStateNormal];
+		self.documentNameButton.alpha = percentFromCentered;
+		self.documentNameButton.enabled = YES;
+		self.deleteButton.alpha = percentFromCentered;
+		self.deleteButton.enabled = percentFromCentered;
 	}
 	else
 	{
+		//Hide everything
 		self.documentNameButton.alpha = 0.0;
 		self.documentNameButton.enabled = NO;
 		self.deleteButton.alpha = 0;
 		self.deleteButton.enabled = NO;
-
-	}
-	
+	}	
 }
 
 
