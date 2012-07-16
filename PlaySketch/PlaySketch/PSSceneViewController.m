@@ -17,7 +17,7 @@
 #import "PSDrawingEventsView.h"
 
 @interface PSSceneViewController ()
-
+@property(nonatomic)BOOL isSelecting; // If we are selecting instead of drawing
 @end
 
 
@@ -26,6 +26,9 @@
 @synthesize renderingController = _renderingController;
 @synthesize drawingTouchView = _drawingTouchView;
 @synthesize currentDocument = _currentDocument;
+@synthesize isSelecting = _isSelecting;
+
+
 
 -(void)setCurrentDocument:(PSDrawingDocument *)currentDocument
 {
@@ -73,21 +76,49 @@
 */
 -(IBAction)toggleCharacterCreation:(id)sender
 {
-	NSLog(@"start creation");
+	self.isSelecting = !self.isSelecting;
+
+	//TODO: other clean up?
 }
 
+
+
+
+/*
+	PSDrawingEventsViewDrawingDelegate methods
+	Decides whether to add a new drawing line or a new selection line
+*/
 -(PSDrawingLine*)newLineToDrawTo:(id)drawingView
 {
-	return [PSDataModel newLineInGroup:self.currentDocument.rootGroup];
+	if (! self.isSelecting )
+	{
+		return [PSDataModel newLineInGroup:self.currentDocument.rootGroup];
+	}
+	else
+	{
+		self.renderingController.selectionLine = [PSDataModel newLineInGroup:nil];
+		return self.renderingController.selectionLine;
+	}
+		
 }
 
 -(void)finishedDrawingLine:(PSDrawingLine*)line inDrawingView:(id)drawingView
 {
-	
+	if ( line == self.renderingController.selectionLine )
+	{
+		//TODO: clean up selection stuff!
+		[PSDataModel deleteDrawingLine:self.renderingController.selectionLine];
+		self.renderingController.selectionLine = nil;
+	}
+	else
+	{
+		[PSDataModel save];
+	}
 }
 
 -(void)cancelledDrawingLine:(PSDrawingLine*)line inDrawingView:(id)drawingView
 {
+	//TODO: similar to finishedDrawing
 	PS_NOT_YET_IMPLEMENTED();
 }
 
