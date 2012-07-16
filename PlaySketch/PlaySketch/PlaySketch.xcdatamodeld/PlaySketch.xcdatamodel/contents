@@ -2,21 +2,20 @@
 <model name="" userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="1171" systemVersion="11E53" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="PSDrawingDocument" representedClassName="PSDrawingDocument" syncable="YES">
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
-        <relationship name="rootGroup" optional="YES" minCount="1" maxCount="1" deletionRule="Cascade" destinationEntity="PSDrawingGroup" inverseName="rootGroupParentDocument" inverseEntity="PSDrawingGroup" syncable="YES"/>
+        <relationship name="rootGroup" optional="YES" minCount="1" maxCount="1" deletionRule="Cascade" destinationEntity="PSDrawingGroup" syncable="YES"/>
     </entity>
     <entity name="PSDrawingGroup" representedClassName="PSDrawingGroup" syncable="YES">
         <relationship name="children" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="PSDrawingGroup" inverseName="parent" inverseEntity="PSDrawingGroup" syncable="YES"/>
         <relationship name="drawingLines" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="PSDrawingLine" inverseName="group" inverseEntity="PSDrawingLine" syncable="YES"/>
         <relationship name="parent" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="PSDrawingGroup" inverseName="children" inverseEntity="PSDrawingGroup" syncable="YES"/>
-        <relationship name="rootGroupParentDocument" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="PSDrawingDocument" inverseName="rootGroup" inverseEntity="PSDrawingDocument" syncable="YES"/>
     </entity>
     <entity name="PSDrawingLine" representedClassName="PSDrawingLine" syncable="YES">
         <attribute name="pointsAsData" optional="YES" attributeType="Binary" syncable="YES"/>
         <relationship name="group" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="PSDrawingGroup" inverseName="drawingLines" inverseEntity="PSDrawingGroup" syncable="YES"/>
     </entity>
     <elements>
-        <element name="PSDrawingDocument" positionX="160" positionY="192" width="128" height="75"/>
-        <element name="PSDrawingGroup" positionX="160" positionY="192" width="128" height="105"/>
+        <element name="PSDrawingGroup" positionX="160" positionY="192" width="128" height="120"/>
         <element name="PSDrawingLine" positionX="160" positionY="192" width="128" height="60"/>
+        <element name="PSDrawingDocument" positionX="160" positionY="192" width="128" height="75"/>
     </elements>
 </model>
