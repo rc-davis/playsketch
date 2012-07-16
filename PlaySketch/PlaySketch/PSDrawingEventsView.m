@@ -39,6 +39,9 @@
 		previous.y = self.bounds.size.height - previous.y;
 
 		[self.currentLine addLineFrom:previous to:p];
+		
+		if (self.drawingDelegate)
+			[self.drawingDelegate addedToLine:self.currentLine fromPoint:previous toPoint:p inDrawingView:self];
 	}
 }
 

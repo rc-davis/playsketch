@@ -22,6 +22,7 @@
 */
 @protocol PSDrawingEventsViewDrawingDelegate <NSObject>
 -(PSDrawingLine*)newLineToDrawTo:(id)drawingView;
+-(void)addedToLine:(PSDrawingLine*)line fromPoint:(CGPoint)from toPoint:(CGPoint)to inDrawingView:(id)drawingView;
 -(void)finishedDrawingLine:(PSDrawingLine*)line inDrawingView:(id)drawingView;
 -(void)cancelledDrawingLine:(PSDrawingLine*)line inDrawingView:(id)drawingView;
 @end
