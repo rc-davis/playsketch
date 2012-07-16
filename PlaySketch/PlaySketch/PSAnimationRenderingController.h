@@ -20,6 +20,7 @@
 @interface PSAnimationRenderingController : GLKViewController
 
 @property(nonatomic,retain) PSDrawingGroup* rootGroup;
+@property(nonatomic,retain) PSDrawingLine* selectionLine; 
 
 @end
 

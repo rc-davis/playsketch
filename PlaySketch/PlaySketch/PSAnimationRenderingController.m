@@ -30,6 +30,7 @@
 @synthesize context = _context;
 @synthesize effect = _effect;
 @synthesize rootGroup = _rootGroup;
+@synthesize selectionLine = _selectionLine;
 
 
 -(BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
@@ -97,6 +98,14 @@
 	self.effect.transform.modelviewMatrix = GLKMatrix4Identity;
 
 	[self.rootGroup renderGroupWithEffect:self.effect];
+	
+	//Draw our selection line on top of everything
+	if(self.selectionLine)
+	{
+		self.effect.constantColor = GLKVector4Make(1.0, 0.30, 0.05, 1.0);		
+		[self.effect prepareToDraw];
+		[self.selectionLine render];
+	}
 
 }
 
