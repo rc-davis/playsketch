@@ -15,9 +15,11 @@
 #import "PSDataModel.h"
 #import "PSAnimationRenderingController.h"
 #import "PSDrawingEventsView.h"
+#import "PSSelectionHelper.h"
 
 @interface PSSceneViewController ()
 @property(nonatomic)BOOL isSelecting; // If we are selecting instead of drawing
+@property(nonatomic,retain)PSSelectionHelper* selectionHelper;
 @end
 
 
@@ -27,6 +29,7 @@
 @synthesize drawingTouchView = _drawingTouchView;
 @synthesize currentDocument = _currentDocument;
 @synthesize isSelecting = _isSelecting;
+@synthesize selectionHelper = _selectionHelper;
 
 
 
@@ -96,19 +99,38 @@
 	}
 	else
 	{
-		self.renderingController.selectionLine = [PSDataModel newLineInGroup:nil];
-		return self.renderingController.selectionLine;
+		//Start a new selection set helper
+		self.selectionHelper = [[PSSelectionHelper alloc] initWithGroup:self.currentDocument.rootGroup];
+		
+		//Tell the rendering controller to draw the selection loupe and highlight objects
+		self.renderingController.selectionLoupeLine = [PSDataModel newLineInGroup:nil];
+		self.renderingController.selectedLines = self.selectionHelper.selectedLines;
+		
+		return self.renderingController.selectionLoupeLine;
 	}
 		
 }
 
+-(void)addedToLine:(PSDrawingLine*)line fromPoint:(CGPoint)from toPoint:(CGPoint)to inDrawingView:(id)drawingView
+{
+	
+	if ( line == self.renderingController.selectionLoupeLine )
+	{
+		[self.selectionHelper addLineFrom:from to:to];
+		NSLog(@"Selected %d lines", self.selectionHelper.selectedLines.count);
+	}
+	
+}
+
 -(void)finishedDrawingLine:(PSDrawingLine*)line inDrawingView:(id)drawingView
 {
-	if ( line == self.renderingController.selectionLine )
+	if ( line == self.renderingController.selectionLoupeLine )
 	{
-		//TODO: clean up selection stuff!
-		[PSDataModel deleteDrawingLine:self.renderingController.selectionLine];
-		self.renderingController.selectionLine = nil;
+		//Clean up selection state
+		[PSDataModel deleteDrawingLine:self.renderingController.selectionLoupeLine];
+		self.renderingController.selectionLoupeLine = nil;
+		
+		self.selectionHelper = nil;
 	}
 	else
 	{

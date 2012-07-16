@@ -1,12 +1,9 @@
 
-ipad color every stroke:	0.00382
-ipad color only once:		0.00243
-
-
 MILESTONE 2
-- selection algorithm for finding lines! (NSSet)
-- selection picks out lines & creates a new group
-- group gets visualized with a button
+
+respond to selection being done
+visualize group
+make button act better?
 
 
 
