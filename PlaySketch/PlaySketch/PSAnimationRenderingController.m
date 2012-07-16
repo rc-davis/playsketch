@@ -84,8 +84,12 @@
  Delegate methods from the GLKView which trigger our rendering
  
  ------------*/
-
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect {    
+
+	// Debugging for timing our draw loop:
+	//static NSTimeInterval perfSumTime;
+	//static int perfFrameCount = 0;
+    //NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
 	
     glClearColor(1.0, 0.977, 0.842, 1.00);
     glClear(GL_COLOR_BUFFER_BIT);    
@@ -106,6 +110,12 @@
 		[self.effect prepareToDraw];
 		[self.selectionLine render];
 	}
+
+	// Timing our draw loop
+    //NSTimeInterval perfDuration = [NSDate timeIntervalSinceReferenceDate] - start;	
+	//perfSumTime += perfDuration;
+	//perfFrameCount++;
+	//NSLog(@"loop duration: %lf\tavg:%lf", perfDuration, (perfSumTime/(double)perfFrameCount));
 
 }
 

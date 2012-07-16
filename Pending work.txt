@@ -1,23 +1,28 @@
-- button for starting selection (& backing instance)
-- selecting lines get highlighted
+
+ipad color every stroke:	0.00382
+ipad color only once:		0.00243
+
+
+MILESTONE 2
+- selection algorithm for finding lines! (NSSet)
 - selection picks out lines & creates a new group
 - group gets visualized with a button
-- clicking the button pushes a detail view
-- dismiss detail view
-- drawing in detail view (pause rendering on 
 
 
 
-select parts of the drawing and create a character which you can draw inside
-and return to editing on
 
-
-MILESTONE 3: goal tuesday
+MILESTONE 3
 aniimation widget animates drawing
 	design data structures for TimeLists
 	Implementent them in coredata
 	test TimeLists
 	basic timeline
+
+MILESTONE 4:
+- clicking the button pushes a detail view
+- dismiss detail view
+- drawing in detail view (pause rendering on 
+
 	
 MILESTONE 4:
 	puppets inside the animation
