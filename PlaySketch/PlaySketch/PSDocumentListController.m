@@ -48,6 +48,7 @@
     [super viewDidLoad];
 	[self generateButtons];
 	self.scrollView.delegate = self; //So we can respond to the scroll events
+	self.scrollView.decelerationRate = UIScrollViewDecelerationRateFast;
 	[self refreshButtonAppearance];
 }
 
