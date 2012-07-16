@@ -17,35 +17,55 @@
 #import "PSDataModel.h"
 
 @implementation PSDrawingEventsView
-@synthesize currentDrawingGroup = _currentDrawingGroup;
+@synthesize drawingDelegate = _drawingDelegate;
 @synthesize currentLine = _currentLine;
+
 
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-	self.currentLine = [PSDataModel newLineInGroup:self.currentDrawingGroup];
+	//Fetch a line from our delegate to put our touch points into
+	if(self.drawingDelegate)
+		self.currentLine = [self.drawingDelegate newLineToDrawTo:self];
 }		
 
 
 -(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
-	UITouch* touch = [touches anyObject];
-	CGPoint p = [touch locationInView:self];
-	p.y = self.bounds.size.height - p.y;
-	[self.currentLine addLineFrom:CGPointZero to:p];
+	if(self.currentLine)
+	{
+		UITouch* touch = [touches anyObject];
+		CGPoint p = [touch locationInView:self];
+		p.y = self.bounds.size.height - p.y;
+		CGPoint previous = [touch previousLocationInView:self];
+		previous.y = self.bounds.size.height - previous.y;
 
+		[self.currentLine addLineFrom:previous to:p];
+	}
 }
 
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-	[PSDataModel save];
-	self.currentLine = nil;	
+
+	if(self.currentLine)
+	{
+		if (self.drawingDelegate)
+			[self.drawingDelegate finishedDrawingLine:self.currentLine inDrawingView:self];
+		self.currentLine = nil;	
+	}
+
 }
 
 -(void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
 {
-	[PSDataModel deleteDrawingLine:self.currentLine];
-	self.currentLine = nil;
+	
+	if(self.currentLine)
+	{
+		if (self.drawingDelegate)
+			[self.drawingDelegate cancelledDrawingLine:self.currentLine inDrawingView:self];
+		self.currentLine = nil;	
+	}
+
 }
 
 @end
