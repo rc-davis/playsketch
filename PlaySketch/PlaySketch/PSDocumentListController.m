@@ -22,18 +22,21 @@
 
 @interface PSDocumentListController ()
 @property(nonatomic,retain)NSArray* documentButtons;
+@property(nonatomic,retain)UIButton* createDocumentButton;
 @property(nonatomic,retain)NSArray* documentRoots;
 
--(void)generateButtons;
--(void)clearButtons;
+-(void)generateDocumentButtons;
+-(void)clearDocumentButtons;
 -(PSDrawingDocument*)selectedDocument:(CGFloat*)outPercentFromCentered;
--(void)refreshButtonAppearance;
+-(void)refreshSelectionAppearance;
++(void)styleButton:(UIButton*)button;
 @end
 
 @implementation PSDocumentListController
 @synthesize scrollView = _scrollView;
 @synthesize documentRoots = _documentRoots;
 @synthesize documentButtons = _documentButtons;
+@synthesize createDocumentButton = _newDocumentButton;
 @synthesize deleteButton = _deleteButton;
 @synthesize documentNameButton = _documentNameButton;
 
@@ -46,21 +49,35 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	[self generateButtons];
+	
+	//create our "new document" Button
+	{
+		CGRect defaultFrame = CGRectMake(281, 100, 462, 300);
+		self.createDocumentButton = [[UIButton alloc] initWithFrame:defaultFrame];
+		[self.createDocumentButton setTitle:@"Create New Animation" forState:UIControlStateNormal];
+		[PSDocumentListController styleButton:self.createDocumentButton];
+		[self.createDocumentButton addTarget:self action:@selector(newDocument:) forControlEvents:UIControlEventTouchUpInside];
+		[self.scrollView addSubview:self.createDocumentButton];
+	}
+	
+	[self generateDocumentButtons];
 	self.scrollView.delegate = self; //So we can respond to the scroll events
-	self.scrollView.decelerationRate = UIScrollViewDecelerationRateFast;
-	[self refreshButtonAppearance];
+	//self.scrollView.decelerationRate = UIScrollViewDecelerationRateFast;
+	[self refreshSelectionAppearance];
 }
 
 
 /*
 	This is called right after the view has left the screen. 
 	It gives us the opportunity to free any resources the view was using.
+	Its actions should be symmetrical to viewDidLoad
 */
 - (void)viewDidUnload
 {
 	[super viewDidUnload];
-	[self clearButtons];
+	[self clearDocumentButtons];
+	[self.createDocumentButton removeFromSuperview];
+	self.createDocumentButton = nil;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -69,10 +86,10 @@
 }
 
 
--(void)generateButtons
+-(void)generateDocumentButtons
 {
 	if(self.documentButtons != nil)
-		[self clearButtons];
+		[self clearDocumentButtons];
 	
 	
 	// Fetch a list of all the documents
@@ -86,7 +103,7 @@
 	// Give the scrollview's scrolling area the right size to hold them all
 	// This means DOC_BUTTON_STEP_SIZE for each document + padding at the start and end to be able to center
 	CGSize newContentSize = self.scrollView.contentSize;
-	newContentSize.width = self.documentRoots.count*DOC_BUTTON_STEP_SIZE +
+	newContentSize.width = (self.documentRoots.count + 1)*DOC_BUTTON_STEP_SIZE +
 							2 * (self.scrollView.frame.size.width/2.0 - DOC_BUTTON_STEP_SIZE/2.0);
 	self.scrollView.contentSize = newContentSize;
 
@@ -95,28 +112,29 @@
 	for(PSDrawingGroup* docRoot in self.documentRoots)
 	{
 		UIButton* docButton = [[UIButton alloc] initWithFrame:buttonFrame];
-		docButton.backgroundColor = [UIColor colorWithRed:1.000 green:0.977 blue:0.842 alpha:1.000];
-		docButton.center = CGPointMake(centerX, self.scrollView.bounds.size.height/2.0);
-		[self.scrollView addSubview:docButton];
-		[buttons addObject:docButton];
+		[PSDocumentListController styleButton:docButton];
 
-		// Add a drop shadow just because we can (take that!)
-		docButton.layer.shadowColor = [UIColor blackColor].CGColor;
-		docButton.layer.shadowOffset = CGSizeMake(0, 10);
-		docButton.layer.shadowRadius = 10.0;
-		docButton.layer.shadowOpacity = 0.5;
+		[self.scrollView addSubview:docButton];
+		docButton.center = CGPointMake(centerX, self.scrollView.bounds.size.height/2.0);		
 		
 		//Hook up the button to call viewDocument:
 		[docButton addTarget:self action:@selector(viewDocument:) forControlEvents:UIControlEventTouchUpInside];
-		
+
+		[buttons addObject:docButton];		
+
 		centerX += DOC_BUTTON_STEP_SIZE;
 	}
 
+	//Set the create document button to align properly
+	[UIView beginAnimations:@"create document button" context:nil];
+	self.createDocumentButton.center = CGPointMake(centerX, self.scrollView.bounds.size.height/2.0);
+	[UIView commitAnimations];
+	
 	self.documentButtons = buttons;
 }
 
 
--(void)clearButtons
+-(void)clearDocumentButtons
 {
 	for(UIButton* button in self.documentButtons)
 	{
@@ -160,11 +178,11 @@
 -(IBAction)newDocument:(id)sender
 {
 	NSString* newDocName = [NSString stringWithFormat:@"Untitled Animation %d", 
-							[PSDataModel allDrawingDocuments].count];
+							[PSDataModel allDrawingDocuments].count + 1];
 	[PSDataModel newDrawingDocumentWithName:newDocName];
 
 	CGPoint offsetBeforeAddingButton = self.scrollView.contentOffset;
-	[self generateButtons];
+	[self generateDocumentButtons];
 
 	//Animate motion from the offset the scrollview WAS at to center on the new document
 
@@ -173,7 +191,7 @@
 	 CGPointMake((self.documentRoots.count - 1)*DOC_BUTTON_STEP_SIZE,
 				 offsetBeforeAddingButton.y) animated:YES];
 
-	[self refreshButtonAppearance];
+	[self refreshSelectionAppearance];
 	
 }
 
@@ -188,14 +206,13 @@
 		[PSDataModel deleteDrawingDocument:docToDelete];
 		
 		//Reload our data
-		[self generateButtons];
+		[self generateDocumentButtons];
 		
 		// TODO: animate the delete better
 		
 		// Trigger an update of our labels
 		self.scrollView.contentOffset = offsetBeforeDeleting;
-		[self scrollViewDidEndDecelerating:self.scrollView];
-		[self refreshButtonAppearance];
+		[self refreshSelectionAppearance];
 		
 	}
 }
@@ -217,7 +234,7 @@
 		PSDrawingDocument* document = [self.documentRoots objectAtIndex:index];
 		[self performSegueWithIdentifier:@"GoToSceneViewController" sender:document];
 
-		[self refreshButtonAppearance];
+		[self refreshSelectionAppearance];
 	}
 }
 
@@ -254,7 +271,7 @@
 		{
 			document.name = newName;
 			[PSDataModel save];
-			[self refreshButtonAppearance];
+			[self refreshSelectionAppearance];
 		}
 	}
 }
@@ -292,40 +309,16 @@
 	
 	// Validate/sanity-check it
 	requestedIndex = MAX(requestedIndex, 0);
-	requestedIndex = MIN(requestedIndex, self.documentButtons.count - 1);
+	requestedIndex = MIN(requestedIndex, self.documentButtons.count);
 	
 	//Update the targetContentOffset we've been given to adjust it
-	(*targetContentOffset).x = requestedIndex * DOC_BUTTON_STEP_SIZE + 0.5;
-}
-
-
-/*
-	The above delegate callback (scrollViewWillEndDragging) SHOULD be all we 
-	need to make sure our scrollview snaps to a document properly.
-	It looks like there's a bug keeping it from always working, so we need to 
-	duplicate the snapping functionality here. 
-	See here for discussion of the bug:
-	http://stackoverflow.com/questions/10880434/scrollviewwillenddraggingwithvelocitytargetcontentoffset-not-working-on-the-e
-*/
--(void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
-{
-	// Find the button that is nearest to the offset the scrollview is planning on stopping at
-	int requestedIndex = round(self.scrollView.contentOffset.x/DOC_BUTTON_STEP_SIZE);
-	
-	// Validate/sanity-check it
-	requestedIndex = MAX(requestedIndex, 0);
-	requestedIndex = MIN(requestedIndex, self.documentButtons.count - 1);
-	
-	//scroll to the right location
-	[scrollView setContentOffset:CGPointMake(requestedIndex * DOC_BUTTON_STEP_SIZE, 
-										   scrollView.contentOffset.y)
-						animated:YES];
+	(*targetContentOffset).x = requestedIndex * DOC_BUTTON_STEP_SIZE;
 }
 
 
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-	[self refreshButtonAppearance];
+	[self refreshSelectionAppearance];
 }
 
 
@@ -333,7 +326,7 @@
 	Update the label and delete button to fade unless the document is directly
 	above them
  */
--(void)refreshButtonAppearance
+-(void)refreshSelectionAppearance
 {
 	CGFloat percentFromCentered;
 	PSDrawingDocument* currentDocument = [self selectedDocument:&percentFromCentered];
@@ -357,5 +350,15 @@
 	}	
 }
 
++(void)styleButton:(UIButton*)button
+{
+	[button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+	button.backgroundColor = [UIColor colorWithRed:1.000 green:0.977 blue:0.842 alpha:1.000];
+	button.layer.shadowColor = [UIColor blackColor].CGColor;
+	button.layer.shadowOffset = CGSizeMake(0, 10);
+	button.layer.shadowRadius = 10.0;
+	button.layer.shadowOpacity = 0.5;
+	button.layer.shouldRasterize = YES;
+}
 
 @end
