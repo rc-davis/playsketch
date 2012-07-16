@@ -119,9 +119,10 @@
 	 NSLog(@"--- Context contains a total of:\nGroups:%d\nLines:%d", allGroups.count, allLines.count);
  }
  
-+(void)DEBUG_generateTestShapesIntoGroup:(PSDrawingGroup*)rootGroup
++(void)DEBUG_generateTestShapesIntoGroup:(PSDrawingGroup*)parentGroup
  {
- 
+	 PSDrawingGroup* rootGroup = [PSDataModel newDrawingGroupWithParent:parentGroup];
+	 
 		//Add a square to the root group centered on 50,50
 	 PSDrawingLine* rootSquare = (PSDrawingLine*)[NSEntityDescription 
 	 insertNewObjectForEntityForName:@"PSDrawingLine" 
@@ -153,8 +154,8 @@
 	 
 	 
 	 //this should look like ferris-wheel style nested motion, moving to the right and growing
-	 [rootGroup setCurrentSRTRate:SRTRateMake( 50, 0, 0.2, 2 )];
-	 [rootGroup setCurrentSRTPosition:SRTPositionMake(0, 300, 1, 0, 50, 50)];
+	 [rootGroup setCurrentSRTRate:SRTRateMake( 0, 0, 0, 2 )];
+	 [rootGroup setCurrentSRTPosition:SRTPositionMake(300, 300, 1, 0, 50, 50)];
 	 [subgroup1 setCurrentSRTRate:SRTRateMake( 0, 0, 0, -2 )];
 	 [subgroup1 setCurrentSRTPosition:SRTPositionMake(100, 100, 1, 0, 100, 100)];
  

@@ -179,7 +179,8 @@
 {
 	NSString* newDocName = [NSString stringWithFormat:@"Untitled Animation %d", 
 							[PSDataModel allDrawingDocuments].count + 1];
-	[PSDataModel newDrawingDocumentWithName:newDocName];
+	PSDrawingDocument* doc = [PSDataModel newDrawingDocumentWithName:newDocName];
+	[PSDataModel DEBUG_generateTestShapesIntoGroup:doc.rootGroup];
 
 	CGPoint offsetBeforeAddingButton = self.scrollView.contentOffset;
 	[self generateDocumentButtons];

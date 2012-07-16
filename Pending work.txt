@@ -1,9 +1,10 @@
-
-- create view for getting drawing touches
-- create view for getting selection touches
-- button for starting selection
+- button for starting selection (& backing instance)
 - selecting lines get highlighted
 - selection picks out lines & creates a new group
+- group gets visualized with a button
+- clicking the button pushes a detail view
+- dismiss detail view
+- drawing in detail view (pause rendering on 
 
 
 

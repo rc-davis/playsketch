@@ -24,7 +24,6 @@
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
 	self.currentLine = [PSDataModel newLineInGroup:self.currentDrawingGroup];
-	NSLog(@"!!!! %@", self.currentDrawingGroup);
 }		
 
 
