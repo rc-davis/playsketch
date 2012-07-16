@@ -33,5 +33,7 @@
 @property (nonatomic, retain) PSDrawingGroup *group;
 
 -(void)addLineFrom:(CGPoint)from to:(CGPoint)to;
+-(CGPoint*)points;
+-(int)pointCount;
 
 @end

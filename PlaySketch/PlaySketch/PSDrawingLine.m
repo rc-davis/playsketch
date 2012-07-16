@@ -48,6 +48,17 @@
 	
 }
 
+-(CGPoint*)points
+{
+	return points;
+}
+
+-(int)pointCount
+{
+	return pointCount;
+}
+
+
 
 /*
  This is called when our object comes out of storage
