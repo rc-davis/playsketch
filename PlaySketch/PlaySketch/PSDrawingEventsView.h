@@ -12,9 +12,7 @@
  */
 
 #import <GLKit/GLKit.h>
-#import "PSDrawingGroup.h"
-#import "PSDrawingLine.h"
-#import "PSAnimationRenderingController.h"
+#import "PSDataModel.h"
 
 /*
 	This protocol is what a drawingDelegate needs to implement to help this class function
@@ -31,7 +29,7 @@
 
 @interface PSDrawingEventsView : GLKView
 
-@property(nonatomic,weak)id<PSDrawingEventsViewDrawingDelegate> drawingDelegate;
+@property(nonatomic,weak)IBOutlet id<PSDrawingEventsViewDrawingDelegate> drawingDelegate;
 @property(nonatomic,retain)PSDrawingLine* currentLine;
 
 @end

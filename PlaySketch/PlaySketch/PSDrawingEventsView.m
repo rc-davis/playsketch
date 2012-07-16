@@ -13,8 +13,6 @@
 
 
 #import "PSDrawingEventsView.h"
-#import "PSAppDelegate.h"
-#import "PSDataModel.h"
 
 @implementation PSDrawingEventsView
 @synthesize drawingDelegate = _drawingDelegate;
