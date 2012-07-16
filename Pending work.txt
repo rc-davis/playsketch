@@ -1,6 +1,12 @@
 
+- create view for getting drawing touches
+- create view for getting selection touches
+- button for starting selection
+- selecting lines get highlighted
+- selection picks out lines & creates a new group
 
-MILESTONE 2: goal monday morning
+
+
 select parts of the drawing and create a character which you can draw inside
 and return to editing on
 

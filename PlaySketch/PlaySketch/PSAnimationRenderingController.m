@@ -87,14 +87,14 @@
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect {    
 	
-    glClearColor(0.5, 0, 0, 1);
+    glClearColor(1.0, 0.977, 0.842, 1.00);
     glClear(GL_COLOR_BUFFER_BIT);    
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
 	
 	// Try to do as much rendering setup as possible so we don't have to call it on every iteration
 	self.effect.useConstantColor = YES;
-	self.effect.constantColor = GLKVector4Make(0.0, 1.0, 1.0, 0.5);
+	self.effect.constantColor = GLKVector4Make(0.5, 0.5, 0.5, 1.0);
 	self.effect.transform.modelviewMatrix = GLKMatrix4Identity;
 
 	[self.rootGroup renderGroupWithEffect:self.effect];
