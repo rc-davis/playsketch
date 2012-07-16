@@ -161,6 +161,25 @@
  
  }
 
++(void)DEBUG_generateRandomLittleLinesIntoGroup:(PSDrawingGroup*)rootGroup lineCount:(int)lineCount
+{
+	int POINT_COUNT = 100;
+	CGSize viewSize = CGSizeMake(924, 600);
+	srand(time(NULL));
+	
+	for (int i = 0; i < lineCount; i ++)
+	{
+		CGPoint start = CGPointMake(rand()%(int)viewSize.width, rand()%(int)viewSize.height);
+		PSDrawingLine* line = [PSDataModel newLineInGroup:rootGroup];
+		for(int j = 0; j < POINT_COUNT; j++)
+		{
+			CGPoint next = CGPointMake(start.x + rand()%4, start.y + rand()%4-2 );
+			[line addLineFrom:start	to:next];
+			start = next;
+		}
+	}
+}
+
 
 +(NSManagedObjectContext*)context
 {

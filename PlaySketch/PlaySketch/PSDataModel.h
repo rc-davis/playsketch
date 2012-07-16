@@ -42,6 +42,6 @@
 
 +(void)DEBUG_printTotalObjectCount;
 +(void)DEBUG_generateTestShapesIntoGroup:(PSDrawingGroup*)rootGroup;
-
++(void)DEBUG_generateRandomLittleLinesIntoGroup:(PSDrawingGroup*)rootGroup lineCount:(int)lineCount;
 
 @end
