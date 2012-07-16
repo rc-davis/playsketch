@@ -15,11 +15,13 @@
 #import <UIKit/UIKit.h>
 @class PSAnimationRenderingController;
 @class PSDrawingDocument;
+@class PSDrawingEventsView;
 
 
 @interface PSSceneViewController : UIViewController
 
 @property(nonatomic,retain)IBOutlet PSAnimationRenderingController* renderingController;
+@property(nonatomic,retain)IBOutlet PSDrawingEventsView* drawingTouchView;
 @property(nonatomic,retain)PSDrawingDocument* currentDocument;
 
 -(IBAction)play:(id)sender;

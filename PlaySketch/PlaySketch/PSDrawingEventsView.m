@@ -12,25 +12,22 @@
  */
 
 
-#import "PSAnimationRenderingView.h"
+#import "PSDrawingEventsView.h"
 #import "PSAppDelegate.h"
+#import "PSDataModel.h"
 
-@implementation PSAnimationRenderingView
-@synthesize parentController = _parentController;
+@implementation PSDrawingEventsView
+@synthesize currentDrawingGroup = _currentDrawingGroup;
 @synthesize currentLine = _currentLine;
+
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-	PSAppDelegate* appDelegate = (PSAppDelegate*)[[UIApplication sharedApplication] delegate];	
-	NSManagedObjectContext *context = [appDelegate managedObjectContext];
-
-	self.currentLine = (PSDrawingLine*)[NSEntityDescription 
-										insertNewObjectForEntityForName:@"PSDrawingLine" inManagedObjectContext:context];
-	self.currentLine.group = self.parentController.rootGroup;
-	
-	// TODO: this should be in PSDataModel and this view should be elsewhere
-	
+	self.currentLine = [PSDataModel newLineInGroup:self.currentDrawingGroup];
+	NSLog(@"!!!! %@", self.currentDrawingGroup);
 }		
+
+
 -(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
 	UITouch* touch = [touches anyObject];
@@ -42,19 +39,14 @@
 
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-	PSAppDelegate* appDelegate = (PSAppDelegate*)[[UIApplication sharedApplication] delegate];	
-	NSManagedObjectContext *context = [appDelegate managedObjectContext];
-
-	[context save:nil];
-	
-	self.currentLine = nil;
-	
+	[PSDataModel save];
+	self.currentLine = nil;	
 }
 
 -(void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
 {
-	
-	
+	[PSDataModel deleteDrawingLine:self.currentLine];
+	self.currentLine = nil;
 }
 
 @end

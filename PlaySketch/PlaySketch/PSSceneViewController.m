@@ -14,6 +14,7 @@
 #import "PSSceneViewController.h"
 #import "PSDataModel.h"
 #import "PSAnimationRenderingController.h"
+#import "PSDrawingEventsView.h"
 
 @interface PSSceneViewController ()
 
@@ -23,12 +24,14 @@
 
 @implementation PSSceneViewController
 @synthesize renderingController = _renderingController;
+@synthesize drawingTouchView = _drawingTouchView;
 @synthesize currentDocument = _currentDocument;
 
 -(void)setCurrentDocument:(PSDrawingDocument *)currentDocument
 {
 	_currentDocument = currentDocument;
 	self.renderingController.rootGroup = currentDocument.rootGroup;
+	self.drawingTouchView.currentDrawingGroup = currentDocument.rootGroup;
 }
 
 
@@ -39,6 +42,7 @@
 	// Add the renderingview to our viewcontroller hierarchy
 	[self addChildViewController:self.renderingController];
 	[self.renderingController viewDidLoad];
+	self.drawingTouchView.currentDrawingGroup = self.currentDocument.rootGroup;
 	
 }
 

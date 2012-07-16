@@ -13,7 +13,6 @@
 
 #import "PSAnimationRenderingController.h"
 #import "PSAppDelegate.h"
-#import "PSAnimationRenderingView.h"
 
 
 /* Private Interface */

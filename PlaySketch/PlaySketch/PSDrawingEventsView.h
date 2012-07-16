@@ -16,9 +16,10 @@
 #import "PSDrawingLine.h"
 #import "PSAnimationRenderingController.h"
 
-@interface PSAnimationRenderingView : GLKView
+@interface PSDrawingEventsView : GLKView
 
-@property(nonatomic,weak) IBOutlet PSAnimationRenderingController* parentController;
+//@property(nonatomic,weak) IBOutlet PSAnimationRenderingController* parentController;
+@property(nonatomic,retain)PSDrawingGroup* currentDrawingGroup;
 @property(nonatomic,retain)PSDrawingLine* currentLine;
 
 @end
