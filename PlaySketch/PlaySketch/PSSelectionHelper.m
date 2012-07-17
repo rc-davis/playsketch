@@ -87,8 +87,14 @@
 	CGFloat bReverse = _firstPoint.y - mReverse * _firstPoint.x;
 	CGFloat minXReverse = MIN(_firstPoint.x, to.x);
 	CGFloat maxXReverse = MAX(_firstPoint.x, to.x);
-		
-	//update crossing count for each point in each line
+	
+	// Make a copy of the current set of selected lines for us to add and remove from
+	// Doing it this way is slower than directly changing self.selectedLines, but 
+	// it can be done in the background since it doesn't disturb the current set 
+	// which may be getting drawn to the screen
+	NSMutableSet* newSelectedLines = [self.selectedLines mutableCopy];
+	
+	// Iterate through the lines and update crossing count for each point in each line
 	int cumulativeLineCount = 0; // for indexing into lineHitCount
 	for (PSDrawingLine* line in self.allLines)
 	{
@@ -123,16 +129,15 @@
 			cumulativeLineCount ++;
 		}								
 
+		//Add or remove it from our new set of lines
 		if ( lineIsHit )
-		{
-			[self.selectedLines addObject:line];
-		}
-		else
-		{
-			if([self.selectedLines containsObject:line])
-				[self.selectedLines removeObject:line];
-		}
+			[newSelectedLines addObject:line];
+		else if ( [newSelectedLines containsObject:line] )
+			[newSelectedLines removeObject:line];
 	}	
+
+	self.selectedLines = newSelectedLines;
+
 }
 
 @end
