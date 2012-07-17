@@ -181,6 +181,7 @@
 							[PSDataModel allDrawingDocuments].count + 1];
 	PSDrawingDocument* doc = [PSDataModel newDrawingDocumentWithName:newDocName];
 	[PSDataModel DEBUG_generateTestShapesIntoGroup:doc.rootGroup];
+	[PSDataModel DEBUG_generateRandomLittleLinesIntoGroup:doc.rootGroup lineCount:100];
 
 	CGPoint offsetBeforeAddingButton = self.scrollView.contentOffset;
 	[self generateDocumentButtons];

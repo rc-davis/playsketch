@@ -1,7 +1,7 @@
 
 MILESTONE 2
 
-respond to selection being done
+respond to selection being finished
 visualize group
 make button act better?
 
