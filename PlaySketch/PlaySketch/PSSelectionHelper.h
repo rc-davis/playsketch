@@ -10,9 +10,10 @@
 #import "PSDataModel.h"
 
 @interface PSSelectionHelper : NSObject
-@property(nonatomic,retain) NSMutableSet* selectedLines;
+@property(atomic,retain) NSSet* selectedLines; // must be atomic since adding in background
+@property(nonatomic,retain) PSDrawingLine* selectionLoupeLine;
 
--(id)initWithGroup:(PSDrawingGroup*)rootGroup;
+-(id)initWithGroup:(PSDrawingGroup*)rootGroup andLine:(PSDrawingLine*)line;
 -(void)addLineFrom:(CGPoint)from to:(CGPoint)to;
 
 

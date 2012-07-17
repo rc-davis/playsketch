@@ -15,13 +15,13 @@
 #import <GLKit/GLKit.h>
 #import "PSDrawingGroup.h"
 #import "PSDrawingLine.h"
+#import "PSSelectionHelper.h"
 
 
 @interface PSAnimationRenderingController : GLKViewController
 
 @property(nonatomic,retain) PSDrawingGroup* rootGroup;
-@property(nonatomic,retain) PSDrawingLine* selectionLoupeLine; 
-@property(nonatomic,retain) NSSet* selectedLines;
+@property(nonatomic,retain) PSSelectionHelper* selectionHelper; 
 
 @end
 

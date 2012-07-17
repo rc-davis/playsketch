@@ -30,8 +30,8 @@
 @synthesize context = _context;
 @synthesize effect = _effect;
 @synthesize rootGroup = _rootGroup;
-@synthesize selectionLoupeLine = _selectionLine;
-@synthesize selectedLines = _selectedLines;
+@synthesize selectionHelper = _selectionHelper;;
+
 
 
 -(BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
@@ -105,11 +105,11 @@
 	[self.rootGroup renderGroupWithEffect:self.effect];
 	
 	//Draw our selection line on top of everything
-	if(self.selectionLoupeLine)
+	if(self.selectionHelper.selectionLoupeLine)
 	{
 		self.effect.constantColor = GLKVector4Make(1.0, 0.0, 0.0, 1.0);		
 		[self.effect prepareToDraw];
-		[self.selectionLoupeLine render];
+		[self.selectionHelper.selectionLoupeLine render];
 	}
 
 	// Draw our selected lines again, with a different color to show them highlighted
@@ -119,7 +119,7 @@
 	// set our drawing color
 	self.effect.constantColor = GLKVector4Make(1.0, 0.0, 0.0, 1.0);
 	[self.effect prepareToDraw];
-	for (PSDrawingLine* line in self.selectedLines)
+	for (PSDrawingLine* line in self.selectionHelper.selectedLines)
 		[line render];
 	
 	

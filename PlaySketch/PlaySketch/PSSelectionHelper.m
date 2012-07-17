@@ -18,16 +18,19 @@
 
 
 @implementation PSSelectionHelper
+@synthesize selectionLoupeLine = _selectionLoupeLine;
 @synthesize allLines = _allLines;
 @synthesize selectedLines = _selectedLines;
 @synthesize firstPoint = _firstPoint;
 @synthesize lineHitCounts = _lineHitCounts;
 @synthesize haveFirstPoint = _haveFirstPoint;
 
--(id)initWithGroup:(PSDrawingGroup*)rootGroup
+-(id)initWithGroup:(PSDrawingGroup*)rootGroup andLine:(PSDrawingLine*)line
 {
 	if(self = [super init])
 	{
+		self.selectionLoupeLine = line;
+		
 		self.selectedLines = [NSMutableSet set];
 		self.haveFirstPoint = NO;
 	
@@ -63,7 +66,7 @@
 -(void)addLineFrom:(CGPoint)from to:(CGPoint)to
 {
 	// Save this as our first point if we don't have one already
-	if (! self.haveFirstPoint )
+	if (! _haveFirstPoint )
 	{
 		self.firstPoint = from;
 		self.haveFirstPoint = YES;

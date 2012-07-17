@@ -19,7 +19,6 @@
 
 @interface PSSceneViewController ()
 @property(nonatomic)BOOL isSelecting; // If we are selecting instead of drawing
-@property(nonatomic,retain)PSSelectionHelper* selectionHelper;
 @end
 
 
@@ -29,7 +28,6 @@
 @synthesize drawingTouchView = _drawingTouchView;
 @synthesize currentDocument = _currentDocument;
 @synthesize isSelecting = _isSelecting;
-@synthesize selectionHelper = _selectionHelper;
 
 
 
@@ -99,35 +97,53 @@
 	}
 	else
 	{
-		//Start a new selection set helper
-		self.selectionHelper = [[PSSelectionHelper alloc] initWithGroup:self.currentDocument.rootGroup];
+		// Create a line to draw
+		PSDrawingLine* selectionLine = [PSDataModel newLineInGroup:nil];
+
+		// Start a new selection set helper
+		PSSelectionHelper* helper = [[PSSelectionHelper alloc] initWithGroup:self.currentDocument.rootGroup
+																	 andLine:selectionLine];
 		
-		//Tell the rendering controller to draw the selection loupe and highlight objects
-		self.renderingController.selectionLoupeLine = [PSDataModel newLineInGroup:nil];
-		self.renderingController.selectedLines = self.selectionHelper.selectedLines;
+		//Tell the rendering controller about the selection helper so it can draw the loupe and highlight objects
+		self.renderingController.selectionHelper = helper;
 		
-		return self.renderingController.selectionLoupeLine;
+		return helper.selectionLoupeLine;
 	}
 		
+}
+
+-(void)backgroundAddLine:(NSDictionary*)points
+{
+	CGPoint from = [[points objectForKey:@"from"] CGPointValue];
+	CGPoint to = [[points objectForKey:@"to"] CGPointValue];
+	[self.renderingController.selectionHelper addLineFrom:from to:to];
 }
 
 -(void)addedToLine:(PSDrawingLine*)line fromPoint:(CGPoint)from toPoint:(CGPoint)to inDrawingView:(id)drawingView
 {
 	
-	if ( line == self.renderingController.selectionLoupeLine )
-		[self.selectionHelper addLineFrom:from to:to];
-	
+	if ( line == self.renderingController.selectionHelper.selectionLoupeLine )
+	{
+		// We want to add this line to the selectionHelper on a background
+		// thread so it won't block the redrawing as much as possible
+		// That requires us to bundle up the points as objects instead of structs
+		// so they'll fit in a dictionary to pass to the performSelectorInBackground function
+		NSValue* fromV = [NSValue valueWithCGPoint:from];
+		NSValue* toV = [NSValue valueWithCGPoint:to];
+		NSDictionary* pointsDict = [NSDictionary dictionaryWithObjectsAndKeys:
+									fromV, @"from",
+									toV, @"to", nil];
+		[self performSelectorInBackground:@selector(backgroundAddLine:) withObject:pointsDict];
+	}
 }
 
 -(void)finishedDrawingLine:(PSDrawingLine*)line inDrawingView:(id)drawingView
 {
-	if ( line == self.renderingController.selectionLoupeLine )
+	if ( line == self.renderingController.selectionHelper.selectionLoupeLine )
 	{
 		//Clean up selection state
-		[PSDataModel deleteDrawingLine:self.renderingController.selectionLoupeLine];
-		self.renderingController.selectionLoupeLine = nil;
-		
-		self.selectionHelper = nil;
+		[PSDataModel deleteDrawingLine:self.renderingController.selectionHelper.selectionLoupeLine];
+		self.renderingController.selectionHelper = nil;
 	}
 	else
 	{
