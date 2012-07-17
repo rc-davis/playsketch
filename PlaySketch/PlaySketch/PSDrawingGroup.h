@@ -40,6 +40,8 @@
 - (void)addDrawingLines:(NSSet *)values;
 - (void)removeDrawingLines:(NSSet *)values;
 
+- (CGRect)calculateFrame;
+
 //TODO TEMP
 -(void)setCurrentSRTRate:(SRTRate)r;
 -(void)setCurrentSRTPosition:(SRTPosition)p;
