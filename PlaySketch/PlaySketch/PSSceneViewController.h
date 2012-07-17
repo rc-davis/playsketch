@@ -11,11 +11,14 @@
  
  */
 
+#define MANIPULATOR_WIDTH 200
+
 
 #import <UIKit/UIKit.h>
 #import "PSDrawingEventsView.h"
 @class PSAnimationRenderingController;
 @class PSDrawingDocument;
+@class PSSRTManipulator;
 
 
 
@@ -24,6 +27,7 @@
 @property(nonatomic,retain)IBOutlet PSAnimationRenderingController* renderingController;
 @property(nonatomic,retain)IBOutlet PSDrawingEventsView* drawingTouchView;
 @property(nonatomic,retain)PSDrawingDocument* currentDocument;
+@property(nonatomic,retain)PSSRTManipulator* manipulator;
 
 -(IBAction)play:(id)sender;
 -(IBAction)dismissSceneView:(id)sender;

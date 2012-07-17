@@ -16,6 +16,7 @@
 #import "PSAnimationRenderingController.h"
 #import "PSDrawingEventsView.h"
 #import "PSSelectionHelper.h"
+#import "PSSRTManipulator.h"
 
 @interface PSSceneViewController ()
 @property(nonatomic)BOOL isSelecting; // If we are selecting instead of drawing
@@ -27,6 +28,7 @@
 @synthesize renderingController = _renderingController;
 @synthesize drawingTouchView = _drawingTouchView;
 @synthesize currentDocument = _currentDocument;
+@synthesize manipulator = _manipulator;
 @synthesize isSelecting = _isSelecting;
 
 
@@ -46,6 +48,11 @@
 	[self addChildViewController:self.renderingController];
 	[self.renderingController viewDidLoad];
 	
+	//Create a manipulator and add it to our rendering view
+	//TODO: for now just with static size!
+	CGRect manipulatorFrame = CGRectMake(0, 0, MANIPULATOR_WIDTH, MANIPULATOR_WIDTH);
+	self.manipulator = [[PSSRTManipulator alloc] initWithFrame:manipulatorFrame];
+	[self.renderingController.view addSubview:self.manipulator];
 }
 
 - (void)viewDidUnload

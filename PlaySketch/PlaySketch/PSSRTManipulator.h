@@ -15,4 +15,6 @@
 
 @interface PSSRTManipulator : UIView
 
+-(id)initWithFrame:(CGRect)frame;
+
 @end

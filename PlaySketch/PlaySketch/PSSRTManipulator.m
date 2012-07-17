@@ -22,6 +22,15 @@
 
 
 @implementation PSSRTManipulator
+-(id)initWithFrame:(CGRect)frame
+{
+	if (self = [super initWithFrame:frame])
+	{
+		self.backgroundColor = [UIColor colorWithRed:0.2 green:0.2 blue:0.2 alpha:0.5];
+	}
+	
+	return self;
+}
 
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
