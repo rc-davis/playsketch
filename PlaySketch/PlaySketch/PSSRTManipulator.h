@@ -13,6 +13,10 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol PSSRTManipulatoDelegate
+-(void)manipulator:(id)sender didUpdateToTransform:(CGAffineTransform)transform;
+@end
+
 @interface PSSRTManipulator : UIView
 
 -(id)initWithFrame:(CGRect)frame;

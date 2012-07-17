@@ -16,12 +16,15 @@
 #import <QuartzCore/QuartzCore.h>
 
 @interface PSSRTManipulator ()
+@property(nonatomic,weak) id<PSSRTManipulatoDelegate> delegate;
 - (CGAffineTransform)incrementalTransformWithTouches:(NSSet *)touches;
 @end
 
 
-
 @implementation PSSRTManipulator
+@synthesize delegate = _delegate;
+
+
 -(id)initWithFrame:(CGRect)frame
 {
 	if (self = [super initWithFrame:frame])
@@ -40,24 +43,35 @@
 
 -(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {		
+	NSLog(@"touchesMoved: %d\t%d", touches.count, event.allTouches.count);
 	CGAffineTransform t = [self incrementalTransformWithTouches:event.allTouches];
 	self.transform = CGAffineTransformConcat(self.transform, t);
 	
+	if(self.delegate)
+		[self.delegate manipulator:self didUpdateToTransform:self.transform];
 }
 
+-(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+{
+	
+}
+
+-(void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
+{
+	
+}
 
 /*
 	Turns a set of touches from touchesMoved: into an affine transform representing
 	the S,R,T change being made.
 	Heavily borrowed from:
 	https://github.com/erica/iphone-3.0-cookbook-/tree/master/C08-Gestures/14-Resize%20And%20Rotate
-	(which is heavily borrowed from Apple sample code)
+	(which is "heavily borrowed" from Apple sample code)
 	concatenating this with the view's current transform will update properly
 */
 - (CGAffineTransform)incrementalTransformWithTouches:(NSSet *)touches 
 {
 	NSInteger numTouches = [touches count];
-    
 	if (numTouches == 0)
 	{
 		// If there are no touches, simply return identify transform.
@@ -69,7 +83,8 @@
 		UITouch *touch = [touches anyObject];
 		CGPoint beginPoint = [touch previousLocationInView:self.superview];
 		CGPoint currentPoint = [touch locationInView:self.superview];
-		return CGAffineTransformMakeTranslation(currentPoint.x - beginPoint.x, currentPoint.y - beginPoint.y);
+		return CGAffineTransformMakeTranslation(currentPoint.x - beginPoint.x,
+												currentPoint.y - beginPoint.y);
 	}
 	else
 	{
@@ -108,8 +123,10 @@
 
 		double a = (y1-y2)*(y3-y4) + (x1-x2)*(x3-x4);
 		double b = (y1-y2)*(x3-x4) - (x1-x2)*(y3-y4);
-		double tx = (y1*x2 - x1*y2)*(y4-y3) - (x1*x2 + y1*y2)*(x3+x4) + x3*(y2*y2 + x2*x2) + x4*(y1*y1 + x1*x1);
-		double ty = (x1*x2 + y1*y2)*(-y4-y3) + (y1*x2 - x1*y2)*(x3-x4) + y3*(y2*y2 + x2*x2) + y4*(y1*y1 + x1*x1);
+		double tx = (y1*x2 - x1*y2)*(y4-y3) - (x1*x2 + y1*y2)*(x3+x4) + 
+					x3*(y2*y2 + x2*x2) + x4*(y1*y1 + x1*x1);
+		double ty = (x1*x2 + y1*y2)*(-y4-y3) + (y1*x2 - x1*y2)*(x3-x4) + 
+					y3*(y2*y2 + x2*x2) + y4*(y1*y1 + x1*x1);
 
 		return CGAffineTransformMake(a/D, -b/D, b/D, a/D, tx/D, ty/D);
 	}
