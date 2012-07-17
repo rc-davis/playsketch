@@ -17,10 +17,8 @@
 
 
 //TODO: conditionally remove this in non-debug builds
-#define PS_ASSERT( expr, message) NSAssert( expr, message);
-#define PS_ASSERT1( expr, message, arg) NSAssert1( expr, message, arg);
-#define PS_NOT_YET_IMPLEMENTED() NSAssert(NO, @"NOT YET IMPLEMENTED" );
-
+#define PS_FAIL(message) { DEBUG_DISPLAY_FAILURE_MESSAGE(message); }
+#define PS_ASSERT( expr, message) { if ( !(expr) ) DEBUG_DISPLAY_FAILURE_MESSAGE(message); }
 
 // Translate a rect from top-0 to bottom-0 coordinate systems (urgh)
 static inline CGRect CGRectByFlippingYOriginDirection(CGRect rect, CGRect parentFrame)
@@ -31,5 +29,15 @@ static inline CGRect CGRectByFlippingYOriginDirection(CGRect rect, CGRect parent
 					  rect.size.height);
 }
 
+
+static inline void DEBUG_DISPLAY_FAILURE_MESSAGE(NSString* message)
+{
+	[[[UIAlertView alloc] initWithTitle:@"FAILURE" 
+								message:[NSString stringWithFormat:@"Execution will be unreliable after this point! Note this message:\n\"%@\"", message]
+							   delegate:nil 
+					  cancelButtonTitle:@"SORRY"
+					  otherButtonTitles:nil, nil] show];
+
+}
 
 #endif

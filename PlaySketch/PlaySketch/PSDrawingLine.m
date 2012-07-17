@@ -89,7 +89,7 @@
 - (void)awakeFromSnapshotEvents:(NSSnapshotEventType)flags
 {
 	[super awakeFromSnapshotEvents:flags];
-	PS_NOT_YET_IMPLEMENTED();
+	PS_FAIL(@"Not Yet Implemented: awakeFromSnapshotEvents:");
 }
 
 

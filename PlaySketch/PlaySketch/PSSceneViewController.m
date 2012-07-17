@@ -68,7 +68,6 @@
 
 -(IBAction)play:(id)sender
 {
-
 }
 
 
@@ -161,7 +160,7 @@
 -(void)cancelledDrawingLine:(PSDrawingLine*)line inDrawingView:(id)drawingView
 {
 	//TODO: similar to finishedDrawing
-	PS_NOT_YET_IMPLEMENTED();
+	PS_FAIL(@"NOT YET IMPLEMENTED: cancelledDrawingLine:");
 }
 
 @end
