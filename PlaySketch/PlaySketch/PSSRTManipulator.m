@@ -43,7 +43,6 @@
 
 -(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {		
-	NSLog(@"touchesMoved: %d\t%d", touches.count, event.allTouches.count);
 	CGAffineTransform t = [self incrementalTransformWithTouches:event.allTouches];
 	self.transform = CGAffineTransformConcat(self.transform, t);
 	
