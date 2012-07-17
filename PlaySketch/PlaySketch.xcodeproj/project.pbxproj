@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		467E4E4215B4235700F70C1E /* PSSelectionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 467E4E4115B4235700F70C1E /* PSSelectionHelper.m */; };
+		46BAC13415B52741007C288E /* PSSRTManipulator.m in Sources */ = {isa = PBXBuildFile; fileRef = 46BAC13315B52741007C288E /* PSSRTManipulator.m */; };
 		46BF25AC15B0266A00834681 /* SketchInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 46BF25AB15B0266A00834681 /* SketchInterface.storyboard */; };
 		46BF25AF15B02B5C00834681 /* PSAnimationRenderingController.m in Sources */ = {isa = PBXBuildFile; fileRef = 46BF25AE15B02B5C00834681 /* PSAnimationRenderingController.m */; };
 		46BF25B115B02B8700834681 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46BF25B015B02B8700834681 /* GLKit.framework */; };
@@ -48,8 +49,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		467E4E4015B4235700F70C1E /* PSSelectionHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; path = PSSelectionHelper.h; sourceTree = "<group>"; };
+		467E4E4015B4235700F70C1E /* PSSelectionHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSSelectionHelper.h; sourceTree = "<group>"; };
 		467E4E4115B4235700F70C1E /* PSSelectionHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSSelectionHelper.m; sourceTree = "<group>"; };
+		46BAC13215B52741007C288E /* PSSRTManipulator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PSSRTManipulator.h; path = PlaySketch/PSSRTManipulator.h; sourceTree = "<group>"; };
+		46BAC13315B52741007C288E /* PSSRTManipulator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PSSRTManipulator.m; path = PlaySketch/PSSRTManipulator.m; sourceTree = "<group>"; };
 		46BF25AB15B0266A00834681 /* SketchInterface.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SketchInterface.storyboard; path = PlaySketch/SketchInterface.storyboard; sourceTree = "<group>"; };
 		46BF25AD15B02B5C00834681 /* PSAnimationRenderingController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PSAnimationRenderingController.h; path = PlaySketch/PSAnimationRenderingController.h; sourceTree = "<group>"; };
 		46BF25AE15B02B5C00834681 /* PSAnimationRenderingController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PSAnimationRenderingController.m; path = PlaySketch/PSAnimationRenderingController.m; sourceTree = "<group>"; };
@@ -158,6 +161,8 @@
 				46BF25AB15B0266A00834681 /* SketchInterface.storyboard */,
 				46BF25CB15B140D500834681 /* PSDrawingEventsView.h */,
 				46BF25CC15B140D500834681 /* PSDrawingEventsView.m */,
+				46BAC13215B52741007C288E /* PSSRTManipulator.h */,
+				46BAC13315B52741007C288E /* PSSRTManipulator.m */,
 			);
 			name = Interface;
 			path = ..;
@@ -375,6 +380,7 @@
 				46C9AD1615B29D1E00EF3A92 /* PSDataModel.m in Sources */,
 				46C9AD1B15B2B67800EF3A92 /* PSDrawingDocument.m in Sources */,
 				467E4E4215B4235700F70C1E /* PSSelectionHelper.m in Sources */,
+				46BAC13415B52741007C288E /* PSSRTManipulator.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
