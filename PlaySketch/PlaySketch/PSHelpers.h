@@ -20,15 +20,6 @@
 #define PS_FAIL(message) { DEBUG_DISPLAY_FAILURE_MESSAGE(message); }
 #define PS_ASSERT( expr, message) { if ( !(expr) ) DEBUG_DISPLAY_FAILURE_MESSAGE(message); }
 
-// Translate a rect from top-0 to bottom-0 coordinate systems (urgh)
-static inline CGRect CGRectByFlippingYOriginDirection(CGRect rect, CGRect parentFrame)
-{
-	return CGRectMake(rect.origin.x,
-					  parentFrame.size.height - (rect.origin.y + rect.size.height),
-					  rect.size.width,
-					  rect.size.height);
-}
-
 
 static inline void DEBUG_DISPLAY_FAILURE_MESSAGE(NSString* message)
 {

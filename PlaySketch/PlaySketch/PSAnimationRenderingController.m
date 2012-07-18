@@ -72,8 +72,8 @@
     GLKMatrix4 projectionMatrix = GLKMatrix4MakeOrtho(
 					  self.view.bounds.origin.x,
 					  self.view.bounds.origin.x + self.view.bounds.size.width,
-					  self.view.bounds.origin.y,
 					  self.view.bounds.origin.y + self.view.bounds.size.height,
+					  self.view.bounds.origin.y,
 					  -1024, 1024);
     self.effect.transform.projectionMatrix = projectionMatrix;
 }
