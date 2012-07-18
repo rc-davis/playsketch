@@ -1,5 +1,3 @@
-buttons have actual images of the drawing!!!
-	
 
 MILESTONE 3
 aniimation widget animates drawing
@@ -79,3 +77,12 @@ NOTES
 ========
 This is the style guide people should follow:
 https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/CodingGuidelines/CodingGuidelines.html
+
+
+========
+BUGS:
+transforms not saved
+image previews look like crap
+
+
+

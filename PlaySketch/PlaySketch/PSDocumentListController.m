@@ -60,10 +60,8 @@
 		[self.scrollView addSubview:self.createDocumentButton];
 	}
 	
-	[self generateDocumentButtons];
 	self.scrollView.delegate = self; //So we can respond to the scroll events
 	//self.scrollView.decelerationRate = UIScrollViewDecelerationRateFast;
-	[self refreshSelectionAppearance];
 }
 
 
@@ -80,10 +78,19 @@
 	self.createDocumentButton = nil;
 }
 
+
+-(void) viewWillAppear:(BOOL)animated
+{
+	[self generateDocumentButtons];
+	[self refreshSelectionAppearance];
+}
+
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
 	return UIInterfaceOrientationIsLandscape(interfaceOrientation);
 }
+
+
 
 
 -(void)generateDocumentButtons
@@ -109,7 +116,7 @@
 
 	// Create a button for each document and add to the scroll view
 	
-	for(PSDrawingGroup* docRoot in self.documentRoots)
+	for(PSDrawingDocument* docRoot in self.documentRoots)
 	{
 		UIButton* docButton = [[UIButton alloc] initWithFrame:buttonFrame];
 		[PSDocumentListController styleButton:docButton];
@@ -120,6 +127,15 @@
 		//Hook up the button to call viewDocument:
 		[docButton addTarget:self action:@selector(viewDocument:) forControlEvents:UIControlEventTouchUpInside];
 
+		//Put the background image in the button
+		NSData* imageData = docRoot.previewImage;
+		if(imageData)
+		{
+			UIImage* image = [UIImage imageWithData:imageData];
+			[docButton setImage:image forState:UIControlStateNormal];
+		}
+		
+		
 		[buttons addObject:docButton];		
 
 		centerX += DOC_BUTTON_STEP_SIZE;

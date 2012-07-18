@@ -68,15 +68,30 @@
 	self.selectedSetManipulator.delegate = self;
 }
 
+
 - (void)viewDidUnload
 {
     [super viewDidUnload];
-
 }
+
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
 	return UIInterfaceOrientationIsLandscape(interfaceOrientation);
+}
+
+
+-(void) viewWillDisappear:(BOOL)animated
+{
+	// Save a preview image of our drawing before going away!
+	// First we snapshot the contents of our rendering view,
+	// Then we convert that to a format that will fit in our data store
+	// TODO: the last line of this seems to take a while....
+	// TODO: downsample?
+	GLKView* view = (GLKView*)self.renderingController.view;
+	UIImage* previewImg = [view snapshot];
+	self.currentDocument.previewImage = UIImagePNGRepresentation(previewImg);
+	[PSDataModel save];
 }
 
 
