@@ -363,7 +363,7 @@
 	button.layer.shadowColor = [UIColor blackColor].CGColor;
 	button.layer.shadowOffset = CGSizeMake(0, 10);
 	button.layer.shadowRadius = 10.0;
-	button.layer.shadowOpacity = 0.5;
+	button.layer.shadowOpacity = 0.8;
 	button.layer.shouldRasterize = YES;
 }
 
