@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4673A46A15B6A9100053FDF0 /* PSHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 4673A46915B6A9100053FDF0 /* PSHelpers.m */; };
 		467E4E4215B4235700F70C1E /* PSSelectionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 467E4E4115B4235700F70C1E /* PSSelectionHelper.m */; };
 		46BAC13415B52741007C288E /* PSSRTManipulator.m in Sources */ = {isa = PBXBuildFile; fileRef = 46BAC13315B52741007C288E /* PSSRTManipulator.m */; };
 		46BF25AC15B0266A00834681 /* SketchInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 46BF25AB15B0266A00834681 /* SketchInterface.storyboard */; };
@@ -49,6 +50,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4673A46815B6A9100053FDF0 /* PSHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSHelpers.h; sourceTree = "<group>"; };
+		4673A46915B6A9100053FDF0 /* PSHelpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSHelpers.m; sourceTree = "<group>"; };
 		467E4E4015B4235700F70C1E /* PSSelectionHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSSelectionHelper.h; sourceTree = "<group>"; };
 		467E4E4115B4235700F70C1E /* PSSelectionHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSSelectionHelper.m; sourceTree = "<group>"; };
 		46BAC13215B52741007C288E /* PSSRTManipulator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PSSRTManipulator.h; path = PlaySketch/PSSRTManipulator.h; sourceTree = "<group>"; };
@@ -60,7 +63,6 @@
 		46BF25B715B0302A00834681 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		46BF25C615B1215900834681 /* PSDrawingLine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PSDrawingLine.h; path = PlaySketch/PSDrawingLine.h; sourceTree = "<group>"; };
 		46BF25C715B1215A00834681 /* PSDrawingLine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PSDrawingLine.m; path = PlaySketch/PSDrawingLine.m; sourceTree = "<group>"; };
-		46BF25CA15B1255200834681 /* PSHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSHelpers.h; sourceTree = "<group>"; };
 		46BF25CB15B140D500834681 /* PSDrawingEventsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PSDrawingEventsView.h; path = PlaySketch/PSDrawingEventsView.h; sourceTree = "<group>"; };
 		46BF25CC15B140D500834681 /* PSDrawingEventsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PSDrawingEventsView.m; path = PlaySketch/PSDrawingEventsView.m; sourceTree = "<group>"; };
 		46BF25CE15B1503B00834681 /* PSSceneViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PSSceneViewController.h; path = PlaySketch/PSSceneViewController.h; sourceTree = "<group>"; };
@@ -130,9 +132,10 @@
 			children = (
 				46F7A64915B014E700C7B374 /* PSAppDelegate.h */,
 				46F7A64A15B014E700C7B374 /* PSAppDelegate.m */,
-				46BF25CA15B1255200834681 /* PSHelpers.h */,
 				467E4E4015B4235700F70C1E /* PSSelectionHelper.h */,
 				467E4E4115B4235700F70C1E /* PSSelectionHelper.m */,
+				4673A46815B6A9100053FDF0 /* PSHelpers.h */,
+				4673A46915B6A9100053FDF0 /* PSHelpers.m */,
 			);
 			name = Helpers;
 			sourceTree = "<group>";
@@ -381,6 +384,7 @@
 				46C9AD1B15B2B67800EF3A92 /* PSDrawingDocument.m in Sources */,
 				467E4E4215B4235700F70C1E /* PSSelectionHelper.m in Sources */,
 				46BAC13415B52741007C288E /* PSSRTManipulator.m in Sources */,
+				4673A46A15B6A9100053FDF0 /* PSHelpers.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

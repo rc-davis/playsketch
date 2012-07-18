@@ -48,7 +48,7 @@
 	self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
 	if (!self.context)
 	{
-        PS_FAIL(@"Failed to created an OpenGL context");
+		[PSHelpers failWithMessage:@"Failed to created an OpenGL context"];
     }
 
 	// Tell our view about the context

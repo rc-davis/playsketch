@@ -256,7 +256,7 @@
 -(void)cancelledDrawingLine:(PSDrawingLine*)line inDrawingView:(id)drawingView
 {
 	//TODO: similar to finishedDrawing
-	PS_FAIL(@"NOT YET IMPLEMENTED: cancelledDrawingLine:");
+	[PSHelpers NYIWithmessage:@"scene controller view: cancelledDrawingLine"];
 }
 
 

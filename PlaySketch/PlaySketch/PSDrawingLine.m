@@ -32,7 +32,7 @@
 */
 -(void)addLineFrom:(CGPoint)from to:(CGPoint)to
 {
-	PS_ASSERT(points != nil, @"Points cache should already be allocated before adding to it");
+	[PSHelpers assert:(points != nil) withMessage:@"Points cache should already be allocated"];
 	
 	// Expand our buffer if it is full
 	if(pointBufferCount == pointCount)
@@ -89,7 +89,7 @@
 - (void)awakeFromSnapshotEvents:(NSSnapshotEventType)flags
 {
 	[super awakeFromSnapshotEvents:flags];
-	PS_FAIL(@"Not Yet Implemented: awakeFromSnapshotEvents:");
+	[PSHelpers NYIWithmessage:@"drawingline awakeFromSnapshotEvents:"];
 }
 
 
@@ -106,7 +106,7 @@
 
 -(void)copyPointsIntoObjectCache
 {
-	PS_ASSERT(points == nil, @"awakeFromFetch should have no value for points yet");
+	[PSHelpers assert:(points == nil) withMessage:@"awakeFromFetch should have no value for points yet"];
 	
 	if(self.pointsAsData == nil)
 	{
