@@ -195,22 +195,10 @@
 {
 	NSString* newDocName = [NSString stringWithFormat:@"Untitled Animation %d", 
 							[PSDataModel allDrawingDocuments].count + 1];
-	PSDrawingDocument* doc = [PSDataModel newDrawingDocumentWithName:newDocName];
-	//[PSDataModel DEBUG_generateTestShapesIntoGroup:doc.rootGroup];
-	//[PSDataModel DEBUG_generateRandomLittleLinesIntoGroup:doc.rootGroup lineCount:100];
-
-	CGPoint offsetBeforeAddingButton = self.scrollView.contentOffset;
-	[self generateDocumentButtons];
-
-	//Animate motion from the offset the scrollview WAS at to center on the new document
-
-	self.scrollView.contentOffset = offsetBeforeAddingButton;
-	[self.scrollView setContentOffset:
-	 CGPointMake((self.documentRoots.count - 1)*DOC_BUTTON_STEP_SIZE,
-				 offsetBeforeAddingButton.y) animated:YES];
-
-	[self refreshSelectionAppearance];
-	
+	PSDrawingDocument* newDocument = [PSDataModel newDrawingDocumentWithName:newDocName];
+	//[PSDataModel DEBUG_generateTestShapesIntoGroup:newDocument.rootGroup];
+	//[PSDataModel DEBUG_generateRandomLittleLinesIntoGroup:newDocument.rootGroup lineCount:100];
+	[self performSegueWithIdentifier:@"GoToSceneViewController" sender:newDocument];
 }
 
 
