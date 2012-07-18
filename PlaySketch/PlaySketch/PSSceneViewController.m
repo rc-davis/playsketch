@@ -90,7 +90,8 @@
 	// TODO: downsample?
 	GLKView* view = (GLKView*)self.renderingController.view;
 	UIImage* previewImg = [view snapshot];
-	self.currentDocument.previewImage = UIImagePNGRepresentation(previewImg);
+	UIImage* previewImgSmall = [PSHelpers imageWithImage:previewImg scaledToSize:CGSizeMake(462, 300)];
+	self.currentDocument.previewImage = UIImagePNGRepresentation(previewImgSmall);
 	[PSDataModel save];
 }
 

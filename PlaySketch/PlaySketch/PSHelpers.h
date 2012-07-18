@@ -15,8 +15,9 @@
 
 @interface PSHelpers : NSObject
 
-+(void)assert:(BOOL)expression withMessage:(NSString*)message;
-+(void)failWithMessage:(NSString*)message;
-+(void)NYIWithmessage:(NSString*)message;
++ (void)assert:(BOOL)expression withMessage:(NSString*)message;
++ (void)failWithMessage:(NSString*)message;
++ (void)NYIWithmessage:(NSString*)message;
++ (UIImage *)imageWithImage:(UIImage *)image scaledToSize:(CGSize)newSize;
 
 @end
