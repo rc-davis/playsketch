@@ -91,7 +91,6 @@
 }
 
 
--(IBAction)toggleCharacterCreation:(id)sender
 {
 	//TODO: not necessary
 	self.isSelecting = !self.isSelecting;
