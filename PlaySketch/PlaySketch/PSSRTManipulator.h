@@ -14,11 +14,11 @@
 #import <UIKit/UIKit.h>
 
 @protocol PSSRTManipulatoDelegate
--(void)manipulator:(id)sender didUpdateToTransform:(CGAffineTransform)transform;
+-(void)manipulator:(id)sender didUpdateBy:(CGAffineTransform)incrementalTransform toTransform:(CGAffineTransform)fullTransform;
 @end
 
 @interface PSSRTManipulator : UIView
-
+@property(nonatomic,weak) id<PSSRTManipulatoDelegate> delegate;
 -(id)initWithFrame:(CGRect)frame;
 
 @end

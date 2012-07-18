@@ -16,7 +16,6 @@
 #import <QuartzCore/QuartzCore.h>
 
 @interface PSSRTManipulator ()
-@property(nonatomic,weak) id<PSSRTManipulatoDelegate> delegate;
 - (CGAffineTransform)incrementalTransformWithTouches:(NSSet *)touches;
 @end
 
@@ -43,11 +42,13 @@
 
 -(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {		
-	CGAffineTransform t = [self incrementalTransformWithTouches:event.allTouches];
-	self.transform = CGAffineTransformConcat(self.transform, t);
+	CGAffineTransform incrementalT = [self incrementalTransformWithTouches:event.allTouches];
+	self.transform = CGAffineTransformConcat(self.transform, incrementalT);
 	
 	if(self.delegate)
-		[self.delegate manipulator:self didUpdateToTransform:self.transform];
+		[self.delegate manipulator:self
+					   didUpdateBy:incrementalT
+					   toTransform:self.transform];
 }
 
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
