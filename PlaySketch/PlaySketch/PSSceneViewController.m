@@ -20,6 +20,7 @@
 
 @interface PSSceneViewController ()
 @property(nonatomic)BOOL isSelecting; // If we are selecting instead of drawing
+@property(nonatomic,retain) PSSelectionHelper* selectionHelper;
 @end
 
 
@@ -30,6 +31,7 @@
 @synthesize currentDocument = _currentDocument;
 @synthesize manipulator = _manipulator;
 @synthesize isSelecting = _isSelecting;
+@synthesize selectionHelper = _selectionHelper;
 
 
 
@@ -112,7 +114,15 @@
 -(void)setCurrentDocument:(PSDrawingDocument *)currentDocument
 {
 	_currentDocument = currentDocument;
+	//Also tell the rendering controller about the group to render it
 	self.renderingController.rootGroup = currentDocument.rootGroup;
+}
+
+-(void)setSelectionHelper:(PSSelectionHelper *)selectionHelper
+{
+	_selectionHelper = selectionHelper;
+	//Also tell the rendering controller about the selection helper so it can draw the loupe and highlight objects
+	self.renderingController.selectionHelper = selectionHelper;
 }
 
 
@@ -141,13 +151,9 @@
 		PSDrawingLine* selectionLine = [PSDataModel newLineInGroup:nil];
 
 		// Start a new selection set helper
-		PSSelectionHelper* helper = [[PSSelectionHelper alloc] initWithGroup:self.currentDocument.rootGroup
-																	 andLine:selectionLine];
-		
-		//Tell the rendering controller about the selection helper so it can draw the loupe and highlight objects
-		self.renderingController.selectionHelper = helper;
-		
-		return helper.selectionLoupeLine;
+		self.selectionHelper = [[PSSelectionHelper alloc] initWithGroup:self.currentDocument.rootGroup
+																	 andLine:selectionLine];		
+		return selectionLine;
 	}
 		
 }
@@ -156,7 +162,7 @@
 -(void)addedToLine:(PSDrawingLine*)line fromPoint:(CGPoint)from toPoint:(CGPoint)to inDrawingView:(id)drawingView
 {
 	
-	if ( line == self.renderingController.selectionHelper.selectionLoupeLine )
+	if ( line == self.selectionHelper.selectionLoupeLine )
 	{
 		// Give this new line segment to the selection helper to update the selected set
 		
@@ -167,18 +173,18 @@
 		NSDictionary* pointsDict = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSValue valueWithCGPoint:from], @"from",
 									[NSValue valueWithCGPoint:to], @"to", nil];
-		[self.renderingController performSelectorInBackground:@selector(addLineFromDict:) withObject:pointsDict];
+		[self.selectionHelper performSelectorInBackground:@selector(addLineFromDict:) withObject:pointsDict];
 	}
 }
 
 
 -(void)finishedDrawingLine:(PSDrawingLine*)line inDrawingView:(id)drawingView
 {
-	if ( line == self.renderingController.selectionHelper.selectionLoupeLine )
+	if ( line == self.selectionHelper.selectionLoupeLine )
 	{
 		//Clean up selection state
-		[PSDataModel deleteDrawingLine:self.renderingController.selectionHelper.selectionLoupeLine];
-		self.renderingController.selectionHelper = nil;
+		[PSDataModel deleteDrawingLine:self.selectionHelper.selectionLoupeLine];
+		self.selectionHelper = nil;
 	}
 	else
 	{
