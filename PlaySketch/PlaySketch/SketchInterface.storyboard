@@ -82,21 +82,7 @@
                                     <outlet property="drawingDelegate" destination="UPZ-Bt-XHw" id="v3D-k7-6wt"/>
                                 </connections>
                             </glkView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="mkd-yj-a7c">
-                                <rect key="frame" x="50" y="691" width="72" height="37"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                                <state key="normal" title="Play">
-                                    <color key="titleColor" red="0.19607843459999999" green="0.30980393290000002" blue="0.52156865600000002" alpha="1" colorSpace="calibratedRGB"/>
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
-                                <state key="highlighted">
-                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <connections>
-                                    <action selector="play:" destination="UPZ-Bt-XHw" eventType="touchUpInside" id="HdY-Xh-6He"/>
-                                </connections>
-                            </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="ULa-5G-SCs">
                                 <rect key="frame" x="6" y="5" width="72" height="37"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -172,7 +158,6 @@
             <source key="sourceIdentifier" type="project" relativePath="./Classes/PSSceneViewController.h"/>
             <relationships>
                 <relationship kind="action" name="dismissSceneView:"/>
-                <relationship kind="action" name="play:"/>
                 <relationship kind="action" name="toggleCharacterCreation:"/>
                 <relationship kind="outlet" name="drawingTouchView" candidateClass="PSDrawingEventsView"/>
                 <relationship kind="outlet" name="renderingController" candidateClass="PSAnimationRenderingController"/>

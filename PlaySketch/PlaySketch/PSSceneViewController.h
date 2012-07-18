@@ -27,8 +27,6 @@
 @property(nonatomic,retain)PSDrawingDocument* currentDocument;
 @property(nonatomic,retain)PSSRTManipulator* selectedSetManipulator;
 
--(IBAction)play:(id)sender;
 -(IBAction)dismissSceneView:(id)sender;
--(IBAction)toggleCharacterCreation:(id)sender;
 
 @end
