@@ -269,6 +269,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 46F7A66715B014E700C7B374 /* Build configuration list for PBXNativeTarget "PlaySketch" */;
 			buildPhases = (
+				4673A48215B6B0DC0053FDF0 /* ShellScript */,
 				46F7A63015B014E700C7B374 /* Sources */,
 				46F7A63115B014E700C7B374 /* Frameworks */,
 				46F7A63215B014E700C7B374 /* Resources */,
@@ -351,6 +352,19 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		4673A48215B6B0DC0053FDF0 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /usr/bin/python;
+			shellScript = "# All this script does is to automatically increment our version number\n# It assumes your version number is something like 1.0.1\n# It treats whatever is after the last '.' as an integer\n# and tries to increment it\n\nimport plistlib, os\n\nprint \"Opening Info.plist\"\npath = os.environ['INFOPLIST_FILE']\nlist = plistlib.readPlist(path)\n\nprint \"Updating Version\"\nold_version = list['CFBundleVersion']\nsplitup = old_version.rpartition(\".\")\nnew_version = splitup[0] + \".\" + str( int(splitup[2]) + 1)\n\nprint \"Saving out Info.plist\"\nlist['CFBundleVersion'] = str(new_version)\nlist['CFBundleShortVersionString'] = str(new_version)\nplistlib.writePlist(list, path)\n\nprint \"! Updated !\"\nprint \"Old version: \", old_version\nprint \"New version: \", new_version";
+		};
 		46F7A65215B014E700C7B374 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
