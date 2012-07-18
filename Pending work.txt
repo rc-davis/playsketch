@@ -1,9 +1,5 @@
--(selection created)
--(selection cleared)
-
-
-
-
+buttons have actual images of the drawing!!!
+	
 
 MILESTONE 3
 aniimation widget animates drawing
@@ -67,7 +63,6 @@ Do prettier lines (use point sprite brush instead of line drawings)
 
 
 - Document picker screen
-	- buttons have actual images of the drawing!!!
 
 	- delete button confirm dialog
 

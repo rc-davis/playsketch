@@ -101,7 +101,12 @@
 	self.startDrawingButton.enabled = NO;
 	self.startSelectingButton.enabled = YES;
 	self.isSelecting = NO;
-	
+	if(self.selectionHelper)
+	{
+		self.selectionHelper = nil;
+		self.selectedSetManipulator.hidden = YES;
+		
+	}
 }
 
 
@@ -155,6 +160,13 @@
  */
 -(PSDrawingLine*)newLineToDrawTo:(id)drawingView
 {
+	//Clear out any old selection state
+	if(self.selectionHelper)
+	{
+		self.selectionHelper = nil;
+		self.selectedSetManipulator.hidden = YES;
+	}
+	
 	if (! self.isSelecting )
 	{
 		return [PSDataModel newLineInGroup:self.currentDocument.rootGroup];
