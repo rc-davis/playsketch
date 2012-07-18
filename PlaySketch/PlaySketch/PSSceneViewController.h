@@ -24,9 +24,13 @@
 
 @property(nonatomic,retain)IBOutlet PSAnimationRenderingController* renderingController;
 @property(nonatomic,retain)IBOutlet PSDrawingEventsView* drawingTouchView;
+@property(nonatomic,retain)IBOutlet UIButton* startDrawingButton;
+@property(nonatomic,retain)IBOutlet UIButton* startSelectingButton;
 @property(nonatomic,retain)PSDrawingDocument* currentDocument;
 @property(nonatomic,retain)PSSRTManipulator* selectedSetManipulator;
 
 -(IBAction)dismissSceneView:(id)sender;
+-(IBAction)startDrawing:(id)sender;
+-(IBAction)startSelecting:(id)sender;
 
 @end

@@ -28,6 +28,8 @@
 @implementation PSSceneViewController
 @synthesize renderingController = _renderingController;
 @synthesize drawingTouchView = _drawingTouchView;
+@synthesize startDrawingButton = _startDrawingButton;
+@synthesize startSelectingButton = _startSelectingButton;
 @synthesize currentDocument = _currentDocument;
 @synthesize selectedSetManipulator = _manipulator;
 @synthesize isSelecting = _isSelecting;
@@ -52,6 +54,12 @@
 	// Add the renderingview to our viewcontroller hierarchy
 	[self addChildViewController:self.renderingController];
 	[self.renderingController viewDidLoad];
+	
+	//Start off in drawing mode
+	self.isSelecting = NO;
+	self.startDrawingButton.enabled = NO;
+	self.startSelectingButton.enabled = YES;
+	
 	
 	//Create a manipulator and add it to our rendering view hidden
 	self.selectedSetManipulator = [[PSSRTManipulator alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
@@ -81,9 +89,6 @@
  ----------------------------------------------------------------------------
  */
 
-{
-}
-
 
 -(IBAction)dismissSceneView:(id)sender
 {
@@ -91,9 +96,20 @@
 }
 
 
+-(IBAction)startDrawing:(id)sender
 {
-	//TODO: not necessary
-	self.isSelecting = !self.isSelecting;
+	self.startDrawingButton.enabled = NO;
+	self.startSelectingButton.enabled = YES;
+	self.isSelecting = NO;
+	
+}
+
+
+-(IBAction)startSelecting:(id)sender
+{
+	self.startDrawingButton.enabled = YES;
+	self.startSelectingButton.enabled = NO;	
+	self.isSelecting = YES;	
 }
 
 

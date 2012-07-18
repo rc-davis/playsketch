@@ -1,5 +1,3 @@
-
-- selection toggle button
 -(selection created)
 -(selection cleared)
 
