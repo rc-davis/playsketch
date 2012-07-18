@@ -11,6 +11,10 @@
  
  */
 
+#define PSSRT_BACKGROUND_UICOLOR [UIColor colorWithRed:1.000 green:0.490 blue:0.000 alpha:0.3]
+#define PSSRT_BORDER_UICOLOR [UIColor colorWithRed:1.000 green:0.490 blue:0.000 alpha:1.000]
+
+
 #import <UIKit/UIKit.h>
 
 @protocol PSSRTManipulatoDelegate

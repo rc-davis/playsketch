@@ -92,14 +92,14 @@
 	//static int perfFrameCount = 0;
     //NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
 	
-    glClearColor(1.0, 0.977, 0.842, 1.00);
+    glClearColor(PSANIM_BACKGROUND_COLOR);
     glClear(GL_COLOR_BUFFER_BIT);    
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
 	
 	// Try to do as much rendering setup as possible so we don't have to call it on every iteration
 	self.effect.useConstantColor = YES;
-	self.effect.constantColor = GLKVector4Make(0.5, 0.5, 0.5, 1.0);
+	self.effect.constantColor = GLKVector4Make(PSANIM_LINE_COLOR);
 	self.effect.transform.modelviewMatrix = GLKMatrix4Identity;
 
 	[self.rootGroup renderGroupWithEffect:self.effect];
@@ -107,7 +107,7 @@
 	//Draw our selection line on top of everything
 	if(self.selectionHelper.selectionLoupeLine)
 	{
-		self.effect.constantColor = GLKVector4Make(1.0, 0.0, 0.0, 1.0);		
+		self.effect.constantColor = GLKVector4Make(PSANIM_SELECTION_LOOP_COLOR);
 		[self.effect prepareToDraw];
 		[self.selectionHelper.selectionLoupeLine render];
 	}
@@ -117,7 +117,7 @@
 	// showed that it is faster than the alternative, because that requires checking
 	// for EACH LINE what color it should be, then doing expensive calls into GL to
 	// set our drawing color
-	self.effect.constantColor = GLKVector4Make(1.0, 0.0, 0.0, 1.0);
+	self.effect.constantColor = GLKVector4Make(PSANIM_SELECTED_LINE_COLOR);
 	[self.effect prepareToDraw];
 	for (PSDrawingLine* line in self.selectionHelper.selectedLines)
 		[line render];

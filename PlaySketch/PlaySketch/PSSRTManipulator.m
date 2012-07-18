@@ -28,7 +28,9 @@
 {
 	if (self = [super initWithFrame:frame])
 	{
-		self.backgroundColor = [UIColor colorWithRed:0.2 green:0.2 blue:0.2 alpha:0.5];
+		self.backgroundColor = PSSRT_BACKGROUND_UICOLOR;
+		self.layer.borderColor = (PSSRT_BORDER_UICOLOR).CGColor;
+		self.layer.borderWidth = 4.0;
 	}
 	
 	return self;

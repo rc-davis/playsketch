@@ -11,6 +11,10 @@
  
  */
 
+#define PSANIM_BACKGROUND_COLOR 1.0, 0.977, 0.842, 1.00
+#define PSANIM_LINE_COLOR 0.5, 0.5, 0.5, 1.0
+#define PSANIM_SELECTION_LOOP_COLOR 1.0, 0.5, 0.0, 1.0
+#define PSANIM_SELECTED_LINE_COLOR 1.0, 0.5, 0.0, 1.0
 #import <UIKit/UIKit.h>
 #import <GLKit/GLKit.h>
 #import "PSDrawingGroup.h"
