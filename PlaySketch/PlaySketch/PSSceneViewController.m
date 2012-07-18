@@ -33,11 +33,14 @@
 
 
 
--(void)setCurrentDocument:(PSDrawingDocument *)currentDocument
-{
-	_currentDocument = currentDocument;
-	self.renderingController.rootGroup = currentDocument.rootGroup;
-}
+
+/*
+ ----------------------------------------------------------------------------
+ UIViewController subclass methods
+ These are part of the lifecycle of a viewcontroller and give us the 
+ opportunity to do some logic each time we are loaded or unloaded for example
+ ----------------------------------------------------------------------------
+ */
 
 
 - (void)viewDidLoad
@@ -66,6 +69,16 @@
 	return UIInterfaceOrientationIsLandscape(interfaceOrientation);
 }
 
+
+
+
+/*
+ ----------------------------------------------------------------------------
+ IBActions for the storyboard
+ (methods with a return type of "IBAction" can be triggered by buttons in the storyboard editor
+ ----------------------------------------------------------------------------
+ */
+
 -(IBAction)play:(id)sender
 {
 }
@@ -77,24 +90,45 @@
 }
 
 
-/*
-	Begins selection mode for selecting lines to put into a character
-	If already in selection mode, dismisses
-*/
 -(IBAction)toggleCharacterCreation:(id)sender
 {
+	//TODO: not necessary
 	self.isSelecting = !self.isSelecting;
-
-	//TODO: other clean up?
 }
 
 
 
 
 /*
-	PSDrawingEventsViewDrawingDelegate methods
-	Decides whether to add a new drawing line or a new selection line
-*/
+ ----------------------------------------------------------------------------
+ Property Setters
+ @synthesize generates a default pair of get/set methods
+ You can override any of them here to customize behavior
+ These are also called if you use dot-notaion: foo.currentDocument
+ ----------------------------------------------------------------------------
+ */
+
+
+-(void)setCurrentDocument:(PSDrawingDocument *)currentDocument
+{
+	_currentDocument = currentDocument;
+	self.renderingController.rootGroup = currentDocument.rootGroup;
+}
+
+
+
+
+/*
+ ----------------------------------------------------------------------------
+ PSDrawingEventsViewDrawingDelegate methods
+ (Called by our drawing view when it needs to do something with touch events)
+ ----------------------------------------------------------------------------
+ */
+
+
+/*	
+ Provide a PSDrawingLine based on whether we are selecting or drawing
+ */
 -(PSDrawingLine*)newLineToDrawTo:(id)drawingView
 {
 	if (! self.isSelecting )
@@ -118,30 +152,25 @@
 		
 }
 
--(void)backgroundAddLine:(NSDictionary*)points
-{
-	CGPoint from = [[points objectForKey:@"from"] CGPointValue];
-	CGPoint to = [[points objectForKey:@"to"] CGPointValue];
-	[self.renderingController.selectionHelper addLineFrom:from to:to];
-}
 
 -(void)addedToLine:(PSDrawingLine*)line fromPoint:(CGPoint)from toPoint:(CGPoint)to inDrawingView:(id)drawingView
 {
 	
 	if ( line == self.renderingController.selectionHelper.selectionLoupeLine )
 	{
+		// Give this new line segment to the selection helper to update the selected set
+		
 		// We want to add this line to the selectionHelper on a background
 		// thread so it won't block the redrawing as much as possible
 		// That requires us to bundle up the points as objects instead of structs
-		// so they'll fit in a dictionary to pass to the performSelectorInBackground function
-		NSValue* fromV = [NSValue valueWithCGPoint:from];
-		NSValue* toV = [NSValue valueWithCGPoint:to];
+		// so they'll fit in a dictionary to pass to the performSelectorInBackground method
 		NSDictionary* pointsDict = [NSDictionary dictionaryWithObjectsAndKeys:
-									fromV, @"from",
-									toV, @"to", nil];
-		[self performSelectorInBackground:@selector(backgroundAddLine:) withObject:pointsDict];
+									[NSValue valueWithCGPoint:from], @"from",
+									[NSValue valueWithCGPoint:to], @"to", nil];
+		[self.renderingController performSelectorInBackground:@selector(addLineFromDict:) withObject:pointsDict];
 	}
 }
+
 
 -(void)finishedDrawingLine:(PSDrawingLine*)line inDrawingView:(id)drawingView
 {
@@ -157,10 +186,28 @@
 	}
 }
 
+
 -(void)cancelledDrawingLine:(PSDrawingLine*)line inDrawingView:(id)drawingView
 {
 	//TODO: similar to finishedDrawing
 	PS_FAIL(@"NOT YET IMPLEMENTED: cancelledDrawingLine:");
+}
+
+
+
+
+/*
+ ----------------------------------------------------------------------------
+ PSSRTManipulatoDelegate methods
+ Called by our manipulator(s) when they are manipulated
+ ----------------------------------------------------------------------------
+ */
+
+
+-(void)manipulator:(id)sender didUpdateBy:(CGAffineTransform)incrementalTransform toTransform:(CGAffineTransform)fullTransform
+{
+
+	
 }
 
 @end
