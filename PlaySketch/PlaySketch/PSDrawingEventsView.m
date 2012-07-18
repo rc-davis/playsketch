@@ -34,9 +34,7 @@
 	{
 		UITouch* touch = [touches anyObject];
 		CGPoint p = [touch locationInView:self];
-		p.y = self.bounds.size.height - p.y;
 		CGPoint previous = [touch previousLocationInView:self];
-		previous.y = self.bounds.size.height - previous.y;
 
 		[self.currentLine addLineFrom:previous to:p];
 		
