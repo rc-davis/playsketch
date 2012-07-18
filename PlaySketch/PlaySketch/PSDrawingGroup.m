@@ -42,26 +42,7 @@
 */
 - (CGRect)calculateFrame
 {
-	if ( self.drawingLines.count == 0 )
-		return CGRectZero;
-	else
-	{
-		CGPoint min = CGPointMake(1e100, 1e100);
-		CGPoint max = CGPointMake(-1e100, -1e100);
-		
-		for (PSDrawingLine* line in self.drawingLines)
-		{
-			CGPoint* points = line.points;
-			for(int i = 0; i < line.pointCount; i++)
-			{
-				min.x = MIN(min.x, points[i].x);
-				min.y = MIN(min.y, points[i].y);
-				max.x = MAX(max.x, points[i].x);
-				max.y = MAX(max.y, points[i].y);
-			}
-		}
-		return CGRectMake(min.x, min.y, (max.x - min.x), (max.y - min.y));
-	}
+	return [PSDrawingLine calculateFrameForLines:self.drawingLines];
 }
 
 

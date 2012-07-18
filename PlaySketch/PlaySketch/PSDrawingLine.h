@@ -35,5 +35,7 @@
 -(void)addLineFrom:(CGPoint)from to:(CGPoint)to;
 -(CGPoint*)points;
 -(int)pointCount;
-
+-(void)applyIncrementalTransform:(CGAffineTransform)transform;
+- (CGRect)calculateFrame;
++(CGRect)calculateFrameForLines:(id<NSFastEnumeration>) enumerable;
 @end

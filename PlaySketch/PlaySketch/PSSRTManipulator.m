@@ -35,6 +35,12 @@
 }
 
 
+-(void)setFrame:(CGRect)frame
+{
+	self.transform = CGAffineTransformIdentity;
+	[super setFrame:frame];
+}
+
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
 	//Consume the event so it isn't passed up the chain
@@ -43,12 +49,13 @@
 -(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {		
 	CGAffineTransform incrementalT = [self incrementalTransformWithTouches:event.allTouches];
-	self.transform = CGAffineTransformConcat(self.transform, incrementalT);
 	
 	if(self.delegate)
 		[self.delegate manipulator:self
 					   didUpdateBy:incrementalT
 					   toTransform:self.transform];
+
+	self.transform = CGAffineTransformConcat(self.transform, incrementalT);
 }
 
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event

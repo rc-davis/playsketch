@@ -29,7 +29,7 @@
 @synthesize renderingController = _renderingController;
 @synthesize drawingTouchView = _drawingTouchView;
 @synthesize currentDocument = _currentDocument;
-@synthesize manipulator = _manipulator;
+@synthesize selectedSetManipulator = _manipulator;
 @synthesize isSelecting = _isSelecting;
 @synthesize selectionHelper = _selectionHelper;
 
@@ -53,11 +53,11 @@
 	[self addChildViewController:self.renderingController];
 	[self.renderingController viewDidLoad];
 	
-	//Create a manipulator and add it to our rendering view
-	//TODO: for now just with static size!
-	CGRect manipulatorFrame = CGRectMake(0, 0, MANIPULATOR_WIDTH, MANIPULATOR_WIDTH);
-	self.manipulator = [[PSSRTManipulator alloc] initWithFrame:manipulatorFrame];
-	[self.renderingController.view addSubview:self.manipulator];
+	//Create a manipulator and add it to our rendering view hidden
+	self.selectedSetManipulator = [[PSSRTManipulator alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+	[self.renderingController.view addSubview:self.selectedSetManipulator];
+	self.selectedSetManipulator.hidden = YES;
+	self.selectedSetManipulator.delegate = self;
 }
 
 - (void)viewDidUnload
@@ -184,7 +184,26 @@
 	{
 		//Clean up selection state
 		[PSDataModel deleteDrawingLine:self.selectionHelper.selectionLoupeLine];
-		self.selectionHelper = nil;
+		self.selectionHelper.selectionLoupeLine = nil;
+		
+		//Show the manipulator if it was worthwhile
+		if(self.selectionHelper.selectedLines.count > 0)
+		{
+			self.selectedSetManipulator.hidden = NO;
+			CGRect linesFrame = [PSDrawingLine calculateFrameForLines:self.selectionHelper.selectedLines];
+			
+//			for (PSDrawingLine* line in self.selectionHelper.selectedLines)
+//				[line applyIncrementalTransform:CGAffineTransformMakeTranslation(linesFrame.origin.x, linesFrame.origin.y)];
+			
+			self.selectedSetManipulator.frame = CGRectMake(-linesFrame.size.width/2, 
+														   -linesFrame.size.height/2,
+														   linesFrame.size.width,
+														   linesFrame.size.height);
+			CGPoint middle = CGPointMake(linesFrame.origin.x + linesFrame.size.width/2, 
+										 linesFrame.origin.y + linesFrame.size.height/2);
+			self.selectedSetManipulator.transform = CGAffineTransformMakeTranslation(middle.x, middle.y);
+																					 
+		}
 	}
 	else
 	{
@@ -212,8 +231,9 @@
 
 -(void)manipulator:(id)sender didUpdateBy:(CGAffineTransform)incrementalTransform toTransform:(CGAffineTransform)fullTransform
 {
-
 	
+	for (PSDrawingLine* line in self.selectionHelper.selectedLines)
+		[line applyIncrementalTransform:incrementalTransform];
 }
 
 @end

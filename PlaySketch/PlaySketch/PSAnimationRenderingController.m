@@ -48,7 +48,7 @@
 	self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
 	if (!self.context)
 	{
-        NSLog(@"!!!! Failed to create an OpenGL ES context!!!!");
+        PS_FAIL(@"Failed to created an OpenGL context");
     }
 
 	// Tell our view about the context

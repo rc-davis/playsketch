@@ -99,6 +99,7 @@
 */
 - (void)willSave
 {
+	NSLog(@"will save line");
 	[self copyPointsOutOfObjectCache];
 }
 
@@ -132,6 +133,52 @@
 	// Only set a persisted property if it is different to prevent infinite recursion
 	if ( ![newPointsData isEqualToData:self.pointsAsData] )
 		self.pointsAsData = newPointsData;
+}
+
+-(void)applyIncrementalTransform:(CGAffineTransform)transform
+{
+	for(int i = 0; i < pointCount; i++)
+	{
+		points[i] = CGPointApplyAffineTransform(points[i], transform);
+	}
+}
+
+
+- (CGRect)calculateFrame
+{
+	CGPoint min = CGPointMake(1e100, 1e100);
+	CGPoint max = CGPointMake(-1e100, -1e100);
+
+	for(int i = 0; i < pointCount; i++)
+	{
+		min.x = MIN(min.x, points[i].x);
+		min.y = MIN(min.y, points[i].y);
+		max.x = MAX(max.x, points[i].x);
+		max.y = MAX(max.y, points[i].y);
+	}
+	if(min.x > max.x) return CGRectNull;
+	else return CGRectMake(min.x, min.y, (max.x - min.x), (max.y - min.y));
+}
+	
++(CGRect)calculateFrameForLines:(id<NSFastEnumeration>) enumerable
+{
+	CGPoint min = CGPointMake(1e100, 1e100);
+	CGPoint max = CGPointMake(-1e100, -1e100);
+
+	for (PSDrawingLine* line in enumerable)
+	{
+		CGRect lineFrame = [line calculateFrame];
+		if(!CGRectIsNull(lineFrame))
+		{
+			min.x = MIN(min.x, CGRectGetMinX(lineFrame));
+			min.y = MIN(min.y, CGRectGetMinY(lineFrame));
+			max.x = MAX(max.x, CGRectGetMaxX(lineFrame));
+			max.y = MAX(max.y, CGRectGetMaxY(lineFrame));
+		}
+
+	}
+	if(min.x > max.x) return CGRectNull;
+	else return CGRectMake(min.x, min.y, (max.x - min.x), (max.y - min.y));	
 }
 
 

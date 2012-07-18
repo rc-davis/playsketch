@@ -17,14 +17,14 @@
 
 
 //TODO: conditionally remove this in non-debug builds
-#define PS_FAIL(message) { DEBUG_DISPLAY_FAILURE_MESSAGE(message); }
+#define PS_FAIL(message) { DEBUG_DISPLAY_FAILURE_MESSAGE((message)); }
 #define PS_ASSERT( expr, message) { if ( !(expr) ) DEBUG_DISPLAY_FAILURE_MESSAGE(message); }
 
 
 static inline void DEBUG_DISPLAY_FAILURE_MESSAGE(NSString* message)
 {
 	[[[UIAlertView alloc] initWithTitle:@"FAILURE" 
-								message:[NSString stringWithFormat:@"Execution will be unreliable after this point! Note this message:\n\"%@\"", message]
+								message:[NSString stringWithFormat:@"Execution will be unreliable after this point! Note this message:\n\"%@\"", (message)]
 							   delegate:nil 
 					  cancelButtonTitle:@"SORRY"
 					  otherButtonTitles:nil, nil] show];
