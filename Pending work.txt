@@ -1,9 +1,8 @@
 
-MILESTONE 2
+- selection toggle button
+-(selection created)
+-(selection cleared)
 
-respond to selection being finished
-visualize group
-make button act better?
 
 
 
@@ -24,6 +23,10 @@ MILESTONE 4:
 MILESTONE 4:
 	puppets inside the animation
 
+
+
+for selection line to not be created IN the model:
+http://stackoverflow.com/questions/3576743/core-data-create-multiple-managed-objects-but-only-save-some
 
 
 
