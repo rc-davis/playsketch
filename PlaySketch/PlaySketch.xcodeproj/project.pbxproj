@@ -490,10 +490,12 @@
 		46F7A66815B014E700C7B374 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer: Ryder Ziola (QKH6WJ23CX)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PlaySketch/PlaySketch-Prefix.pch";
 				INFOPLIST_FILE = "PlaySketch/PlaySketch-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "FD1DB85D-883A-45D9-9293-5D483E4DDE7D";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -501,10 +503,12 @@
 		46F7A66915B014E700C7B374 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer: Ryder Ziola (QKH6WJ23CX)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PlaySketch/PlaySketch-Prefix.pch";
 				INFOPLIST_FILE = "PlaySketch/PlaySketch-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "FD1DB85D-883A-45D9-9293-5D483E4DDE7D";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
