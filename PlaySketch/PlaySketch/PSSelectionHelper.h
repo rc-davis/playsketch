@@ -15,6 +15,7 @@
 
 -(id)initWithGroup:(PSDrawingGroup*)rootGroup andLine:(PSDrawingLine*)line;
 -(void)addLineFrom:(CGPoint)from to:(CGPoint)to;
+-(void)addLineFromDict:(NSDictionary*)pointsDict;
 
 
 @end

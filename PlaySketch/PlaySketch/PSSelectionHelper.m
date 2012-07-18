@@ -140,4 +140,17 @@
 
 }
 
+
+
+/* 
+ pointsDict contains keys "from" and "to", which are CGPoints encoded with NSValue
+ It is helpful to wrap them this way so we can call this on a background thread
+ */
+-(void)addLineFromDict:(NSDictionary*)pointsDict
+{
+	CGPoint from = [[pointsDict objectForKey:@"from"] CGPointValue];
+	CGPoint to = [[pointsDict objectForKey:@"to"] CGPointValue];
+	[self addLineFrom:from to:to];
+}
+
 @end
