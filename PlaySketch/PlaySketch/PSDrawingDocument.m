@@ -14,5 +14,6 @@
 
 @dynamic name;
 @dynamic rootGroup;
+@dynamic previewImage;
 
 @end

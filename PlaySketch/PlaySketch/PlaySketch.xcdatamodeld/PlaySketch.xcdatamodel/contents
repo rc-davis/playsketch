@@ -2,6 +2,7 @@
 <model name="" userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="1171" systemVersion="11E53" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="PSDrawingDocument" representedClassName="PSDrawingDocument" syncable="YES">
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="previewImage" optional="YES" attributeType="Binary" syncable="YES"/>
         <relationship name="rootGroup" optional="YES" minCount="1" maxCount="1" deletionRule="Cascade" destinationEntity="PSDrawingGroup" inverseName="rootGroupParentDocument" inverseEntity="PSDrawingGroup" syncable="YES"/>
     </entity>
     <entity name="PSDrawingGroup" representedClassName="PSDrawingGroup" syncable="YES">

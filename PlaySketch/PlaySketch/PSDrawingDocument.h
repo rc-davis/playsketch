@@ -15,5 +15,6 @@
 
 @property (nonatomic, retain) NSString * name;
 @property (nonatomic, retain) PSDrawingGroup *rootGroup;
+@property (nonatomic, retain) NSData* previewImage;
 
 @end
