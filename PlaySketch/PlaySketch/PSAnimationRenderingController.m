@@ -22,7 +22,7 @@
 	GLKMatrix4 _projectionMatrix;
 	GLint _uniformModelViewProjectionMatrix;
 	GLint _uniformBrushTexture;
-	GLint _uniformPenColor;
+	GLint _uniformBrushColor;
 	
 }
 @property (strong, nonatomic, retain) EAGLContext* context;
@@ -128,7 +128,7 @@
 	glBindTexture(GL_TEXTURE_2D, self.brushTextureInfo.name);
 	
 	//Set the brush's color
-	glUniform4f(_uniformPenColor, 0.5, 0.5, 0, 0.75);
+	glUniform4f(_uniformBrushColor, 0.5, 0.5, 0, 0.75);
 	
 	
 	glColor4f(1.0, 0, 0, 1.0);
@@ -141,7 +141,7 @@
 	if(self.selectionHelper.selectionLoupeLine)
 	{
 		//Set the brush's color for selection loupe
-		glUniform4f(_uniformPenColor, PSANIM_SELECTION_LOOP_COLOR);
+		glUniform4f(_uniformBrushColor, PSANIM_SELECTION_LOOP_COLOR);
 		
 		//Restore our default matrix
 		glUniformMatrix4fv(_uniformModelViewProjectionMatrix, 1, 0, _projectionMatrix.m);
@@ -158,7 +158,7 @@
 	if (self.selectionHelper.selectedLines.count > 0)
 	{
 		//Set the brush's color for highlighting
-		glUniform4f(_uniformPenColor, PSANIM_SELECTED_LINE_COLOR);
+		glUniform4f(_uniformBrushColor, PSANIM_SELECTED_LINE_COLOR);
 		glUniformMatrix4fv(_uniformModelViewProjectionMatrix, 1, 0, _projectionMatrix.m);
 
 		for (PSDrawingLine* line in self.selectionHelper.selectedLines)
@@ -255,7 +255,7 @@
 	// This are the addresses we can use later for passing arguments into the shader program
 	_uniformModelViewProjectionMatrix = glGetUniformLocation(_program, "modelViewProjectionMatrix");
 	_uniformBrushTexture = glGetUniformLocation(_program, "brushTexture");
-	_uniformPenColor = glGetUniformLocation(_program, "penColor");
+	_uniformBrushColor = glGetUniformLocation(_program, "brushColor");
 
 	// Release vertex and fragment shaders.
 	if (vertShader)
