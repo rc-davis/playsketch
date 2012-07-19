@@ -128,11 +128,11 @@
 	 insertNewObjectForEntityForName:@"PSDrawingLine" 
 	 inManagedObjectContext:[PSDataModel context]];
 	 rootSquare.group = rootGroup;
-	 [rootSquare addLineFrom:CGPointZero to:CGPointMake(0,0)];
-	 [rootSquare addLineFrom:CGPointZero to:CGPointMake(100,0)];
-	 [rootSquare addLineFrom:CGPointZero to:CGPointMake(100,100)];
-	 [rootSquare addLineFrom:CGPointZero to:CGPointMake(0,100)];
-	 [rootSquare addLineFrom:CGPointZero to:CGPointMake(0,0)];
+	 [rootSquare addLineTo:CGPointMake(0,0)];
+	 [rootSquare addLineTo:CGPointMake(100,0)];
+	 [rootSquare addLineTo:CGPointMake(100,100)];
+	 [rootSquare addLineTo:CGPointMake(0,100)];
+	 [rootSquare addLineTo:CGPointMake(0,0)];
 	 
 	 
 	 //Create a subgroup
@@ -147,10 +147,10 @@
 	 insertNewObjectForEntityForName:@"PSDrawingLine" 
 	 inManagedObjectContext:[PSDataModel context]];
 	 subgroupTriangle.group = subgroup1;
-	 [subgroupTriangle addLineFrom:CGPointZero to:CGPointMake(100, 100 + 50)];
-	 [subgroupTriangle addLineFrom:CGPointZero to:CGPointMake(100 - 43.3012702, 100 - 25)];
-	 [subgroupTriangle addLineFrom:CGPointZero to:CGPointMake(100 + 43.3012702, 100 - 25)];
-	 [subgroupTriangle addLineFrom:CGPointZero to:CGPointMake(100, 100 + 50)];
+	 [subgroupTriangle addLineTo:CGPointMake(100, 100 + 50)];
+	 [subgroupTriangle addLineTo:CGPointMake(100 - 43.3012702, 100 - 25)];
+	 [subgroupTriangle addLineTo:CGPointMake(100 + 43.3012702, 100 - 25)];
+	 [subgroupTriangle addLineTo:CGPointMake(100, 100 + 50)];
 	 
 	 
 	 //this should look like ferris-wheel style nested motion, moving to the right and growing
@@ -174,7 +174,7 @@
 		for(int j = 0; j < POINT_COUNT; j++)
 		{
 			CGPoint next = CGPointMake(start.x + rand()%4, start.y + rand()%4-2 );
-			[line addLineFrom:start	to:next];
+			[line addLineTo:next];
 			start = next;
 		}
 	}

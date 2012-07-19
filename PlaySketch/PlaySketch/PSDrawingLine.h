@@ -32,7 +32,8 @@
 @property (nonatomic, retain) NSData * pointsAsData;
 @property (nonatomic, retain) PSDrawingGroup *group;
 
--(void)addLineFrom:(CGPoint)from to:(CGPoint)to;
+-(void)addPoint:(CGPoint)p;
+-(void)addLineTo:(CGPoint)to;
 -(CGPoint*)points;
 -(int)pointCount;
 -(void)applyIncrementalTransform:(CGAffineTransform)transform;

@@ -28,9 +28,9 @@
 
 
 /*
- Add a new point to the end of the current line
+ Add a new point to the current line
 */
--(void)addLineFrom:(CGPoint)from to:(CGPoint)to
+-(void)addPoint:(CGPoint)p
 {
 	[PSHelpers assert:(points != nil) withMessage:@"Points cache should already be allocated"];
 	
@@ -43,10 +43,43 @@
 		pointBufferCount = newBufferCount;
 	}
 	
-	points[pointCount] = to;
+	points[pointCount] = p;
 	pointCount++;
 	
 }
+
+/*
+ Add a new line segment starting at the last point
+ This uses some interpolation logic to achieve a constant frequency of points
+ */
+-(void)addLineTo:(CGPoint)to
+{
+	CGFloat STAMP_DISTANCE = 4.0;
+	
+	// Deal with the case where we have no 'from' point
+	if(pointCount == 0)
+	{
+		[self addPoint:to];
+	}
+	else
+	{
+		CGPoint from = points[pointCount-1];
+
+		//Figure out how many points we want to add
+		CGFloat distance = hypot(to.x - from.x, to.y - from.y);
+		int count = ceilf(distance / STAMP_DISTANCE);
+		CGSize stepSize = CGSizeMake((to.x - from.x)/(CGFloat)count,
+									 (to.y - from.y)/(CGFloat)count);
+
+		for(int i = 0; i < count; i++)
+		{
+			CGPoint newPoint = CGPointMake(from.x + stepSize.width * (i + 1),
+										   from.y + stepSize.height * (i + 1));
+			[self addPoint:newPoint];
+		}
+	}
+}
+
 
 -(CGPoint*)points
 {

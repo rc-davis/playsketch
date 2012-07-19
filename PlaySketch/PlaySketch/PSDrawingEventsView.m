@@ -36,7 +36,7 @@
 		CGPoint p = [touch locationInView:self];
 		CGPoint previous = [touch previousLocationInView:self];
 
-		[self.currentLine addLineFrom:previous to:p];
+		[self.currentLine addLineTo:p];
 		
 		if (self.drawingDelegate)
 			[self.drawingDelegate addedToLine:self.currentLine fromPoint:previous toPoint:p inDrawingView:self];
