@@ -21,6 +21,7 @@
 @interface PSSceneViewController ()
 @property(nonatomic)BOOL isSelecting; // If we are selecting instead of drawing
 @property(nonatomic,retain) PSSelectionHelper* selectionHelper;
+@property(nonatomic, retain) UIColor* currentColor; // the color the pen right now
 @end
 
 
@@ -34,6 +35,7 @@
 @synthesize selectedSetManipulator = _manipulator;
 @synthesize isSelecting = _isSelecting;
 @synthesize selectionHelper = _selectionHelper;
+@synthesize currentColor = _currentColor;
 
 
 
@@ -59,6 +61,7 @@
 	self.isSelecting = NO;
 	self.startDrawingButton.enabled = NO;
 	self.startSelectingButton.enabled = YES;
+	self.currentColor = [UIColor colorWithWhite:0.200 alpha:1.000];
 	
 	
 	//Create a manipulator and add it to our rendering view hidden
@@ -101,7 +104,8 @@
 /*
  ----------------------------------------------------------------------------
  IBActions for the storyboard
- (methods with a return type of "IBAction" can be triggered by buttons in the storyboard editor
+ (methods with a return type of "IBAction" can be triggered by buttons in the 
+ storyboard editor
  ----------------------------------------------------------------------------
  */
 
@@ -134,7 +138,12 @@
 }
 
 
-
+- (IBAction)setColor:(id)sender
+{
+	// Grab the background color of the button that called us and remember it
+	UIColor* color = [sender backgroundColor];
+	self.currentColor = color;
+}
 
 /*
  ----------------------------------------------------------------------------
@@ -185,7 +194,9 @@
 	
 	if (! self.isSelecting )
 	{
-		return [PSDataModel newLineInGroup:self.currentDocument.rootGroup];
+		PSDrawingLine* line = [PSDataModel newLineInGroup:self.currentDocument.rootGroup];
+		line.color = self.currentColor;
+		return line;
 	}
 	else
 	{

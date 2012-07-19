@@ -29,8 +29,9 @@
 @property(nonatomic,retain)PSDrawingDocument* currentDocument;
 @property(nonatomic,retain)PSSRTManipulator* selectedSetManipulator;
 
--(IBAction)dismissSceneView:(id)sender;
--(IBAction)startDrawing:(id)sender;
--(IBAction)startSelecting:(id)sender;
+- (IBAction)dismissSceneView:(id)sender;
+- (IBAction)startDrawing:(id)sender;
+- (IBAction)startSelecting:(id)sender;
+- (IBAction)setColor:(id)sender;
 
 @end
