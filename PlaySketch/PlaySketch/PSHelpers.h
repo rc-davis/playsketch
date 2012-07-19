@@ -19,5 +19,6 @@
 + (void)failWithMessage:(NSString*)message;
 + (void)NYIWithmessage:(NSString*)message;
 + (UIImage *)imageWithImage:(UIImage *)image scaledToSize:(CGSize)newSize;
-
++ (int64_t) colorToInt64:(UIColor*)color;
++ (void) int64ToColor:(UInt64)color toR:(float*)r g:(float*)g b:(float*)b a:(float*)a;
 @end
