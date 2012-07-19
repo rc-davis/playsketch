@@ -13,6 +13,7 @@
 
 #import "PSDrawingLine.h"
 #import "PSDrawingGroup.h"
+#import "PSHelpers.h"
 
 
 /* Private Interface */
@@ -24,6 +25,7 @@
 
 @implementation PSDrawingLine
 @dynamic pointsAsData;
+@dynamic color;
 @dynamic group;
 
 

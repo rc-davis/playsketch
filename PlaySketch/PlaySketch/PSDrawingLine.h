@@ -30,6 +30,7 @@
 }
 
 @property (nonatomic, retain) NSData * pointsAsData;
+@property (nonatomic, retain) NSNumber* color;
 @property (nonatomic, retain) PSDrawingGroup *group;
 
 -(void)addPoint:(CGPoint)p;

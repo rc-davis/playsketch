@@ -7,11 +7,12 @@
     </entity>
     <entity name="PSDrawingGroup" representedClassName="PSDrawingGroup" syncable="YES">
         <relationship name="children" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="PSDrawingGroup" inverseName="parent" inverseEntity="PSDrawingGroup" syncable="YES"/>
-        <relationship name="drawingLines" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="PSDrawingLine" inverseName="group" inverseEntity="PSDrawingLine" syncable="YES"/>
+        <relationship name="drawingLines" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="PSDrawingLine" inverseName="group" inverseEntity="PSDrawingLine" syncable="YES"/>
         <relationship name="parent" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="PSDrawingGroup" inverseName="children" inverseEntity="PSDrawingGroup" syncable="YES"/>
         <relationship name="rootGroupParentDocument" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="PSDrawingDocument" inverseName="rootGroup" inverseEntity="PSDrawingDocument" syncable="YES"/>
     </entity>
     <entity name="PSDrawingLine" representedClassName="PSDrawingLine" syncable="YES">
+        <attribute name="color" optional="YES" attributeType="Integer 64" defaultValueString="0.0" syncable="YES"/>
         <attribute name="pointsAsData" optional="YES" attributeType="Binary" syncable="YES"/>
         <relationship name="group" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="PSDrawingGroup" inverseName="drawingLines" inverseEntity="PSDrawingGroup" syncable="YES"/>
     </entity>
