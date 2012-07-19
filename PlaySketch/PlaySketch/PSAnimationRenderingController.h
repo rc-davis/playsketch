@@ -38,6 +38,6 @@
 @end
 
 @interface PSDrawingLine ( renderingCategory )
-- (void) render;
+- (void) renderWithUniforms:(GLint*)uniforms;
 @end
 

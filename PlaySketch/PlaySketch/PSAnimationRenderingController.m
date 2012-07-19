@@ -458,6 +458,12 @@ enum
 	glEnableVertexAttribArray(GLKVertexAttribPosition);
 	glVertexAttribPointer(GLKVertexAttribPosition, 2, GL_FLOAT, GL_FALSE, 0,(void *)points );
 
+	//Set the color (SLOW HERE???)
+	UInt64 colorAsInt = [self.color unsignedLongLongValue];
+	float r,g,b,a;
+	[PSHelpers  int64ToColor:colorAsInt toR:&r g:&g b:&b a:&a];
+	glUniform4f(uniforms[UNIFORMS_BRUSH_COLOR], r, g, b, a);
+	
 	// do actual drawing!
 	glEnable(GL_TEXTURE_2D);
 	glEnable (GL_BLEND);
