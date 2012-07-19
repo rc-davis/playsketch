@@ -72,7 +72,7 @@ enum
     [EAGLContext setCurrentContext:self.context];
 	
 	//Load the image we will use for our brush texture
-	self.brushTextureInfo = [GLKTextureLoader textureWithCGImage:[UIImage imageNamed:@"dot.png"].CGImage
+	self.brushTextureInfo = [GLKTextureLoader textureWithCGImage:[UIImage imageNamed:@"Brush.png"].CGImage
 																		 options:nil
 																		   error:nil];
 	
