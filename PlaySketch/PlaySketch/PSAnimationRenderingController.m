@@ -125,9 +125,7 @@ enum
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
 	
-	
 	// Push the projection matrix
-	// TODO: start with identity and recurse
 	glUniformMatrix4fv(_uniforms[UNIFORMS_MODELMATRIX], 1, 0, _projectionMatrix.m);
 	
 	// Pass the brush we want to draw with
@@ -136,9 +134,10 @@ enum
 	glBindTexture(GL_TEXTURE_2D, self.brushTextureInfo.name);
 	
 	// Set the brush's color
-	glUniform4f(_uniforms[UNIFORMS_BRUSH_COLOR], 0.5, 0.5, 0, 0.75);
+	glUniform4f(_uniforms[UNIFORMS_BRUSH_COLOR], PSANIM_LINE_COLOR);
 	
-	glColor4f(1.0, 0, 0, 1.0);
+	// Set the brushes size
+	glUniform1f(_uniforms[UNIFORMS_BRUSH_POINT_SIZE], 20.0);
 	
 	// Now we can recurse on our root and will only have to push vertices and matrices
 	[self.rootGroup renderGroupWithMatrix:_projectionMatrix uniforms:_uniforms];
