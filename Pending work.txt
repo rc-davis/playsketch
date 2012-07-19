@@ -1,9 +1,7 @@
-do math on line to have constant number of points
 dotted line for selection
-pass in point size??
-pass in colors (compare old version)
+pass in point size for scaling
+per-line colours
 compare pointcounts and rendering times!
-
 
 retina vs non-retina point size (?)
 
