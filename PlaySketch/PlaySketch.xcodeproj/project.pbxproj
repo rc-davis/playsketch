@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4633559315B6D820001AE6CD /* Shader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 4625EA1E15B6D55100316216 /* Shader.fsh */; };
+		4633559415B6D820001AE6CD /* Shader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 4625EA2115B6D56900316216 /* Shader.vsh */; };
+		463355E515B6EA23001AE6CD /* dot.png in Resources */ = {isa = PBXBuildFile; fileRef = 463355E415B6EA23001AE6CD /* dot.png */; };
 		4673A46A15B6A9100053FDF0 /* PSHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 4673A46915B6A9100053FDF0 /* PSHelpers.m */; };
 		467E4E4215B4235700F70C1E /* PSSelectionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 467E4E4115B4235700F70C1E /* PSSelectionHelper.m */; };
 		46BAC13415B52741007C288E /* PSSRTManipulator.m in Sources */ = {isa = PBXBuildFile; fileRef = 46BAC13315B52741007C288E /* PSSRTManipulator.m */; };
@@ -50,6 +53,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4625EA1E15B6D55100316216 /* Shader.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = Shader.fsh; sourceTree = "<group>"; };
+		4625EA2115B6D56900316216 /* Shader.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = Shader.vsh; sourceTree = "<group>"; };
+		463355E415B6EA23001AE6CD /* dot.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = dot.png; sourceTree = "<group>"; };
 		4673A46815B6A9100053FDF0 /* PSHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSHelpers.h; sourceTree = "<group>"; };
 		4673A46915B6A9100053FDF0 /* PSHelpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSHelpers.m; sourceTree = "<group>"; };
 		467E4E4015B4235700F70C1E /* PSSelectionHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSSelectionHelper.h; sourceTree = "<group>"; };
@@ -127,6 +133,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		463355E615B7AAA2001AE6CD /* Line Drawing */ = {
+			isa = PBXGroup;
+			children = (
+				463355E415B6EA23001AE6CD /* dot.png */,
+				4625EA1E15B6D55100316216 /* Shader.fsh */,
+				4625EA2115B6D56900316216 /* Shader.vsh */,
+			);
+			name = "Line Drawing";
+			sourceTree = "<group>";
+		};
 		467E4E3E15B4232900F70C1E /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
@@ -235,6 +251,7 @@
 		46F7A64115B014E700C7B374 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				463355E615B7AAA2001AE6CD /* Line Drawing */,
 				46F7A64215B014E700C7B374 /* PlaySketch-Info.plist */,
 				46F7A64315B014E700C7B374 /* InfoPlist.strings */,
 				46F7A64615B014E700C7B374 /* main.m */,
@@ -335,9 +352,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4633559315B6D820001AE6CD /* Shader.fsh in Resources */,
+				4633559415B6D820001AE6CD /* Shader.vsh in Resources */,
 				46F7A64515B014E700C7B374 /* InfoPlist.strings in Resources */,
 				46F7A67315B0188600C7B374 /* Pending work.txt in Resources */,
 				46BF25AC15B0266A00834681 /* SketchInterface.storyboard in Resources */,
+				463355E515B6EA23001AE6CD /* dot.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -11,26 +11,32 @@
  
  */
 
+
 #import "PSAnimationRenderingController.h"
 #import "PSAppDelegate.h"
 
-
 /* Private Interface */
 @interface PSAnimationRenderingController ()
-
+{
+	GLuint _program;
+	GLKMatrix4 _projectionMatrix;
+	GLint _uniformModelViewProjectionMatrix;
+	GLint _uniformBrushTexture;
+	
+}
 @property (strong, nonatomic, retain) EAGLContext* context;
-@property (strong, retain) GLKBaseEffect* effect;
-
+@property(nonatomic,retain) GLKTextureInfo* brushTextureInfo;
 @end
 
 
 
 /* Begin Implementation */
+
 @implementation PSAnimationRenderingController
 @synthesize context = _context;
-@synthesize effect = _effect;
 @synthesize rootGroup = _rootGroup;
 @synthesize selectionHelper = _selectionHelper;;
+@synthesize brushTextureInfo = _brushTextureInfo;
 
 
 
@@ -55,12 +61,17 @@
     GLKView *view = (GLKView *)self.view;
     view.context = self.context;
     [EAGLContext setCurrentContext:self.context];
-    
-
-	// Create a default "effect" for rendering
-	// GLKBaseEffect gives us basic texture and lights, which should be good enough
-    self.effect = [[GLKBaseEffect alloc] init];
-
+	
+	//Load the image we will use for our brush texture
+	self.brushTextureInfo = [GLKTextureLoader textureWithCGImage:[UIImage imageNamed:@"dot.png"].CGImage
+																		 options:nil
+																		   error:nil];
+	
+	//Compile our shaders for drawing
+	if (! [self loadShaders] )
+	{
+		[PSHelpers failWithMessage:@"Failed to load shaders in PSAnimationRenderingController"];
+	}
 }
 
 
@@ -69,13 +80,12 @@
 */
 - (void)viewDidLayoutSubviews
 {
-    GLKMatrix4 projectionMatrix = GLKMatrix4MakeOrtho(
+    _projectionMatrix = GLKMatrix4MakeOrtho(
 					  self.view.bounds.origin.x,
 					  self.view.bounds.origin.x + self.view.bounds.size.width,
 					  self.view.bounds.origin.y + self.view.bounds.size.height,
 					  self.view.bounds.origin.y,
 					  -1024, 1024);
-    self.effect.transform.projectionMatrix = projectionMatrix;
 }
 
 
@@ -91,24 +101,41 @@
 	//static NSTimeInterval perfSumTime;
 	//static int perfFrameCount = 0;
     //NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
-	
-    glClearColor(PSANIM_BACKGROUND_COLOR);
-    glClear(GL_COLOR_BUFFER_BIT);    
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_BLEND);
-	
-	// Try to do as much rendering setup as possible so we don't have to call it on every iteration
-	self.effect.useConstantColor = YES;
-	self.effect.constantColor = GLKVector4Make(PSANIM_LINE_COLOR);
-	self.effect.transform.modelviewMatrix = GLKMatrix4Identity;
 
-	[self.rootGroup renderGroupWithEffect:self.effect];
+	// Try to do as much rendering setup as possible so we don't have to call 
+	// on each line/group when we recurse:
+	
+	// Use our custom shaders
+	glUseProgram(_program);
+
+	// Clear the background
+	glClearColor(PSANIM_BACKGROUND_COLOR);
+	glClear(GL_COLOR_BUFFER_BIT);
+	
+	// Set a blend function so our brush will have alpha preserved
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_BLEND);
+	
+	
+	// Push the projection matrix
+	// TODO: start with identity and recurse
+	glUniformMatrix4fv(_uniformModelViewProjectionMatrix, 1, 0, _projectionMatrix.m);
+	
+	// Pass the brush we want to draw with
+	glUniform1i(_uniformBrushTexture, 0);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, self.brushTextureInfo.name);
+	
+	// Now we can recurse on our root and will only have to push vertices and matrices
+	[self.rootGroup renderGroupWithMatrix:_projectionMatrix uniforms:_uniformModelViewProjectionMatrix];
+
 	
 	//Draw our selection line on top of everything
 	if(self.selectionHelper.selectionLoupeLine)
 	{
-		self.effect.constantColor = GLKVector4Make(PSANIM_SELECTION_LOOP_COLOR);
-		[self.effect prepareToDraw];
+		//Restore our default matrix
+		glUniformMatrix4fv(_uniformModelViewProjectionMatrix, 1, 0, _projectionMatrix.m);
+		//TODO: Set different color and brush for selection
 		[self.selectionHelper.selectionLoupeLine render];
 	}
 
@@ -117,8 +144,7 @@
 	// showed that it is faster than the alternative, because that requires checking
 	// for EACH LINE what color it should be, then doing expensive calls into GL to
 	// set our drawing color
-	self.effect.constantColor = GLKVector4Make(PSANIM_SELECTED_LINE_COLOR);
-	[self.effect prepareToDraw];
+	// TODO: won't be necessary when we get line color working
 	for (PSDrawingLine* line in self.selectionHelper.selectedLines)
 		[line render];
 	
@@ -134,6 +160,189 @@
 - (void)update
 {
 	[self.rootGroup updateWithTimeInterval:self.timeSinceLastUpdate];
+}
+
+
+
+/*
+ -------------------------------------------------------------------------------
+ Helpers for loading, compiling, and linking our shaders
+ (These are taken from the XCode template for an OpenGL project, if you want 
+ more context, just create a new one and see how its supposed to be used)
+ -------------------------------------------------------------------------------
+*/
+
+- (BOOL)loadShaders
+{
+	GLuint vertShader, fragShader;
+	NSString *vertShaderPathname, *fragShaderPathname;
+
+	// Create shader program.
+	_program = glCreateProgram();
+
+	// Create and compile vertex shader.
+	vertShaderPathname = [[NSBundle mainBundle] pathForResource:@"Shader" ofType:@"vsh"];
+	if (![self compileShader:&vertShader type:GL_VERTEX_SHADER file:vertShaderPathname])
+	{
+		NSLog(@"Failed to compile vertex shader");
+		return NO;
+	}
+
+	// Create and compile fragment shader.
+	fragShaderPathname = [[NSBundle mainBundle] pathForResource:@"Shader" ofType:@"fsh"];
+	if (![self compileShader:&fragShader type:GL_FRAGMENT_SHADER file:fragShaderPathname])
+	{
+		NSLog(@"Failed to compile fragment shader");
+		return NO;
+	}
+
+	// Attach vertex shader to program.
+	glAttachShader(_program, vertShader);
+
+	// Attach fragment shader to program.
+	glAttachShader(_program, fragShader);
+
+	// Bind attribute locations.
+	// TODO: need this?
+	// This needs to be done prior to linking.
+	//    glBindAttribLocation(_program, ATTRIB_POSITION, "position");
+
+	// Link program.
+	if (![self linkProgram:_program])
+	{
+		NSLog(@"Failed to link program: %d", _program);
+
+		// Clean up on failure
+		
+		if (vertShader)
+		{
+			glDeleteShader(vertShader);
+			vertShader = 0;
+		}
+
+		if (fragShader)
+		{
+			glDeleteShader(fragShader);
+			fragShader = 0;
+		}
+
+		if (_program)
+		{
+			glDeleteProgram(_program);
+			_program = 0;
+		}
+
+		return NO;
+	}
+
+	// Get uniform locations
+	// This are the addresses we can use later for passing arguments into the shader program
+	_uniformModelViewProjectionMatrix = glGetUniformLocation(_program, "modelViewProjectionMatrix");
+	_uniformBrushTexture= glGetUniformLocation(_program, "brushTexture");
+
+	// Release vertex and fragment shaders.
+	if (vertShader)
+	{
+		glDetachShader(_program, vertShader);
+		glDeleteShader(vertShader);
+	}
+
+	if (fragShader)
+	{
+		glDetachShader(_program, fragShader);
+		glDeleteShader(fragShader);
+	}
+
+	return YES;
+}
+
+- (BOOL)compileShader:(GLuint *)shader type:(GLenum)type file:(NSString *)file
+{
+	GLint status;
+	const GLchar *source;
+
+	source = (GLchar *)[[NSString stringWithContentsOfFile:file encoding:NSUTF8StringEncoding error:nil] UTF8String];
+	if (!source)
+	{
+		NSLog(@"Failed to load vertex shader");
+		return NO;
+	}
+
+	*shader = glCreateShader(type);
+	glShaderSource(*shader, 1, &source, NULL);
+	glCompileShader(*shader);
+
+	#if defined(DEBUG)
+	GLint logLength;
+	glGetShaderiv(*shader, GL_INFO_LOG_LENGTH, &logLength);
+	if (logLength > 0)
+	{
+		GLchar *log = (GLchar *)malloc(logLength);
+		glGetShaderInfoLog(*shader, logLength, &logLength, log);
+		NSLog(@"Shader compile log:\n%s", log);
+		free(log);
+	}
+	#endif
+
+	glGetShaderiv(*shader, GL_COMPILE_STATUS, &status);
+	if (status == 0)
+	{
+		glDeleteShader(*shader);
+		return NO;
+	}
+
+	return YES;
+}
+
+
+- (BOOL)linkProgram:(GLuint)prog
+{
+	GLint status;
+	glLinkProgram(prog);
+
+	#if defined(DEBUG)
+	GLint logLength;
+	glGetProgramiv(prog, GL_INFO_LOG_LENGTH, &logLength);
+	if (logLength > 0)
+	{
+		GLchar *log = (GLchar *)malloc(logLength);
+		glGetProgramInfoLog(prog, logLength, &logLength, log);
+		NSLog(@"Program link log:\n%s", log);
+		free(log);
+	}
+	#endif
+
+	glGetProgramiv(prog, GL_LINK_STATUS, &status);
+	if (status == 0)
+	{
+		return NO;
+	}
+
+	return YES;
+}
+
+
+- (BOOL)validateProgram:(GLuint)prog
+{
+	GLint logLength, status;
+
+	glValidateProgram(prog);
+	glGetProgramiv(prog, GL_INFO_LOG_LENGTH, &logLength);
+	if (logLength > 0)
+	{
+		GLchar *log = (GLchar *)malloc(logLength);
+		glGetProgramInfoLog(prog, logLength, &logLength, log);
+		NSLog(@"Program validate log:\n%s", log);
+		free(log);
+	}
+
+	glGetProgramiv(prog, GL_VALIDATE_STATUS, &status);
+	if (status == 0)
+	{
+		return NO;
+	}
+
+	return YES;
 }
 
 @end
@@ -157,13 +366,11 @@
 
 
 @implementation PSDrawingGroup ( renderingCategory )
-- (void) renderGroupWithEffect:(GLKBaseEffect*)effect
+- (void)renderGroupWithMatrix:(GLKMatrix4)parentModelMatrix uniforms:(GLint)uniformModelMatrix
 {
 	//Push Matrix
-	GLKMatrix4 previousMatrix = effect.transform.modelviewMatrix;
-	effect.transform.modelviewMatrix = GLKMatrix4Multiply(previousMatrix, 
-														  currentModelViewMatrix);
-	[effect prepareToDraw];	
+	GLKMatrix4 ownModelMatrix = GLKMatrix4Multiply(parentModelMatrix, currentModelViewMatrix);
+	glUniformMatrix4fv(uniformModelMatrix, 1, 0, ownModelMatrix.m);
 
 	
 	//Draw our own drawingLines
@@ -173,20 +380,15 @@
 		//It is only necessary because we are caching the points ourselves
 		//Usually this is done automatically when you access properties on the object
 		//TODO: take this out of the draw loop into somewhere else...
+		//		or at least just make an accessor for points
 		[drawingItem willAccessValueForKey:nil];	
-
 		[drawingItem render];
 	}
 	
-	
 	//Recurse on child groups
 	for (PSDrawingGroup* child in self.children)
-		[child renderGroupWithEffect:effect];
+		[child renderGroupWithMatrix:ownModelMatrix uniforms:uniformModelMatrix];
 
-
-	//Pop Matrix
-	effect.transform.modelviewMatrix = previousMatrix;
-	
 }
 
 
@@ -202,13 +404,11 @@
 	GLKMatrix4 m = GLKMatrix4Identity;
 
 	m = GLKMatrix4Translate(m, currentSRTPosition.location.x, currentSRTPosition.location.y, 0);
-//	m = GLKMatrix4Translate(m, currentSRTPosition.origin.x, currentSRTPosition.origin.y, 0);
 	m = GLKMatrix4Scale(m, currentSRTPosition.scale, currentSRTPosition.scale, 1);
 	m = GLKMatrix4Rotate(m, currentSRTPosition.rotation, 0, 0, 1);
 	m = GLKMatrix4Translate(m, -currentSRTPosition.origin.x, -currentSRTPosition.origin.y, 0);
 	currentModelViewMatrix = m;
 
-	
 	// Recurse on our children
 	for (PSDrawingGroup* child in self.children)
 		[child updateWithTimeInterval:timeSinceLastUpdate];
@@ -228,17 +428,18 @@
 @implementation PSDrawingLine ( renderingCategory )
 - (void) render
 {	
-
 	//Pass the vertices
 	glEnableVertexAttribArray(GLKVertexAttribPosition);
 	glVertexAttribPointer(GLKVertexAttribPosition, 2, GL_FLOAT, GL_FALSE, 0,(void *)points );
-	
-	//Draw the vertices
-	glDrawArrays(GL_LINE_STRIP, 0, pointCount);
-	
-	//Release our vertex array
+
+	// do actual drawing!
+	glEnable(GL_TEXTURE_2D);
+	glEnable (GL_BLEND);
+	glBlendFunc (GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
+    glDrawArrays(GL_POINTS, 0, pointCount);
+	glDisable(GL_TEXTURE_2D);
 	glDisableVertexAttribArray(GLKVertexAttribPosition);
-	
+
 }
 
 @end
