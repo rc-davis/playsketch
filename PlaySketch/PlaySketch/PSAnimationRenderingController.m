@@ -21,6 +21,7 @@
 	GLuint _program;
 	GLKMatrix4 _projectionMatrix;
 	GLint _uniformModelViewProjectionMatrix;
+	GLint _uniformBrushPointSize;
 	GLint _uniformBrushTexture;
 	GLint _uniformBrushColor;
 	
@@ -127,27 +128,17 @@
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, self.brushTextureInfo.name);
 	
-	//Set the brush's color
+	// Set the brush's color
 	glUniform4f(_uniformBrushColor, 0.5, 0.5, 0, 0.75);
 	
+	// Set the brush's size
+	glUniform1f(_uniformBrushPointSize, 20.0);
 	
 	glColor4f(1.0, 0, 0, 1.0);
 	
 	// Now we can recurse on our root and will only have to push vertices and matrices
 	[self.rootGroup renderGroupWithMatrix:_projectionMatrix uniforms:_uniformModelViewProjectionMatrix];
 
-	
-	//Draw our selection line on top of everything
-	if(self.selectionHelper.selectionLoupeLine)
-	{
-		//Set the brush's color for selection loupe
-		glUniform4f(_uniformBrushColor, PSANIM_SELECTION_LOOP_COLOR);
-		
-		//Restore our default matrix
-		glUniformMatrix4fv(_uniformModelViewProjectionMatrix, 1, 0, _projectionMatrix.m);
-		//TODO: Set different color and brush for selection
-		[self.selectionHelper.selectionLoupeLine render];
-	}
 
 	// Draw our selected lines again, with a different color to show them highlighted
 	// It may seem crazy to draw selected lines twice per frame, but my measurements
@@ -160,9 +151,23 @@
 		//Set the brush's color for highlighting
 		glUniform4f(_uniformBrushColor, PSANIM_SELECTED_LINE_COLOR);
 		glUniformMatrix4fv(_uniformModelViewProjectionMatrix, 1, 0, _projectionMatrix.m);
-
+		
 		for (PSDrawingLine* line in self.selectionHelper.selectedLines)
-		[line render];
+			[line render];
+	}
+	
+	
+	//Draw our selection line on top of everything
+	if(self.selectionHelper.selectionLoupeLine)
+	{
+		//Set the brush's color and size for selection loupe
+		glUniform4f(_uniformBrushColor, PSANIM_SELECTION_LOOP_COLOR);
+		glUniform1f(_uniformBrushPointSize, 5.0);
+		
+		//Restore our default matrix
+		glUniformMatrix4fv(_uniformModelViewProjectionMatrix, 1, 0, _projectionMatrix.m);
+		//TODO: Set different color and brush for selection
+		[self.selectionHelper.selectionLoupeLine render];
 	}
 	
 	// Timing our draw loop
@@ -255,6 +260,7 @@
 	// This are the addresses we can use later for passing arguments into the shader program
 	_uniformModelViewProjectionMatrix = glGetUniformLocation(_program, "modelViewProjectionMatrix");
 	_uniformBrushTexture = glGetUniformLocation(_program, "brushTexture");
+	_uniformBrushPointSize = glGetUniformLocation(_program, "brushPointSize");
 	_uniformBrushColor = glGetUniformLocation(_program, "brushColor");
 
 	// Release vertex and fragment shaders.

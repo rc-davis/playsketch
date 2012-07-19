@@ -1,5 +1,5 @@
-dotted line for selection
-pass in point size for scaling
+scaling points
+multiple colour interface
 per-line colours
 compare pointcounts and rendering times!
 
