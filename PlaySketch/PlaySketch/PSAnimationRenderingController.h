@@ -33,7 +33,7 @@
 // Use categories to add a render function to our drawing items
 // And an update function to our groups
 @interface PSDrawingGroup ( renderingCategory )
-- (void)renderGroupWithMatrix:(GLKMatrix4)parentModelMatrix uniforms:(GLint)uniformModelMatrix;
+- (void)renderGroupWithMatrix:(GLKMatrix4)parentModelMatrix uniforms:(GLint*)uniforms;
 - (void)updateWithTimeInterval:(NSTimeInterval)timeSinceLastUpdate;
 @end
 

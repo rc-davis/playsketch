@@ -12,6 +12,17 @@
  */
 
 
+enum
+{
+	// indices into _uniforms array for tracking uniform handles in our shaders
+	UNIFORMS_MODELMATRIX,
+	UNIFORMS_BRUSH_POINT_SIZE,
+	UNIFORMS_BRUSH_TEXTURE,
+	UNIFORMS_BRUSH_COLOR,
+	NUM_UNIFORMS
+};
+
+
 #import "PSAnimationRenderingController.h"
 #import "PSAppDelegate.h"
 
@@ -19,12 +30,8 @@
 @interface PSAnimationRenderingController ()
 {
 	GLuint _program;
+	GLint _uniforms[NUM_UNIFORMS];
 	GLKMatrix4 _projectionMatrix;
-	GLint _uniformModelViewProjectionMatrix;
-	GLint _uniformBrushPointSize;
-	GLint _uniformBrushTexture;
-	GLint _uniformBrushColor;
-	
 }
 @property (strong, nonatomic, retain) EAGLContext* context;
 @property(nonatomic,retain) GLKTextureInfo* brushTextureInfo;
@@ -121,23 +128,20 @@
 	
 	// Push the projection matrix
 	// TODO: start with identity and recurse
-	glUniformMatrix4fv(_uniformModelViewProjectionMatrix, 1, 0, _projectionMatrix.m);
+	glUniformMatrix4fv(_uniforms[UNIFORMS_MODELMATRIX], 1, 0, _projectionMatrix.m);
 	
 	// Pass the brush we want to draw with
-	glUniform1i(_uniformBrushTexture, 0);
+	glUniform1i(_uniforms[UNIFORMS_BRUSH_TEXTURE], 0);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, self.brushTextureInfo.name);
 	
 	// Set the brush's color
-	glUniform4f(_uniformBrushColor, 0.5, 0.5, 0, 0.75);
-	
-	// Set the brush's size
-	glUniform1f(_uniformBrushPointSize, 20.0);
+	glUniform4f(_uniforms[UNIFORMS_BRUSH_COLOR], 0.5, 0.5, 0, 0.75);
 	
 	glColor4f(1.0, 0, 0, 1.0);
 	
 	// Now we can recurse on our root and will only have to push vertices and matrices
-	[self.rootGroup renderGroupWithMatrix:_projectionMatrix uniforms:_uniformModelViewProjectionMatrix];
+	[self.rootGroup renderGroupWithMatrix:_projectionMatrix uniforms:_uniforms];
 
 
 	// Draw our selected lines again, with a different color to show them highlighted
@@ -149,8 +153,8 @@
 	if (self.selectionHelper.selectedLines.count > 0)
 	{
 		//Set the brush's color for highlighting
-		glUniform4f(_uniformBrushColor, PSANIM_SELECTED_LINE_COLOR);
-		glUniformMatrix4fv(_uniformModelViewProjectionMatrix, 1, 0, _projectionMatrix.m);
+		glUniform4f(_uniforms[UNIFORMS_BRUSH_COLOR], PSANIM_SELECTED_LINE_COLOR);
+		glUniformMatrix4fv(_uniforms[UNIFORMS_MODELMATRIX], 1, 0, _projectionMatrix.m);
 		
 		for (PSDrawingLine* line in self.selectionHelper.selectedLines)
 			[line render];
@@ -161,11 +165,11 @@
 	if(self.selectionHelper.selectionLoupeLine)
 	{
 		//Set the brush's color and size for selection loupe
-		glUniform4f(_uniformBrushColor, PSANIM_SELECTION_LOOP_COLOR);
-		glUniform1f(_uniformBrushPointSize, 5.0);
+		glUniform4f(_uniforms[UNIFORMS_BRUSH_COLOR], PSANIM_SELECTION_LOOP_COLOR);
+		glUniform1f(_uniforms[UNIFORMS_BRUSH_POINT_SIZE], 5.0);
 		
 		//Restore our default matrix
-		glUniformMatrix4fv(_uniformModelViewProjectionMatrix, 1, 0, _projectionMatrix.m);
+		glUniformMatrix4fv(_uniforms[UNIFORMS_MODELMATRIX], 1, 0, _projectionMatrix.m);
 		//TODO: Set different color and brush for selection
 		[self.selectionHelper.selectionLoupeLine render];
 	}
@@ -258,10 +262,10 @@
 
 	// Get uniform locations
 	// This are the addresses we can use later for passing arguments into the shader program
-	_uniformModelViewProjectionMatrix = glGetUniformLocation(_program, "modelViewProjectionMatrix");
-	_uniformBrushTexture = glGetUniformLocation(_program, "brushTexture");
-	_uniformBrushPointSize = glGetUniformLocation(_program, "brushPointSize");
-	_uniformBrushColor = glGetUniformLocation(_program, "brushColor");
+	_uniforms[UNIFORMS_MODELMATRIX] = glGetUniformLocation(_program, "modelViewProjectionMatrix");
+	_uniforms[UNIFORMS_BRUSH_TEXTURE] = glGetUniformLocation(_program, "brushTexture");
+	_uniforms[UNIFORMS_BRUSH_POINT_SIZE] = glGetUniformLocation(_program, "brushPointSize");
+	_uniforms[UNIFORMS_BRUSH_COLOR] = glGetUniformLocation(_program, "brushColor");
 
 	// Release vertex and fragment shaders.
 	if (vertShader)
@@ -389,11 +393,11 @@
 
 
 @implementation PSDrawingGroup ( renderingCategory )
-- (void)renderGroupWithMatrix:(GLKMatrix4)parentModelMatrix uniforms:(GLint)uniformModelMatrix
+- (void)renderGroupWithMatrix:(GLKMatrix4)parentModelMatrix uniforms:(GLint*)uniforms
 {
 	//Push Matrix
 	GLKMatrix4 ownModelMatrix = GLKMatrix4Multiply(parentModelMatrix, currentModelViewMatrix);
-	glUniformMatrix4fv(uniformModelMatrix, 1, 0, ownModelMatrix.m);
+	glUniformMatrix4fv(uniforms[UNIFORMS_MODELMATRIX], 1, 0, ownModelMatrix.m);
 
 	
 	//Draw our own drawingLines
@@ -410,7 +414,7 @@
 	
 	//Recurse on child groups
 	for (PSDrawingGroup* child in self.children)
-		[child renderGroupWithMatrix:ownModelMatrix uniforms:uniformModelMatrix];
+		[child renderGroupWithMatrix:ownModelMatrix uniforms:uniforms];
 
 }
 
