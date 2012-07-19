@@ -157,7 +157,7 @@ enum
 		glUniformMatrix4fv(_uniforms[UNIFORMS_MODELMATRIX], 1, 0, _projectionMatrix.m);
 		
 		for (PSDrawingLine* line in self.selectionHelper.selectedLines)
-			[line render];
+			[line renderWithUniforms:_uniforms];
 	}
 	
 	
@@ -171,7 +171,7 @@ enum
 		//Restore our default matrix
 		glUniformMatrix4fv(_uniforms[UNIFORMS_MODELMATRIX], 1, 0, _projectionMatrix.m);
 		//TODO: Set different color and brush for selection
-		[self.selectionHelper.selectionLoupeLine render];
+		[self.selectionHelper.selectionLoupeLine renderWithUniforms:_uniforms];
 	}
 	
 	// Timing our draw loop
@@ -409,7 +409,7 @@ enum
 		//TODO: take this out of the draw loop into somewhere else...
 		//		or at least just make an accessor for points
 		[drawingItem willAccessValueForKey:nil];	
-		[drawingItem render];
+		[drawingItem renderWithUniforms:uniforms];
 	}
 	
 	//Recurse on child groups
@@ -453,7 +453,7 @@ enum
  
  */
 @implementation PSDrawingLine ( renderingCategory )
-- (void) render
+- (void) renderWithUniforms:(GLint*)uniforms
 {	
 	//Pass the vertices
 	glEnableVertexAttribArray(GLKVertexAttribPosition);

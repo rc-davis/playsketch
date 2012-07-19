@@ -145,6 +145,9 @@
                                 <state key="highlighted">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <connections>
+                                    <action selector="setColor:" destination="UPZ-Bt-XHw" eventType="touchUpInside" id="kVe-4V-Kjy"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="1hd-vG-wJl">
                                 <rect key="frame" x="425" y="681" width="47" height="47"/>
@@ -158,6 +161,9 @@
                                 <state key="highlighted">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <connections>
+                                    <action selector="setColor:" destination="UPZ-Bt-XHw" eventType="touchUpInside" id="Wwa-FB-sfi"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="m0r-Hu-Ram">
                                 <rect key="frame" x="645" y="681" width="47" height="47"/>
@@ -171,6 +177,9 @@
                                 <state key="highlighted">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <connections>
+                                    <action selector="setColor:" destination="UPZ-Bt-XHw" eventType="touchUpInside" id="yRy-9q-qto"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="fAb-Pk-55R">
                                 <rect key="frame" x="315" y="681" width="47" height="47"/>
@@ -184,6 +193,9 @@
                                 <state key="highlighted">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <connections>
+                                    <action selector="setColor:" destination="UPZ-Bt-XHw" eventType="touchUpInside" id="fZo-Qb-KVq"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="Rzm-Ze-kRg">
                                 <rect key="frame" x="535" y="681" width="47" height="47"/>
@@ -197,6 +209,9 @@
                                 <state key="highlighted">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <connections>
+                                    <action selector="setColor:" destination="UPZ-Bt-XHw" eventType="touchUpInside" id="3eI-BR-rAx"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="qKH-3I-sp9">
                                 <rect key="frame" x="370" y="681" width="47" height="47"/>
@@ -210,6 +225,9 @@
                                 <state key="highlighted">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <connections>
+                                    <action selector="setColor:" destination="UPZ-Bt-XHw" eventType="touchUpInside" id="KiA-pn-Oxw"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="XLN-Ck-XDT">
                                 <rect key="frame" x="590" y="681" width="47" height="47"/>
@@ -223,6 +241,9 @@
                                 <state key="highlighted">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <connections>
+                                    <action selector="setColor:" destination="UPZ-Bt-XHw" eventType="touchUpInside" id="tPO-q3-rBU"/>
+                                </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
@@ -271,6 +292,7 @@
             <source key="sourceIdentifier" type="project" relativePath="./Classes/PSSceneViewController.h"/>
             <relationships>
                 <relationship kind="action" name="dismissSceneView:"/>
+                <relationship kind="action" name="setColor:"/>
                 <relationship kind="action" name="startDrawing:"/>
                 <relationship kind="action" name="startSelecting:"/>
                 <relationship kind="outlet" name="drawingTouchView" candidateClass="PSDrawingEventsView"/>

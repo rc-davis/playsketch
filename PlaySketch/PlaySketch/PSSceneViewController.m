@@ -22,7 +22,7 @@
 @interface PSSceneViewController ()
 @property(nonatomic)BOOL isSelecting; // If we are selecting instead of drawing
 @property(nonatomic,retain) PSSelectionHelper* selectionHelper;
-@property(nonatomic, retain) UIColor* currentColor; // the color the pen right now
+@property(nonatomic) UInt64 currentColor; // the drawing color as an int
 @end
 
 
@@ -62,7 +62,11 @@
 	self.isSelecting = NO;
 	self.startDrawingButton.enabled = NO;
 	self.startSelectingButton.enabled = YES;
-	self.currentColor = [UIColor colorWithWhite:0.200 alpha:1.000];
+	self.currentColor = [PSHelpers colorToInt64:[UIColor colorWithRed:0.2 
+																green:0.2 
+																 blue:0.2 
+																alpha:1.0]];
+	NSLog(@"set curernt color to: %lld", self.currentColor);
 	
 	
 	//Create a manipulator and add it to our rendering view hidden
@@ -142,8 +146,8 @@
 - (IBAction)setColor:(id)sender
 {
 	// Grab the background color of the button that called us and remember it
-	UIColor* color = [sender backgroundColor];
-	self.currentColor = color;
+	UIColor* c = [sender backgroundColor];
+	self.currentColor = [PSHelpers colorToInt64:c];
 }
 
 /*
@@ -196,14 +200,15 @@
 	if (! self.isSelecting )
 	{
 		PSDrawingLine* line = [PSDataModel newLineInGroup:self.currentDocument.rootGroup];
-		line.color = self.currentColor;
+		line.color = [NSNumber numberWithUnsignedLongLong:self.currentColor];
 		return line;
 	}
 	else
 	{
 		// Create a line to draw
 		PSDrawingLine* selectionLine = [PSDataModel newLineInGroup:nil];
-
+		selectionLine.color = [NSNumber numberWithUnsignedLongLong:[PSHelpers colorToInt64:[UIColor redColor]]];
+		
 		// Start a new selection set helper
 		self.selectionHelper = [[PSSelectionHelper alloc] initWithGroup:self.currentDocument.rootGroup
 																	 andLine:selectionLine];		
@@ -245,9 +250,6 @@
 		{
 			self.selectedSetManipulator.hidden = NO;
 			CGRect linesFrame = [PSDrawingLine calculateFrameForLines:self.selectionHelper.selectedLines];
-			
-//			for (PSDrawingLine* line in self.selectionHelper.selectedLines)
-//				[line applyIncrementalTransform:CGAffineTransformMakeTranslation(linesFrame.origin.x, linesFrame.origin.y)];
 			
 			self.selectedSetManipulator.frame = CGRectMake(-linesFrame.size.width/2, 
 														   -linesFrame.size.height/2,

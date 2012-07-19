@@ -154,7 +154,7 @@
 	 
 	 
 	 //this should look like ferris-wheel style nested motion, moving to the right and growing
-	 [rootGroup setCurrentSRTRate:SRTRateMake( 0, 0, 0, 2 )];
+	 [rootGroup setCurrentSRTRate:SRTRateMake( 0, 0, 0.3, 0 )];
 	 [rootGroup setCurrentSRTPosition:SRTPositionMake(300, 300, 1, 0, 50, 50)];
 	 [subgroup1 setCurrentSRTRate:SRTRateMake( 0, 0, 0, -2 )];
 	 [subgroup1 setCurrentSRTPosition:SRTPositionMake(100, 100, 1, 0, 100, 100)];
