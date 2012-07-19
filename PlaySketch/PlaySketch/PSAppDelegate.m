@@ -12,6 +12,7 @@
  */
 
 #import "PSAppDelegate.h"
+#import "PSHelpers.h"
 
 @implementation PSAppDelegate
 

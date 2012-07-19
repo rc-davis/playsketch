@@ -25,6 +25,7 @@ enum
 
 #import "PSAnimationRenderingController.h"
 #import "PSAppDelegate.h"
+#import "PSHelpers.h"
 
 /* Private Interface */
 @interface PSAnimationRenderingController ()
