@@ -60,6 +60,12 @@
 -(void)dealloc
 {
 	free(self.lineHitCounts);
+
+	for (PSDrawingLine* line in self.selectedLines)
+	{
+		line.highlighted = NO;
+	}
+
 }
 
 
@@ -131,9 +137,15 @@
 
 		//Add or remove it from our new set of lines
 		if ( lineIsHit )
+		{
 			[newSelectedLines addObject:line];
+			line.highlighted = YES;
+		}
 		else if ( [newSelectedLines containsObject:line] )
+		{
 			[newSelectedLines removeObject:line];
+			line.highlighted = NO;
+		}
 	}	
 
 	self.selectedLines = newSelectedLines;

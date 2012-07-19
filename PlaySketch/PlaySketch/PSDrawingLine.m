@@ -25,6 +25,7 @@
 
 @implementation PSDrawingLine
 @dynamic pointsAsData;
+@dynamic highlighted;
 @dynamic color;
 @dynamic group;
 

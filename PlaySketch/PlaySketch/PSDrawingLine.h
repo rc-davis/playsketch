@@ -31,6 +31,7 @@
 
 @property (nonatomic, retain) NSData * pointsAsData;
 @property (nonatomic, retain) NSNumber* color;
+@property (nonatomic) BOOL highlighted;
 @property (nonatomic, retain) PSDrawingGroup *group;
 
 -(void)addPoint:(CGPoint)p;

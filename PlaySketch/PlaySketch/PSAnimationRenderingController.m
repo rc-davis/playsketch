@@ -143,23 +143,6 @@ enum
 	// Now we can recurse on our root and will only have to push vertices and matrices
 	[self.rootGroup renderGroupWithMatrix:_projectionMatrix uniforms:_uniforms];
 
-
-	// Draw our selected lines again, with a different color to show them highlighted
-	// It may seem crazy to draw selected lines twice per frame, but my measurements
-	// showed that it is faster than the alternative, because that requires checking
-	// for EACH LINE what color it should be, then doing expensive calls into GL to
-	// set our drawing color
-	// TODO: won't be necessary when we get line color working
-	if (self.selectionHelper.selectedLines.count > 0)
-	{
-		//Set the brush's color for highlighting
-		glUniform4f(_uniforms[UNIFORMS_BRUSH_COLOR], PSANIM_SELECTED_LINE_COLOR);
-		glUniformMatrix4fv(_uniforms[UNIFORMS_MODELMATRIX], 1, 0, _projectionMatrix.m);
-		
-		for (PSDrawingLine* line in self.selectionHelper.selectedLines)
-			[line renderWithUniforms:_uniforms];
-	}
-	
 	
 	//Draw our selection line on top of everything
 	if(self.selectionHelper.selectionLoupeLine)
@@ -459,11 +442,18 @@ enum
 	glEnableVertexAttribArray(GLKVertexAttribPosition);
 	glVertexAttribPointer(GLKVertexAttribPosition, 2, GL_FLOAT, GL_FALSE, 0,(void *)points );
 
-	//Set the color (SLOW HERE???)
-	UInt64 colorAsInt = [self.color unsignedLongLongValue];
-	float r,g,b,a;
-	[PSHelpers  int64ToColor:colorAsInt toR:&r g:&g b:&b a:&a];
-	glUniform4f(uniforms[UNIFORMS_BRUSH_COLOR], r, g, b, a);
+	//Set the color (POTENTIAL BOTTLENECK)
+	if (self.highlighted)
+	{
+		glUniform4f(uniforms[UNIFORMS_BRUSH_COLOR], PSANIM_SELECTED_LINE_COLOR);
+	}
+	else
+	{
+		UInt64 colorAsInt = [self.color unsignedLongLongValue];
+		float r,g,b,a;
+		[PSHelpers  int64ToColor:colorAsInt toR:&r g:&g b:&b a:&a];
+		glUniform4f(uniforms[UNIFORMS_BRUSH_COLOR], r, g, b, a);		
+	}
 	
 	// do actual drawing!
 	glEnable(GL_TEXTURE_2D);

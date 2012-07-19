@@ -1,6 +1,3 @@
-
-multiple colour interface
-per-line colours
 compare pointcounts and rendering times!
 scaling points
 retina vs non-retina point size (?)
