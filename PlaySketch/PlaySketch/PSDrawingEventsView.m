@@ -25,6 +25,7 @@
 	//Fetch a line from our delegate to put our touch points into
 	if(self.drawingDelegate)
 		self.currentLine = [self.drawingDelegate newLineToDrawTo:self];
+	
 }		
 
 

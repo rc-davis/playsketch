@@ -15,6 +15,8 @@
 #import "PSDrawingGroup.h"
 #import "PSHelpers.h"
 
+#define OFFSET_DISTANCE 14.0
+
 
 /* Private Interface */
 @interface PSDrawingLine ()
@@ -56,19 +58,41 @@
  */
 -(void)addLineTo:(CGPoint)to
 {
-	CGFloat OFFSET_DISTANCE = 14.0;
-	
 	// Deal with the case where we have no 'from' point
-	if(pointCount == 0)
+	if(pointCount < 2)
 	{
 		[self addPoint:to];
 	}
 	else
 	{
-		BOOL isOddStrip = (pointCount - 1)%7 == 0;
+		CGPoint fromTopLast = points[pointCount - 1];
+		CGPoint fromBottomLast = points[pointCount - 2];
+		CGPoint from = CGPointMake((fromTopLast.x + fromBottomLast.x)/2.0,
+								   (fromTopLast.y + fromBottomLast.y)/2.0);
 		
-		CGPoint from = isOddStrip ? points[pointCount - 1] : points[pointCount - 2];
 		
+		//Calculate the normal
+		CGSize normal = CGSizeMake(to.y - from.y, - (to.x - from.x));
+		double length = hypot(normal.width, normal.height);
+		if (length < 1) return;
+		CGSize normalScaled = CGSizeMake(normal.width / length * OFFSET_DISTANCE,
+										 normal.height / length * OFFSET_DISTANCE);
+		
+
+		//Calculate the four offset points
+		CGPoint fromTop = CGPointMake(from.x + normalScaled.width,
+									  from.y + normalScaled.height);
+		CGPoint fromBottom = CGPointMake(from.x - normalScaled.width,
+										 from.y - normalScaled.height);
+		CGPoint toTop = CGPointMake(to.x + normalScaled.width,
+									to.y + normalScaled.height);
+		CGPoint toBottom = CGPointMake(to.x - normalScaled.width,
+									   to.y - normalScaled.height);
+		
+		[self addPoint:fromBottom];
+		[self addPoint:fromTop];
+		[self addPoint:toBottom];
+		[self addPoint:toTop];
 		
 		//Try out something like this:use the 'speed' to determine the offsetdistance!
 		/*
@@ -77,36 +101,6 @@
 		
 		OFFSET_DISTANCE = OFFSET_DISTANCE * ( 0.25 + 0.75*(1 - speedPcnt) );
 		*/
-		
-		
-		
-		//calculate fromNormal and toNormal
-		CGSize normal = CGSizeMake(to.y - from.y, - (to.x - from.x));
-		double length = hypot(normal.width, normal.height);
-		if (length < 1) return;
-		
-		CGSize normalScaled = CGSizeMake(normal.width / length * OFFSET_DISTANCE,
-										 normal.height / length * OFFSET_DISTANCE);
-		
-		CGPoint fromNormal = CGPointMake(from.x + normalScaled.width,
-										 from.y + normalScaled.height);
-		CGPoint toNormal = CGPointMake(to.x + normalScaled.width,
-										 to.y + normalScaled.height);
-
-		if (isOddStrip)
-		{
-			[self addPoint:fromNormal];
-			[self addPoint:to];
-			[self addPoint:toNormal];
-		}
-		else
-		{
-			[self addPoint:fromNormal];
-			[self addPoint:from];
-			[self addPoint:toNormal];
-			[self addPoint:to];
-		}
-
 	}
 }
 
