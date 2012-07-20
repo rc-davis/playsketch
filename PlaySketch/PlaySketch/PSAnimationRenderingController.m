@@ -85,6 +85,7 @@ enum
 
 - (void)startPlayingAtFrame:(int)frame
 {
+	[self.rootGroup willAccessValueForKey:nil];
 	[self.rootGroup jumpToFrame:frame];
 	_currentTimeContinuous = frame;
 	self.playing = YES;
@@ -398,22 +399,22 @@ enum
 		currentLocationIndex++;
 	}
 	
-	SRTPosition currentPos = locationList[currentLocationIndex];
-	
 	// Set position and momentum
 	if (locationCount == 0)
 	{
 		currentSRTPosition = SRTPositionZero();
 		currentSRTRate = SRTRateZero();
 	}
-	else if ( (currentLocationIndex == 0 && currentPos.frame > frame) ||
+	else if ( (currentLocationIndex == 0 && locationList[currentLocationIndex].frame > frame) ||
 			  (currentLocationIndex + 1 >= locationCount) )
 	{
+		SRTPosition currentPos = locationList[currentLocationIndex];
 		currentSRTPosition = currentPos;
 		currentSRTRate = SRTRateZero();
 	}
 	else
 	{
+		SRTPosition currentPos = locationList[currentLocationIndex];
 		SRTPosition nextPos = locationList[currentLocationIndex+1];
 		currentSRTPosition = SRTPositionInterpolate(frame, currentPos, nextPos);
 		currentSRTRate = SRTRateInterpolate(currentPos, nextPos);
@@ -422,6 +423,7 @@ enum
 	//Recurse!
 	for (PSDrawingGroup* child in self.children)
 	{
+		[child willAccessValueForKey:nil];
 		[child jumpToFrame:frame];
 	}
 
