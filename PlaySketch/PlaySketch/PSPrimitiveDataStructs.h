@@ -18,9 +18,10 @@
 
 typedef struct
 {
+	int frame; // The time to be at this position
 	GLKVector2 location; // in Parent's coordinates
-	float scale;
-	float rotation;
+	float scale; // About origin
+	float rotation; // About origin
 	GLKVector2 origin; // point in own coordinates that location is measured to
 } SRTPosition;
 
@@ -35,10 +36,12 @@ typedef struct
 
 // Helpers for making
 
-static inline SRTPosition SRTPositionMake(float x, float y, float scale, float rotation,
-							float originX, float originY)
+static inline SRTPosition SRTPositionMake(int frame, float x, float y, 
+										  float scale, float rotation, 
+										  float originX, float originY)
 {
 	SRTPosition p;
+	p.frame = frame;
 	p.location.x = x;
 	p.location.y = y;
 	p.scale = scale;
@@ -57,6 +60,16 @@ static inline SRTRate SRTRateMake(float dX, float dY, float scaleRate, float rot
 	r.scaleRate = scaleRate;
 	r.rotationRate = rotationRate;
 	return r;
+}
+
+static inline SRTRate SRTRateZero()
+{
+	return SRTRateMake(0,0,0,0);
+}
+
+static inline SRTPosition SRTPositionZero()
+{
+	return SRTPositionMake(0, 0, 0, 1, 0, 0, 0);
 }
 
 #endif

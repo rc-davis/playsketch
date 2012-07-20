@@ -1,4 +1,10 @@
 MILESTONE 3
+
+- time clock
+- store positions
+- interpolate based on time clock
+- button to reset time clock
+
 aniimation widget animates drawing
 	design data structures for TimeLists
 	Implementent them in coredata

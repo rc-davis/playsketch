@@ -23,17 +23,22 @@
 	SRTPosition currentSRTPosition;
 	SRTRate currentSRTRate;
 	GLKMatrix4 currentModelViewMatrix;
-
+	SRTPosition* locationList;
+	int locationCount;
+	int locationBufferCount;
 }
 
 @property (nonatomic, retain) NSString * name;
 @property (nonatomic, retain) NSNumber * rootGroup;
 @property (nonatomic, retain) NSSet *children;
 @property (nonatomic, retain) NSSet *drawingLines;
+@property (nonatomic, retain) NSData *locationListAsData;
 @property (nonatomic, retain) PSDrawingGroup *parent;
 @end
 
 @interface PSDrawingGroup (CoreDataGeneratedAccessors)
+
+- (void)addPosition:(SRTPosition)position;
 
 - (void)addChildrenObject:(PSDrawingGroup *)value;
 - (void)removeChildrenObject:(PSDrawingGroup *)value;
@@ -47,8 +52,5 @@
 
 - (CGRect)calculateFrame;
 
-//TODO TEMP
--(void)setCurrentSRTRate:(SRTRate)r;
--(void)setCurrentSRTPosition:(SRTPosition)p;
 
 @end
