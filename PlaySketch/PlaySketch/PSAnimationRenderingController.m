@@ -31,9 +31,9 @@ enum
 	GLuint _program;
 	GLint _uniforms[NUM_UNIFORMS];
 	GLKMatrix4 _projectionMatrix;
+	NSTimeInterval _currentTimeContinuous;
 }
 @property (strong, nonatomic, retain) EAGLContext* context;
-@property(nonatomic,retain) GLKTextureInfo* brushTextureInfo;
 @end
 
 
@@ -43,8 +43,8 @@ enum
 @implementation PSAnimationRenderingController
 @synthesize context = _context;
 @synthesize rootGroup = _rootGroup;
-@synthesize selectionHelper = _selectionHelper;;
-@synthesize brushTextureInfo = _brushTextureInfo;
+@synthesize playing = _playing;
+@synthesize selectionHelper = _selectionHelper;
 
 
 
@@ -70,18 +70,31 @@ enum
     view.context = self.context;
     [EAGLContext setCurrentContext:self.context];
 	
-	//Load the image we will use for our brush texture
-	self.brushTextureInfo = [GLKTextureLoader textureWithCGImage:[UIImage imageNamed:@"Brush.png"].CGImage
-																		 options:nil
-																		   error:nil];
-	
 	//Compile our shaders for drawing
 	if (! [self loadShaders] )
 	{
 		[PSHelpers failWithMessage:@"Failed to load shaders in PSAnimationRenderingController"];
 	}
+	
+	
+	//TEMPORARY:
+	[self startPlayingAtFrame:0];
+	
 }
 
+
+- (void)startPlayingAtFrame:(int)frame
+{
+	[self.rootGroup jumpToFrame:frame];
+	_currentTimeContinuous = frame;
+	self.playing = YES;
+}
+
+
+- (int)currentFrame
+{
+	return (int)_currentTimeContinuous;
+}
 
 /*
 	Generate our projection matrix in response to updates to our view's coordinates
@@ -123,10 +136,6 @@ enum
 	// Push the projection matrix
 	glUniformMatrix4fv(_uniforms[UNIFORMS_MODELMATRIX], 1, 0, _projectionMatrix.m);
 	
-	// Pass the brush we want to draw with
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, self.brushTextureInfo.name);
-	
 	// Set the brush's color
 	glUniform4f(_uniforms[UNIFORMS_BRUSH_COLOR], PSANIM_LINE_COLOR);
 	
@@ -165,7 +174,12 @@ enum
 
 - (void)update
 {
-	[self.rootGroup updateWithTimeInterval:self.timeSinceLastUpdate];
+	if(_playing)
+	{
+		_currentTimeContinuous += self.timeSinceLastUpdate;
+		[self.rootGroup updateWithTimeInterval:self.timeSinceLastUpdate 
+										toTime:_currentTimeContinuous];
+	}
 }
 
 
@@ -372,6 +386,47 @@ enum
 
 
 @implementation PSDrawingGroup ( renderingCategory )
+
+- (void)jumpToFrame:(int)frame
+{
+	currentLocationIndex = 0;
+	
+	//Advance to the location <= frame
+	while (currentLocationIndex + 1 < locationCount &&
+		   frame > locationList[currentLocationIndex + 1].frame )
+	{
+		currentLocationIndex++;
+	}
+	
+	SRTPosition currentPos = locationList[currentLocationIndex];
+	
+	// Set position and momentum
+	if (locationCount == 0)
+	{
+		currentSRTPosition = SRTPositionZero();
+		currentSRTRate = SRTRateZero();
+	}
+	else if ( (currentLocationIndex == 0 && currentPos.frame > frame) ||
+			  (currentLocationIndex + 1 >= locationCount) )
+	{
+		currentSRTPosition = currentPos;
+		currentSRTRate = SRTRateZero();
+	}
+	else
+	{
+		SRTPosition nextPos = locationList[currentLocationIndex+1];
+		currentSRTPosition = SRTPositionInterpolate(frame, currentPos, nextPos);
+		currentSRTRate = SRTRateInterpolate(currentPos, nextPos);
+	}
+	
+	//Recurse!
+	for (PSDrawingGroup* child in self.children)
+	{
+		[child jumpToFrame:frame];
+	}
+
+}
+
 - (void)renderGroupWithMatrix:(GLKMatrix4)parentModelMatrix uniforms:(GLint*)uniforms
 {
 	//Push Matrix
@@ -398,14 +453,40 @@ enum
 }
 
 
-- (void) updateWithTimeInterval:(NSTimeInterval)timeSinceLastUpdate
+- (void)updateWithTimeInterval:(NSTimeInterval)timeSinceLastUpdate toTime:(NSTimeInterval)currentTime
 {
-	// Animate
-	currentSRTPosition.location.x += timeSinceLastUpdate * currentSRTRate.locationRate.x;
-	currentSRTPosition.location.y += timeSinceLastUpdate * currentSRTRate.locationRate.y;
-	currentSRTPosition.rotation += timeSinceLastUpdate * currentSRTRate.rotationRate;
-	currentSRTPosition.scale += timeSinceLastUpdate * currentSRTRate.scaleRate;
 
+	// Check if it is time for us to advance
+	BOOL shouldAdvance = ( currentLocationIndex + 1 < locationCount ) &&
+						 ( locationList[currentLocationIndex + 1].frame <= currentTime );
+	
+	if( shouldAdvance )
+	{
+		NSLog(@"ADVANCING!");
+		currentLocationIndex ++;
+		
+		if ( currentLocationIndex == locationCount - 1 )
+		{
+			currentSRTPosition = locationList[currentLocationIndex];
+			currentSRTRate = SRTRateZero();
+		}
+		else
+		{
+			SRTPosition currentPos = locationList[currentLocationIndex];
+			SRTPosition nextPos = locationList[currentLocationIndex + 1];
+			currentSRTPosition = SRTPositionInterpolate(currentTime, currentPos, nextPos);
+			currentSRTRate = SRTRateInterpolate(currentPos, nextPos);
+		}
+	} 
+	else
+	{
+		// Animate with the current matrix
+		currentSRTPosition.location.x += timeSinceLastUpdate * currentSRTRate.locationRate.x;
+		currentSRTPosition.location.y += timeSinceLastUpdate * currentSRTRate.locationRate.y;
+		currentSRTPosition.rotation += timeSinceLastUpdate * currentSRTRate.rotationRate;
+		currentSRTPosition.scale += timeSinceLastUpdate * currentSRTRate.scaleRate;
+	}
+	
 	// Set current group matrix
 	GLKMatrix4 m = GLKMatrix4Identity;
 
@@ -417,7 +498,8 @@ enum
 
 	// Recurse on our children
 	for (PSDrawingGroup* child in self.children)
-		[child updateWithTimeInterval:timeSinceLastUpdate];
+		[child updateWithTimeInterval:timeSinceLastUpdate 
+							   toTime:currentTime];
 
 }
 

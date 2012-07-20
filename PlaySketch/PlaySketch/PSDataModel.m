@@ -155,10 +155,10 @@
 	 
 	 
 	 //this should look like ferris-wheel style nested motion, moving to the right and growing
-	 [rootGroup addPosition:SRTPositionMake(0, 300, 300, 1, 0, 50, 50)];
-	 [rootGroup addPosition:SRTPositionMake(10, 500, 300, 2, M_PI*4, 50, 50)];
-	 [rootGroup addPosition:SRTPositionMake(0, 100, 100, 1, 0, 100, 100)];
-	 [rootGroup addPosition:SRTPositionMake(10, 100, 100, 1, M_PI*-4, 100, 100)];
+	 [rootGroup addPosition:SRTPositionMake(0, 0, 300, 1, 0, 50, 50)];
+	 [rootGroup addPosition:SRTPositionMake(5, 500, 300, 2, M_PI*4, 50, 50)];
+	 [subgroup1 addPosition:SRTPositionMake(0, 100, 100, 1, 0, 100, 100)];
+	 [subgroup1 addPosition:SRTPositionMake(5, 100, 100, 1, M_PI*-4, 100, 100)];
  
  }
 

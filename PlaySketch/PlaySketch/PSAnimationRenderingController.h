@@ -27,15 +27,18 @@
 
 @property(nonatomic,retain) PSDrawingGroup* rootGroup;
 @property(nonatomic,retain) PSSelectionHelper* selectionHelper; 
+@property(nonatomic, readonly)int currentFrame; // the time frame that we are at right now
+@property(nonatomic)BOOL playing;
+- (void)startPlayingAtFrame:(int)frame;
 
 @end
 
 
-// Use categories to add a render function to our drawing items
-// And an update function to our groups
+// Use categories to add a render and animation function to our drawing items
 @interface PSDrawingGroup ( renderingCategory )
+- (void)jumpToFrame:(int)frame;
 - (void)renderGroupWithMatrix:(GLKMatrix4)parentModelMatrix uniforms:(GLint*)uniforms;
-- (void)updateWithTimeInterval:(NSTimeInterval)timeSinceLastUpdate;
+- (void)updateWithTimeInterval:(NSTimeInterval)timeSinceLastUpdate toTime:(NSTimeInterval)currentTime;
 @end
 
 @interface PSDrawingLine ( renderingCategory )

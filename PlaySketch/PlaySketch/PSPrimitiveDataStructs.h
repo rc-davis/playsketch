@@ -72,4 +72,32 @@ static inline SRTPosition SRTPositionZero()
 	return SRTPositionMake(0, 0, 0, 1, 0, 0, 0);
 }
 
+static inline SRTPosition SRTPositionInterpolate(float frame, SRTPosition p1, SRTPosition p2)
+{
+	float pcnt = (frame - p1.frame)/(float)(p2.frame - p1.frame);
+	
+	SRTPosition pos;
+	pos.frame = frame;
+	pos.location.x = (1 - pcnt) * p1.location.x + pcnt * p2.location.x;
+	pos.location.y = (1 - pcnt) * p1.location.y + pcnt * p2.location.y;
+	pos.scale = (1 - pcnt) * p1.scale + pcnt * p2.scale;
+	pos.rotation = (1 - pcnt) * p1.rotation + pcnt * p2.rotation;
+	pos.origin.x = (1 - pcnt) * p1.origin.y + pcnt * p2.origin.y;
+	pos.origin.y = (1 - pcnt) * p1.origin.y + pcnt * p2.origin.y;
+	return pos;
+}
+
+static inline SRTRate SRTRateInterpolate(SRTPosition p1, SRTPosition p2)
+{
+	float frameSpan = p2.frame - p1.frame;
+	SRTRate rate;
+	rate.locationRate.x = (p2.location.x - p1.location.x)/frameSpan;
+	rate.locationRate.y = (p2.location.y - p1.location.y)/frameSpan;
+	rate.scaleRate = (p2.scale - p1.scale)/frameSpan;
+	rate.rotationRate = (p2.rotation - p1.rotation)/frameSpan;
+	NSLog(@"rotation rat: %lf", rate.rotationRate);
+	return rate;
+}
+
+
 #endif

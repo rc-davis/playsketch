@@ -19,13 +19,16 @@
 
 @interface PSDrawingGroup : NSManagedObject
 {
-	// These are transient properties which are not stored in the model
-	SRTPosition currentSRTPosition;
-	SRTRate currentSRTRate;
-	GLKMatrix4 currentModelViewMatrix;
 	SRTPosition* locationList;
 	int locationCount;
 	int locationBufferCount;
+
+	// These are transient properties which are not stored in the model
+	// and are used for animation state
+	SRTPosition currentSRTPosition;
+	SRTRate currentSRTRate;
+	int currentLocationIndex;
+	GLKMatrix4 currentModelViewMatrix;
 }
 
 @property (nonatomic, retain) NSString * name;
