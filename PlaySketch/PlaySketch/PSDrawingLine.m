@@ -57,7 +57,7 @@
  */
 -(void)addLineTo:(CGPoint)to
 {
-	CGFloat STAMP_DISTANCE = 4.0;
+	CGFloat OFFSET_DISTANCE = 14.0;
 	
 	// Deal with the case where we have no 'from' point
 	if(pointCount == 0)
@@ -66,20 +66,38 @@
 	}
 	else
 	{
-		CGPoint from = points[pointCount-1];
+		BOOL isOddStrip = (pointCount - 1)%7 == 0;
+		
+		CGPoint from = isOddStrip ? points[pointCount - 1] : points[pointCount - 2];
+		
+		
+		//calculate fromNormal and toNormal
+		CGSize normal = CGSizeMake(to.y - from.y, - (to.x - from.x));
+		double length = hypot(normal.width, normal.height);
+		if (length < 1) return;
+		
+		CGSize normalScaled = CGSizeMake(normal.width / length * OFFSET_DISTANCE,
+										 normal.height / length * OFFSET_DISTANCE);
+		
+		CGPoint fromNormal = CGPointMake(from.x + normalScaled.width,
+										 from.y + normalScaled.height);
+		CGPoint toNormal = CGPointMake(to.x + normalScaled.width,
+										 to.y + normalScaled.height);
 
-		//Figure out how many points we want to add
-		CGFloat distance = hypot(to.x - from.x, to.y - from.y);
-		int count = ceilf(distance / STAMP_DISTANCE);
-		CGSize stepSize = CGSizeMake((to.x - from.x)/(CGFloat)count,
-									 (to.y - from.y)/(CGFloat)count);
-
-		for(int i = 0; i < count; i++)
+		if (isOddStrip)
 		{
-			CGPoint newPoint = CGPointMake(from.x + stepSize.width * (i + 1),
-										   from.y + stepSize.height * (i + 1));
-			[self addPoint:newPoint];
+			[self addPoint:fromNormal];
+			[self addPoint:to];
+			[self addPoint:toNormal];
 		}
+		else
+		{
+			[self addPoint:fromNormal];
+			[self addPoint:from];
+			[self addPoint:toNormal];
+			[self addPoint:to];
+		}
+
 	}
 }
 

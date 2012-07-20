@@ -16,8 +16,6 @@ enum
 {
 	// indices into _uniforms array for tracking uniform handles in our shaders
 	UNIFORMS_MODELMATRIX,
-	UNIFORMS_BRUSH_POINT_SIZE,
-	UNIFORMS_BRUSH_TEXTURE,
 	UNIFORMS_BRUSH_COLOR,
 	NUM_UNIFORMS
 };
@@ -105,12 +103,8 @@ enum
  Delegate methods from the GLKView which trigger our rendering
  
  ------------*/
-- (void)glkView:(GLKView *)view drawInRect:(CGRect)rect {    
-
-	// Debugging for timing our draw loop:
-	//static NSTimeInterval perfSumTime;
-	//static int perfFrameCount = 0;
-    //NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
+- (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
+{
 
 	// Try to do as much rendering setup as possible so we don't have to call 
 	// on each line/group when we recurse:
@@ -130,15 +124,11 @@ enum
 	glUniformMatrix4fv(_uniforms[UNIFORMS_MODELMATRIX], 1, 0, _projectionMatrix.m);
 	
 	// Pass the brush we want to draw with
-	glUniform1i(_uniforms[UNIFORMS_BRUSH_TEXTURE], 0);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, self.brushTextureInfo.name);
 	
 	// Set the brush's color
 	glUniform4f(_uniforms[UNIFORMS_BRUSH_COLOR], PSANIM_LINE_COLOR);
-	
-	// Set the brushes size
-	glUniform1f(_uniforms[UNIFORMS_BRUSH_POINT_SIZE], 20.0);
 	
 	// Now we can recurse on our root and will only have to push vertices and matrices
 	[self.rootGroup renderGroupWithMatrix:_projectionMatrix uniforms:_uniforms];
@@ -149,19 +139,12 @@ enum
 	{
 		//Set the brush's color and size for selection loupe
 		glUniform4f(_uniforms[UNIFORMS_BRUSH_COLOR], PSANIM_SELECTION_LOOP_COLOR);
-		glUniform1f(_uniforms[UNIFORMS_BRUSH_POINT_SIZE], 5.0);
 		
 		//Restore our default matrix
 		glUniformMatrix4fv(_uniforms[UNIFORMS_MODELMATRIX], 1, 0, _projectionMatrix.m);
-		//TODO: Set different color and brush for selection
+
 		[self.selectionHelper.selectionLoupeLine renderWithUniforms:_uniforms];
 	}
-	
-	// Timing our draw loop
-    //NSTimeInterval perfDuration = [NSDate timeIntervalSinceReferenceDate] - start;	
-	//perfSumTime += perfDuration;
-	//perfFrameCount++;
-	//NSLog(@"loop duration: %lf\tavg:%lf", perfDuration, (perfSumTime/(double)perfFrameCount));
 
 }
 
@@ -246,8 +229,6 @@ enum
 	// Get uniform locations
 	// This are the addresses we can use later for passing arguments into the shader program
 	_uniforms[UNIFORMS_MODELMATRIX] = glGetUniformLocation(_program, "modelViewProjectionMatrix");
-	_uniforms[UNIFORMS_BRUSH_TEXTURE] = glGetUniformLocation(_program, "brushTexture");
-	_uniforms[UNIFORMS_BRUSH_POINT_SIZE] = glGetUniformLocation(_program, "brushPointSize");
 	_uniforms[UNIFORMS_BRUSH_COLOR] = glGetUniformLocation(_program, "brushColor");
 
 	// Release vertex and fragment shaders.
@@ -459,7 +440,6 @@ enum
 	glEnable(GL_TEXTURE_2D);
 	glEnable (GL_BLEND);
 	glBlendFunc (GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
-    glDrawArrays(GL_POINTS, 0, pointCount);
 	glDisable(GL_TEXTURE_2D);
 	glDisableVertexAttribArray(GLKVertexAttribPosition);
 

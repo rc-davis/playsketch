@@ -29,12 +29,12 @@
 
 attribute vec4 position;
 uniform mat4 modelViewProjectionMatrix;
-uniform float brushPointSize;
 
 void main()
 {
 
-
-    gl_PointSize = brushPointSize;
+    gl_PointSize = 10.0; //This only matters if we are using brushes instead of lines
     gl_Position = modelViewProjectionMatrix * position;
+
 }
+
