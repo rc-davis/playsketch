@@ -70,6 +70,16 @@
 		CGPoint from = isOddStrip ? points[pointCount - 1] : points[pointCount - 2];
 		
 		
+		//Try out something like this:use the 'speed' to determine the offsetdistance!
+		/*
+		double speedPx = hypot(to.x - from.x, to.y - from.y);
+		float speedPcnt = MIN(1.0, speedPx/50.0);
+		
+		OFFSET_DISTANCE = OFFSET_DISTANCE * ( 0.25 + 0.75*(1 - speedPcnt) );
+		*/
+		
+		
+		
 		//calculate fromNormal and toNormal
 		CGSize normal = CGSizeMake(to.y - from.y, - (to.x - from.x));
 		double length = hypot(normal.width, normal.height);

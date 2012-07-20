@@ -50,6 +50,8 @@ http://stackoverflow.com/questions/3576743/core-data-create-multiple-managed-obj
 LATER
 =========
 
+- fountain-pen style drawing, where speed affects width.
+
 - selection line and selection can use a hash patter that moves across them!
 
 - Explore: using msmutabledata's bytes as line point backing (avoiding weird copy back/forward stuff)
