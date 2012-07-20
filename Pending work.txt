@@ -1,5 +1,3 @@
-retina vs non-retina point size (?)
-
 MILESTONE 3
 aniimation widget animates drawing
 	design data structures for TimeLists
@@ -50,7 +48,13 @@ http://stackoverflow.com/questions/3576743/core-data-create-multiple-managed-obj
 LATER
 =========
 
+- eraser
+
 - fountain-pen style drawing, where speed affects width.
+
+- pen width in general
+
+- touching single point?
 
 - selection line and selection can use a hash patter that moves across them!
 

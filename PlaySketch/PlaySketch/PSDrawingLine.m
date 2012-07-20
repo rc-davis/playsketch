@@ -15,7 +15,7 @@
 #import "PSDrawingGroup.h"
 #import "PSHelpers.h"
 
-#define OFFSET_DISTANCE 14.0
+#define OFFSET_DISTANCE 4.0
 
 
 /* Private Interface */
@@ -61,6 +61,8 @@
 	// Deal with the case where we have no 'from' point
 	if(pointCount < 2)
 	{
+		//Add the first point twice so we don't provide a weird normal to the second point
+		[self addPoint:to];
 		[self addPoint:to];
 	}
 	else
