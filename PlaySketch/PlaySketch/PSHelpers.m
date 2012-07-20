@@ -62,17 +62,13 @@
 	
 	CGFloat r,g,b,a;
 	[color getRed:&r green:&g blue:&b alpha:&a];
-	NSLog(@"COLOR: %@", color);
 	
 	UInt64 rInt = (int)(0xFFFF * r);
 	UInt64 gInt = (int)(0xFFFF * g);
 	UInt64 bInt = (int)(0xFFFF * b);
 	UInt64 aInt = (int)(0xFFFF * a);
-	NSLog(@"started with %lf, %lf, %lf, %lf", r, g, b, a);
 
 	UInt64 intValue = aInt + (bInt << 16) + (gInt << 32) + (rInt << 48);
-	[PSHelpers int64ToColor:intValue toR:&r g:&g b:&b a:&a];
-	NSLog(@"returned: %lf %lf %lf %lf", r, g, b, a);
 	return intValue;
 }
 

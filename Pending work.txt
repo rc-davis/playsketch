@@ -1,5 +1,3 @@
-compare pointcounts and rendering times!
-scaling points
 retina vs non-retina point size (?)
 
 MILESTONE 3
@@ -52,11 +50,7 @@ http://stackoverflow.com/questions/3576743/core-data-create-multiple-managed-obj
 LATER
 =========
 
-Do prettier lines (use point sprite brush instead of line drawings)
-
-- drawing should throw away points that are too near the previous one
-
-- drawing should be prettier and use a stamp
+- selection line and selection can use a hash patter that moves across them!
 
 - Explore: using msmutabledata's bytes as line point backing (avoiding weird copy back/forward stuff)
 

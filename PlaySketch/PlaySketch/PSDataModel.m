@@ -13,6 +13,7 @@
 
 #import "PSDataModel.h"
 #import "PSAppDelegate.h"
+#import "PSHelpers.h"
 
 // Private functions:
 @interface PSDataModel ()
@@ -163,8 +164,8 @@
 
 +(void)DEBUG_generateRandomLittleLinesIntoGroup:(PSDrawingGroup*)rootGroup lineCount:(int)lineCount
 {
-	int POINT_COUNT = 100;
-	CGSize viewSize = CGSizeMake(924, 600);
+	int POINT_COUNT = 1000;
+	CGSize viewSize = CGSizeMake(400, 300);
 	srand(100);
 	
 	for (int i = 0; i < lineCount; i ++)
@@ -173,10 +174,15 @@
 		PSDrawingLine* line = [PSDataModel newLineInGroup:rootGroup];
 		for(int j = 0; j < POINT_COUNT; j++)
 		{
-			CGPoint next = CGPointMake(start.x + rand()%4, start.y + rand()%4-2 );
+			CGPoint next = CGPointMake(start.x + rand()%4, start.y + rand()%4 );
 			[line addLineTo:next];
 			start = next;
 		}
+		int64_t color = [PSHelpers colorToInt64:[UIColor colorWithRed:(rand()%10)/10.0
+																green:(rand()%10)/10.0
+																 blue:(rand()%10)/10.0
+																alpha:1.0]];
+		line.color = [NSNumber  numberWithLongLong:color];
 	}
 }
 

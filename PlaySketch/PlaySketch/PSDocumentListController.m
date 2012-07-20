@@ -197,7 +197,7 @@
 							[PSDataModel allDrawingDocuments].count + 1];
 	PSDrawingDocument* newDocument = [PSDataModel newDrawingDocumentWithName:newDocName];
 	[PSDataModel DEBUG_generateTestShapesIntoGroup:newDocument.rootGroup];
-	//[PSDataModel DEBUG_generateRandomLittleLinesIntoGroup:newDocument.rootGroup lineCount:100];
+//	[PSDataModel DEBUG_generateRandomLittleLinesIntoGroup:newDocument.rootGroup lineCount:100];
 	[self performSegueWithIdentifier:@"GoToSceneViewController" sender:newDocument];
 }
 
