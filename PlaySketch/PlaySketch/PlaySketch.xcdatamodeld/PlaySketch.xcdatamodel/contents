@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model name="" userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="1171" systemVersion="11E53" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
+<model name="" userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="1803" systemVersion="11E53" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="PSDrawingDocument" representedClassName="PSDrawingDocument" syncable="YES">
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="previewImage" optional="YES" attributeType="Binary" syncable="YES"/>
@@ -13,13 +13,12 @@
     </entity>
     <entity name="PSDrawingLine" representedClassName="PSDrawingLine" syncable="YES">
         <attribute name="color" optional="YES" attributeType="Integer 64" defaultValueString="65535" syncable="YES"/>
-        <attribute name="highlighted" optional="YES" transient="YES" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
         <attribute name="pointsAsData" optional="YES" attributeType="Binary" syncable="YES"/>
         <relationship name="group" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="PSDrawingGroup" inverseName="drawingLines" inverseEntity="PSDrawingGroup" syncable="YES"/>
     </entity>
     <elements>
         <element name="PSDrawingDocument" positionX="160" positionY="192" width="128" height="75"/>
         <element name="PSDrawingGroup" positionX="160" positionY="192" width="128" height="105"/>
-        <element name="PSDrawingLine" positionX="160" positionY="192" width="128" height="105"/>
+        <element name="PSDrawingLine" positionX="160" positionY="192" width="128" height="90"/>
     </elements>
 </model>

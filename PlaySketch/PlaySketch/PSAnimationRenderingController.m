@@ -134,6 +134,21 @@ enum
 	[self.rootGroup renderGroupWithMatrix:_projectionMatrix uniforms:_uniforms];
 
 	
+	// Draw our selected lines again, with a different color to show them highlighted
+	// It may seem crazy to draw selected lines twice per frame, but it isn't that
+	// bad and saves us having to do expensive comparisons against the selected set
+	// or maintaining thread-safety while running selection code in the background
+	if (self.selectionHelper.selectedLines.count > 0)
+	{
+		//Set the brush's color for highlighting
+		glUniform4f(_uniforms[UNIFORMS_BRUSH_COLOR], PSANIM_SELECTED_LINE_COLOR);
+		glUniformMatrix4fv(_uniforms[UNIFORMS_MODELMATRIX], 1, 0, _projectionMatrix.m);
+		
+		for (PSDrawingLine* line in self.selectionHelper.selectedLines)
+			[line renderWithUniforms:_uniforms overrideColor:YES];
+	}
+
+	
 	//Draw our selection line on top of everything
 	if(self.selectionHelper.selectionLoupeLine)
 	{
@@ -143,7 +158,7 @@ enum
 		//Restore our default matrix
 		glUniformMatrix4fv(_uniforms[UNIFORMS_MODELMATRIX], 1, 0, _projectionMatrix.m);
 
-		[self.selectionHelper.selectionLoupeLine renderWithUniforms:_uniforms];
+		[self.selectionHelper.selectionLoupeLine renderWithUniforms:_uniforms overrideColor:YES];
 	}
 
 }
@@ -373,7 +388,7 @@ enum
 		//TODO: take this out of the draw loop into somewhere else...
 		//		or at least just make an accessor for points
 		[drawingItem willAccessValueForKey:nil];	
-		[drawingItem renderWithUniforms:uniforms];
+		[drawingItem renderWithUniforms:uniforms overrideColor:NO];
 	}
 	
 	//Recurse on child groups
@@ -417,18 +432,15 @@ enum
  
  */
 @implementation PSDrawingLine ( renderingCategory )
-- (void) renderWithUniforms:(GLint*)uniforms
+- (void) renderWithUniforms:(GLint*)uniforms overrideColor:(BOOL)overrideColor
 {	
 	//Pass the vertices
 	glEnableVertexAttribArray(GLKVertexAttribPosition);
 	glVertexAttribPointer(GLKVertexAttribPosition, 2, GL_FLOAT, GL_FALSE, 0,(void *)points );
 
-	//Set the color (POTENTIAL BOTTLENECK)
-	if (self.highlighted)
-	{
-		glUniform4f(uniforms[UNIFORMS_BRUSH_COLOR], PSANIM_SELECTED_LINE_COLOR);
-	}
-	else
+	
+	// Set the brush color
+	if (!overrideColor)
 	{
 		UInt64 colorAsInt = [self.color unsignedLongLongValue];
 		float r,g,b,a;
@@ -440,6 +452,7 @@ enum
 	glEnable(GL_TEXTURE_2D);
 	glEnable (GL_BLEND);
 	glBlendFunc (GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, pointCount);
 	glDisable(GL_TEXTURE_2D);
 	glDisableVertexAttribArray(GLKVertexAttribPosition);
 

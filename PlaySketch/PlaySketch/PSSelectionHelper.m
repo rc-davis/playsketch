@@ -61,11 +61,6 @@
 {
 	free(self.lineHitCounts);
 
-	for (PSDrawingLine* line in self.selectedLines)
-	{
-		line.highlighted = NO;
-	}
-
 }
 
 
@@ -139,12 +134,10 @@
 		if ( lineIsHit )
 		{
 			[newSelectedLines addObject:line];
-			line.highlighted = YES;
 		}
 		else if ( [newSelectedLines containsObject:line] )
 		{
 			[newSelectedLines removeObject:line];
-			line.highlighted = NO;
 		}
 	}	
 
