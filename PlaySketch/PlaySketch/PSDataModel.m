@@ -165,7 +165,7 @@
 {
 	int POINT_COUNT = 100;
 	CGSize viewSize = CGSizeMake(924, 600);
-	srand(time(NULL));
+	srand(100);
 	
 	for (int i = 0; i < lineCount; i ++)
 	{
