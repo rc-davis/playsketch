@@ -390,32 +390,33 @@ enum
 
 - (void)jumpToFrame:(int)frame
 {
-	currentLocationIndex = 0;
+	currentPositionIndex = 0;
 	
 	//Advance to the location <= frame
-	while (currentLocationIndex + 1 < locationCount &&
-		   frame > locationList[currentLocationIndex + 1].frame )
+	while (currentPositionIndex + 1 < self.positionCount &&
+		   frame > self.positions[currentPositionIndex + 1].frame )
 	{
-		currentLocationIndex++;
+		currentPositionIndex++;
 	}
 	
 	// Set position and momentum
-	if (locationCount == 0)
+	if (self.positionCount == 0)
 	{
 		currentSRTPosition = SRTPositionZero();
 		currentSRTRate = SRTRateZero();
 	}
-	else if ( (currentLocationIndex == 0 && locationList[currentLocationIndex].frame > frame) ||
-			  (currentLocationIndex + 1 >= locationCount) )
+	else if ( (currentPositionIndex == 0 && 
+			   self.positions[currentPositionIndex].frame > frame) ||
+			  (currentPositionIndex + 1 >= self.positionCount) )
 	{
-		SRTPosition currentPos = locationList[currentLocationIndex];
+		SRTPosition currentPos = self.positions[currentPositionIndex];
 		currentSRTPosition = currentPos;
 		currentSRTRate = SRTRateZero();
 	}
 	else
 	{
-		SRTPosition currentPos = locationList[currentLocationIndex];
-		SRTPosition nextPos = locationList[currentLocationIndex+1];
+		SRTPosition currentPos = self.positions[currentPositionIndex];
+		SRTPosition nextPos = self.positions[currentPositionIndex+1];
 		currentSRTPosition = SRTPositionInterpolate(frame, currentPos, nextPos);
 		currentSRTRate = SRTRateInterpolate(currentPos, nextPos);
 	}
@@ -458,23 +459,22 @@ enum
 {
 
 	// Check if it is time for us to advance
-	BOOL shouldAdvance = ( currentLocationIndex + 1 < locationCount ) &&
-						 ( locationList[currentLocationIndex + 1].frame <= currentTime );
+	BOOL shouldAdvance = ( currentPositionIndex + 1 < self.positionCount ) &&
+						 ( self.positions[currentPositionIndex + 1].frame <= currentTime );
 	
 	if( shouldAdvance )
 	{
-		NSLog(@"ADVANCING!");
-		currentLocationIndex ++;
+		currentPositionIndex ++;
 		
-		if ( currentLocationIndex == locationCount - 1 )
+		if ( currentPositionIndex == self.positionCount - 1 )
 		{
-			currentSRTPosition = locationList[currentLocationIndex];
+			currentSRTPosition = self.positions[currentPositionIndex];
 			currentSRTRate = SRTRateZero();
 		}
 		else
 		{
-			SRTPosition currentPos = locationList[currentLocationIndex];
-			SRTPosition nextPos = locationList[currentLocationIndex + 1];
+			SRTPosition currentPos = self.positions[currentPositionIndex];
+			SRTPosition nextPos = self.positions[currentPositionIndex + 1];
 			currentSRTPosition = SRTPositionInterpolate(currentTime, currentPos, nextPos);
 			currentSRTRate = SRTRateInterpolate(currentPos, nextPos);
 		}

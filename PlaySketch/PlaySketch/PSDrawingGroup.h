@@ -19,15 +19,11 @@
 
 @interface PSDrawingGroup : NSManagedObject
 {
-	SRTPosition* locationList;
-	int locationCount;
-	int locationBufferCount;
-
 	// These are transient properties which are not stored in the model
-	// and are used for animation state
+	// and are used for maintaining the animation state as we playback:
 	SRTPosition currentSRTPosition;
 	SRTRate currentSRTRate;
-	int currentLocationIndex;
+	int currentPositionIndex;
 	GLKMatrix4 currentModelViewMatrix;
 }
 
@@ -35,13 +31,15 @@
 @property (nonatomic, retain) NSNumber * rootGroup;
 @property (nonatomic, retain) NSSet *children;
 @property (nonatomic, retain) NSSet *drawingLines;
-@property (nonatomic, retain) NSData *locationListAsData;
+@property (nonatomic, retain) NSData *positionsAsData;
 @property (nonatomic, retain) PSDrawingGroup *parent;
 @end
 
 @interface PSDrawingGroup (CoreDataGeneratedAccessors)
 
 - (void)addPosition:(SRTPosition)position;
+- (SRTPosition*)positions;
+- (int)positionCount;
 
 - (void)addChildrenObject:(PSDrawingGroup *)value;
 - (void)removeChildrenObject:(PSDrawingGroup *)value;

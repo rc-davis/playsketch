@@ -15,6 +15,11 @@
 #import "PSDrawingLine.h"
 #import "PSHelpers.h"
 
+@interface PSDrawingGroup ()
+{
+	NSMutableData* _mutablePositionsAsData;
+}
+@end
 
 @implementation PSDrawingGroup
 
@@ -22,45 +27,63 @@
 @dynamic rootGroup;
 @dynamic children;
 @dynamic drawingLines;
-@dynamic locationListAsData;
+@dynamic positionsAsData;
 @dynamic parent;
-
 
 
 
 - (void)addPosition:(SRTPosition)position
 {
+	// Get a handle to some mutable data
+	int currentPositionCount = self.positionCount;
+	SRTPosition* currentPositions;
+	if ( _mutablePositionsAsData == nil )
+		_mutablePositionsAsData = [NSMutableData dataWithData:self.positionsAsData];
+	currentPositions = (SRTPosition*)_mutablePositionsAsData.bytes;	
+	
+	
 	// Find the index to insert it at
 	int newIndex = 0;
-	while (newIndex < locationCount && locationList[newIndex].frame < position.frame)
+	while (newIndex < currentPositionCount && 
+		   currentPositions[newIndex].frame < position.frame)
 		newIndex++;
 	
-	
-	//Overwrite an existing one if possible
-	if(newIndex < locationCount && locationList[newIndex].frame == position.frame)
+
+	BOOL overwriting = newIndex < currentPositionCount && 
+						currentPositions[newIndex].frame == position.frame;
+
+	//Make space for the new entry if necessary
+	if(!overwriting)
 	{
-		locationList[newIndex] = position;
-	}
-	else
-	{
-		// Expand our buffer if it is full
-		if(locationBufferCount == locationCount)
-		{
-			int newBufferCount = locationBufferCount * 2; // Double each time
-			locationList = (SRTPosition*)realloc(locationList, newBufferCount * sizeof(SRTPosition));
-			locationBufferCount = newBufferCount;
-		}
-		
+		[_mutablePositionsAsData increaseLengthBy:sizeof(SRTPosition)];
+		currentPositions = (SRTPosition*)_mutablePositionsAsData.bytes;
+
 		//Move everything down!
-		memmove(locationList + newIndex + 1, locationList + newIndex ,
-			   (locationCount - newIndex)*sizeof(SRTPosition));
-		
-		//Write the new one
-		locationList[newIndex] = position;
-		locationCount++;
+		memmove(currentPositions + newIndex + 1, 
+				currentPositions + newIndex ,
+				(currentPositionCount - newIndex)*sizeof(SRTPosition));
 	}
+		
+	//Write the new one
+	currentPositions[newIndex] = position;
 }
 
+- (SRTPosition*)positions
+{
+	if (_mutablePositionsAsData != nil)
+		return (SRTPosition*)_mutablePositionsAsData.bytes;
+	else
+		return (SRTPosition*)self.positionsAsData.bytes;
+
+}
+
+- (int)positionCount
+{
+	if (_mutablePositionsAsData != nil)
+		return _mutablePositionsAsData.length / sizeof(SRTPosition);
+	else
+		return self.positionsAsData.length / sizeof(SRTPosition);
+}
 
 
 /*
@@ -70,7 +93,6 @@
 - (void)awakeFromInsert
 {
 	[super awakeFromInsert];
-	[self copyToCache];
 	currentSRTPosition = SRTPositionZero();
 	currentSRTRate = SRTRateZero();
 }
@@ -83,7 +105,6 @@
 -(void)awakeFromFetch
 {
 	[super awakeFromFetch];
-	[self copyToCache];
 	currentSRTPosition = SRTPositionZero();
 	currentSRTRate = SRTRateZero();
 }
@@ -106,7 +127,11 @@
  */
 - (void)willSave
 {
-	[self copyFromCache];
+	if (_mutablePositionsAsData != nil)
+	{
+		self.positionsAsData = _mutablePositionsAsData;
+		_mutablePositionsAsData = nil;
+	}
 }
 
 
@@ -118,40 +143,6 @@
 {
 	return [PSDrawingLine calculateFrameForLines:self.drawingLines];
 }
-
-
-
--(void)copyToCache
-{
-	[PSHelpers assert:(locationList == nil) withMessage:@"should have no locationList"];
-	
-	if(self.locationListAsData == nil)
-	{
-		int STARTING_BUFFER_SIZE = 10;
-		locationList = (SRTPosition*)malloc(sizeof(SRTPosition) * STARTING_BUFFER_SIZE);
-		locationCount = 0;
-		locationBufferCount = STARTING_BUFFER_SIZE;		
-	}
-	else
-	{
-		uint byteCount = self.locationListAsData.length;
-		locationList = (SRTPosition*)malloc(byteCount);
-		memcpy(locationList, self.locationListAsData.bytes, byteCount);
-		locationCount = byteCount / sizeof(SRTPosition);
-		locationBufferCount = locationCount;
-	}
-}
-
-
--(void)copyFromCache
-{
-	NSData* newLocationData = [NSData dataWithBytes:locationList length:( locationCount * sizeof(SRTPosition) )];
-	
-	// Only set a persisted property if it is different to prevent infinite recursion
-	if ( ![newLocationData isEqualToData:self.locationListAsData] )
-		self.locationListAsData = newLocationData;
-}
-
 
 
 @end
