@@ -17,27 +17,16 @@
 @class PSDrawingGroup;
 
 @interface PSDrawingLine : NSManagedObject
-{
-
-	// For performance reasons, we want to cache our points in a raw C array
-	// This data is accessed on each draw loop, so we don't want any read overhead
-	// Custom logic is needed in the implementation for marshalling this into 
-	// self.pointsAsData for persisting into our core data storage
-	CGPoint* points;
-	int pointCount;
-	int pointBufferCount;
-	
-}
 
 @property (nonatomic, retain) NSData * pointsAsData;
 @property (nonatomic, retain) NSNumber* color;
 @property (nonatomic, retain) PSDrawingGroup *group;
+@property (nonatomic, readonly) CGPoint* points;
+@property (nonatomic, readonly) int pointCount;
 
--(void)addPoint:(CGPoint)p;
--(void)addLineTo:(CGPoint)to;
--(CGPoint*)points;
--(int)pointCount;
--(void)applyIncrementalTransform:(CGAffineTransform)transform;
+- (void)addPoint:(CGPoint)p;
+- (void)addLineTo:(CGPoint)to;
+- (void)applyIncrementalTransform:(CGAffineTransform)transform;
 - (CGRect)calculateFrame;
-+(CGRect)calculateFrameForLines:(id<NSFastEnumeration>) enumerable;
++ (CGRect)calculateFrameForLines:(id<NSFastEnumeration>) enumerable;
 @end

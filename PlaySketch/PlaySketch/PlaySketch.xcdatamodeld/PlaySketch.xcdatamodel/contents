@@ -19,7 +19,7 @@
     </entity>
     <elements>
         <element name="PSDrawingDocument" positionX="160" positionY="192" width="128" height="75"/>
-        <element name="PSDrawingGroup" positionX="160" positionY="192" width="128" height="120"/>
+        <element name="PSDrawingGroup" positionX="160" positionY="192" width="128" height="105"/>
         <element name="PSDrawingLine" positionX="160" positionY="192" width="128" height="90"/>
     </elements>
 </model>

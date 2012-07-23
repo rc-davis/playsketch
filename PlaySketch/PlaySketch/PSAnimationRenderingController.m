@@ -444,7 +444,6 @@ enum
 		//Usually this is done automatically when you access properties on the object
 		//TODO: take this out of the draw loop into somewhere else...
 		//		or at least just make an accessor for points
-		[drawingItem willAccessValueForKey:nil];	
 		[drawingItem renderWithUniforms:uniforms overrideColor:NO];
 	}
 	
@@ -520,7 +519,7 @@ enum
 {	
 	//Pass the vertices
 	glEnableVertexAttribArray(GLKVertexAttribPosition);
-	glVertexAttribPointer(GLKVertexAttribPosition, 2, GL_FLOAT, GL_FALSE, 0,(void *)points );
+	glVertexAttribPointer(GLKVertexAttribPosition, 2, GL_FLOAT, GL_FALSE, 0,(void *)self.points);
 
 	
 	// Set the brush color
@@ -536,7 +535,7 @@ enum
 	glEnable(GL_TEXTURE_2D);
 	glEnable (GL_BLEND);
 	glBlendFunc (GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, pointCount);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, self.pointCount);
 	glDisable(GL_TEXTURE_2D);
 	glDisableVertexAttribArray(GLKVertexAttribPosition);
 

@@ -18,12 +18,11 @@
 #define OFFSET_DISTANCE 4.0
 
 
-/* Private Interface */
 @interface PSDrawingLine ()
--(void)copyPointsIntoObjectCache;
--(void)copyPointsOutOfObjectCache;
+{
+	NSMutableData* _mutablePoints;
+}
 @end
-
 
 @implementation PSDrawingLine
 @dynamic pointsAsData;
@@ -31,26 +30,34 @@
 @dynamic group;
 
 
+-(CGPoint*)points
+{
+	if (_mutablePoints )
+		return (CGPoint*)_mutablePoints.bytes;
+	else
+		return (CGPoint*)self.pointsAsData.bytes;
+}
+
+-(int)pointCount
+{
+	if ( _mutablePoints )
+		return _mutablePoints.length / sizeof(CGPoint);
+	else
+		return self.pointsAsData.length / sizeof(CGPoint);
+}
+
+
 /*
  Add a new point to the current line
 */
 -(void)addPoint:(CGPoint)p
 {
-	[PSHelpers assert:(points != nil) withMessage:@"Points cache should already be allocated"];
+	if (_mutablePoints == nil)
+		_mutablePoints = [NSMutableData dataWithData:self.pointsAsData];
 	
-	// Expand our buffer if it is full
-	if(pointBufferCount == pointCount)
-	{
-		NSLog(@"Reallocating points buffer for addPoint");
-		int newBufferCount = pointBufferCount * 2; // Double each time
-		points = (CGPoint*)realloc(points, newBufferCount * sizeof(CGPoint));
-		pointBufferCount = newBufferCount;
-	}
-	
-	points[pointCount] = p;
-	pointCount++;
-	
+	[_mutablePoints appendBytes:&p length:sizeof(CGPoint)];
 }
+
 
 /*
  Add a new line segment starting at the last point
@@ -58,6 +65,7 @@
  */
 -(void)addLineTo:(CGPoint)to
 {
+	int pointCount = self.pointCount;
 	// Deal with the case where we have no 'from' point
 	if(pointCount < 2)
 	{
@@ -67,8 +75,8 @@
 	}
 	else
 	{
-		CGPoint fromTopLast = points[pointCount - 1];
-		CGPoint fromBottomLast = points[pointCount - 2];
+		CGPoint fromTopLast = self.points[pointCount - 1];
+		CGPoint fromBottomLast = self.points[pointCount - 2];
 		CGPoint from = CGPointMake((fromTopLast.x + fromBottomLast.x)/2.0,
 								   (fromTopLast.y + fromBottomLast.y)/2.0);
 		
@@ -106,96 +114,20 @@
 	}
 }
 
-
--(CGPoint*)points
-{
-	return points;
-}
-
--(int)pointCount
-{
-	return pointCount;
-}
-
-
-
-/*
- This is called when our object comes out of storage
- Copy our pointsAsData into our points buffer for faster access
-*/
--(void)awakeFromFetch
-{
-	[super awakeFromFetch];
-	[self copyPointsIntoObjectCache];	
-}
-
-
-/*
- This is called the first time our object is inserted into a store
- Create our transient C-style points here
-*/
-- (void)awakeFromInsert
-{
-	[super awakeFromInsert];
-	[self copyPointsIntoObjectCache];
-}
-
-
-/*
- This is called after undo/redo types of events
- Copy our pointsAsData back into our points buffer after the change
-*/
-- (void)awakeFromSnapshotEvents:(NSSnapshotEventType)flags
-{
-	[super awakeFromSnapshotEvents:flags];
-	[PSHelpers NYIWithmessage:@"drawingline awakeFromSnapshotEvents:"];
-}
-
-
-/*
- This is called when it is time to save this object
- Before the save, we copy the transient points data into the structure
-*/
 - (void)willSave
 {
-	NSLog(@"will save line");
-	[self copyPointsOutOfObjectCache];
-}
-
-
--(void)copyPointsIntoObjectCache
-{
-	[PSHelpers assert:(points == nil) withMessage:@"awakeFromFetch should have no value for points yet"];
-	
-	if(self.pointsAsData == nil)
+	if (_mutablePoints != nil)
 	{
-		int STARTING_BUFFER_SIZE = 100;
-		points = (CGPoint*)malloc(sizeof(CGPoint) * STARTING_BUFFER_SIZE);
-		pointCount = 0;
-		pointBufferCount = STARTING_BUFFER_SIZE;		
-	}
-	else
-	{
-		uint byteCount = self.pointsAsData.length;
-		points = (CGPoint*)malloc(byteCount);
-		memcpy(points, self.pointsAsData.bytes, byteCount);
-		pointCount = byteCount / sizeof(CGPoint);
-		pointBufferCount = pointCount;
+		self.pointsAsData = _mutablePoints;
+		_mutablePoints = nil;
 	}
 }
 
-
--(void)copyPointsOutOfObjectCache
-{
-	NSData* newPointsData = [NSData dataWithBytes:points length:( pointCount * sizeof(CGPoint) )];
-	
-	// Only set a persisted property if it is different to prevent infinite recursion
-	if ( ![newPointsData isEqualToData:self.pointsAsData] )
-		self.pointsAsData = newPointsData;
-}
 
 -(void)applyIncrementalTransform:(CGAffineTransform)transform
 {
+	int pointCount = self.pointCount;
+	CGPoint* points = self.points;
 	for(int i = 0; i < pointCount; i++)
 	{
 		points[i] = CGPointApplyAffineTransform(points[i], transform);
@@ -207,6 +139,8 @@
 {
 	CGPoint min = CGPointMake(1e100, 1e100);
 	CGPoint max = CGPointMake(-1e100, -1e100);
+	int pointCount = self.pointCount;
+	CGPoint* points = self.points;
 
 	for(int i = 0; i < pointCount; i++)
 	{
