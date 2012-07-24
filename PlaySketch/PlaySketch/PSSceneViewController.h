@@ -26,6 +26,7 @@
 @property(nonatomic,retain)IBOutlet PSDrawingEventsView* drawingTouchView;
 @property(nonatomic,retain)IBOutlet UIButton* startDrawingButton;
 @property(nonatomic,retain)IBOutlet UIButton* startSelectingButton;
+@property(nonatomic,retain)IBOutlet UIButton* createCharacterButton;
 @property(nonatomic,retain)PSDrawingDocument* currentDocument;
 @property(nonatomic,retain)PSSRTManipulator* selectedSetManipulator;
 

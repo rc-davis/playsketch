@@ -32,6 +32,7 @@
 @synthesize drawingTouchView = _drawingTouchView;
 @synthesize startDrawingButton = _startDrawingButton;
 @synthesize startSelectingButton = _startSelectingButton;
+@synthesize createCharacterButton = _createCharacterButton;
 @synthesize currentDocument = _currentDocument;
 @synthesize selectedSetManipulator = _manipulator;
 @synthesize isSelecting = _isSelecting;
@@ -66,14 +67,13 @@
 																green:0.2 
 																 blue:0.2 
 																alpha:1.0]];
-	NSLog(@"set curernt color to: %lld", self.currentColor);
-	
 	
 	//Create a manipulator and add it to our rendering view hidden
 	self.selectedSetManipulator = [[PSSRTManipulator alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
 	[self.renderingController.view addSubview:self.selectedSetManipulator];
 	self.selectedSetManipulator.hidden = YES;
 	self.selectedSetManipulator.delegate = self;
+	self.createCharacterButton.enabled = NO;
 }
 
 
@@ -130,6 +130,7 @@
 	{
 		self.selectionHelper = nil;
 		self.selectedSetManipulator.hidden = YES;
+		self.createCharacterButton.enabled = NO;
 		
 	}
 }
@@ -195,6 +196,7 @@
 	{
 		self.selectionHelper = nil;
 		self.selectedSetManipulator.hidden = YES;
+		self.createCharacterButton.enabled = NO;
 	}
 	
 	if (! self.isSelecting )
@@ -249,6 +251,8 @@
 		if(self.selectionHelper.selectedLines.count > 0)
 		{
 			self.selectedSetManipulator.hidden = NO;
+			self.createCharacterButton.enabled = YES;
+			
 			CGRect linesFrame = [PSDrawingLine calculateFrameForLines:self.selectionHelper.selectedLines];
 			
 			self.selectedSetManipulator.frame = CGRectMake(-linesFrame.size.width/2, 
