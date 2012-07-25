@@ -95,8 +95,30 @@ static inline SRTRate SRTRateInterpolate(SRTPosition p1, SRTPosition p2)
 	rate.locationRate.y = (p2.location.y - p1.location.y)/frameSpan;
 	rate.scaleRate = (p2.scale - p1.scale)/frameSpan;
 	rate.rotationRate = (p2.rotation - p1.rotation)/frameSpan;
-	NSLog(@"rotation rat: %lf", rate.rotationRate);
 	return rate;
+}
+
+static inline SRTPosition SRTPositionFromTransform(CGAffineTransform t)
+{
+	SRTPosition p = SRTPositionZero();
+	
+	// Grab the translation directly from the transform
+	p.location.x = t.tx;
+	p.location.y = t.ty;
+
+	// Project two points into the parent space using the transform to calculate rotation and scale
+	CGPoint p1 = CGPointMake(0, 0);
+	CGPoint p2 = CGPointMake(1, 0);
+	CGPoint p1Parent = CGPointApplyAffineTransform(p1, t);
+	CGPoint p2Parent = CGPointApplyAffineTransform(p2, t);	
+	p.rotation = atan2f(p2Parent.y - p1Parent.y, p2Parent.x - p1Parent.x);
+	p.scale = hypotf(p1Parent.x - p2Parent.x, p1Parent.y - p2Parent.y)/hypotf(p1.x - p2.x, p1.y - p2.y);
+	
+	// TODO: I don't think we need to use the origin points at all (yet?)
+	p.origin.x = 0;
+	p.origin.y = 0;
+	
+	return p;
 }
 
 
