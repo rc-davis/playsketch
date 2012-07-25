@@ -28,7 +28,7 @@
 }
 
 @property (nonatomic, retain) NSString * name;
-@property (nonatomic, retain) NSNumber * rootGroup;
+@property (nonatomic, retain) NSNumber * explicitCharacter;
 @property (nonatomic, retain) NSSet *children;
 @property (nonatomic, retain) NSSet *drawingLines;
 @property (nonatomic, retain) NSData *positionsAsData;
