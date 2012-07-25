@@ -77,6 +77,22 @@
 }
 
 
++(PSDrawingGroup*)newChildGroup:(PSDrawingGroup*)parentGroup withLines:(NSSet*)lines
+{
+	// This creates a new group that is a child of parentGroup
+	// all of the lines in lines are removed from parentGroup and added to the
+	// new child group
+	
+	PSDrawingGroup* newGroup = [PSDataModel newDrawingGroupWithParent:parentGroup];
+	for (PSDrawingLine* line in lines)
+	{
+		line.group = newGroup;
+	}
+	
+	return newGroup;
+}
+
+
 +(void)deleteDrawingDocument:(PSDrawingDocument*)doc
 {
 	
