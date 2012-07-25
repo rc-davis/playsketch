@@ -135,16 +135,6 @@
 }
 
 
-/*
-	Find the max and min points across our children
-	This is not cached (maybe it should be if this is needed often?)
-*/
-- (CGRect)calculateFrame
-{
-	return [PSDrawingLine calculateFrameForLines:self.drawingLines];
-}
-
-
 - (void)applyTransform:(CGAffineTransform)transform
 {
 	/*	Brute-force adjusting the points of the lines in this group
@@ -158,6 +148,26 @@
 	
 	for (PSDrawingGroup* group in self.children)
 		[group applyTransform:transform];
+}
+
+
+- (CGRect)boundingRect
+{
+	//TODO: WE SHOULD BE CACHING THIS INSTEAD OF BRUTE-FORCING IT
+	if ( self.drawingLines.count == 0 )
+		return CGRectNull;
+	
+	CGPoint min = CGPointMake(1e100, 1e100);
+	CGPoint max = CGPointMake(-1e100, -1e100);
+	for (PSDrawingLine* line in self.drawingLines)
+	{
+		CGRect lineRect = [line boundingRect];
+		min.x = MIN(min.x, CGRectGetMinX(lineRect));
+		min.y = MIN(min.y, CGRectGetMinY(lineRect));
+		max.x = MAX(max.x, CGRectGetMaxX(lineRect));
+		max.y = MAX(max.y, CGRectGetMaxY(lineRect));
+	}
+	return CGRectMake(min.x, min.y, max.x - min.x, max.y - min.y);
 }
 
 @end

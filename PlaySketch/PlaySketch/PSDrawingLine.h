@@ -27,7 +27,7 @@
 - (void)addPoint:(CGPoint)p;
 - (void)addLineTo:(CGPoint)to;
 - (void)applyTransform:(CGAffineTransform)transform;
-- (CGRect)calculateFrame;
-+ (CGRect)calculateFrameForLines:(id<NSFastEnumeration>) enumerable;
+
+- (CGRect)boundingRect;
 
 @end
