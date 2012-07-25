@@ -124,14 +124,15 @@
 }
 
 
--(void)applyIncrementalTransform:(CGAffineTransform)transform
+- (void)applyTransform:(CGAffineTransform)transform
 {
+	if (_mutablePoints == nil)
+		_mutablePoints = [NSMutableData dataWithData:self.pointsAsData];
+	
 	int pointCount = self.pointCount;
-	CGPoint* points = self.points;
+	CGPoint* points = (CGPoint*)_mutablePoints.bytes;
 	for(int i = 0; i < pointCount; i++)
-	{
 		points[i] = CGPointApplyAffineTransform(points[i], transform);
-	}
 }
 
 

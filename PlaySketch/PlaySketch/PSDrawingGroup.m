@@ -145,4 +145,19 @@
 }
 
 
+- (void)applyTransform:(CGAffineTransform)transform
+{
+	/*	Brute-force adjusting the points of the lines in this group
+		Very slow and destructive to the original point information.
+		Use sparingly, only to manipulate the basic data and not 
+		just to adjust the display of a group.
+	*/
+	
+	for (PSDrawingLine* line in self.drawingLines)
+		[line applyTransform:transform];
+	
+	for (PSDrawingGroup* group in self.children)
+		[group applyTransform:transform];
+}
+
 @end

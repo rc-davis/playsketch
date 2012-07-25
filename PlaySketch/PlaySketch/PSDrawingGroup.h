@@ -52,6 +52,7 @@
 - (void)removeDrawingLines:(NSSet *)values;
 
 - (CGRect)calculateFrame;
+- (void)applyTransform:(CGAffineTransform)transform;
 
 
 @end
