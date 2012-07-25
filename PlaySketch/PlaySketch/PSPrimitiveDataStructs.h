@@ -125,4 +125,14 @@ static inline SRTPosition SRTPositionFromTransform(CGAffineTransform t)
 }
 
 
+static inline CGAffineTransform SRTPositionToTransform(SRTPosition p)
+{
+	CGAffineTransform t = CGAffineTransformIdentity;
+	t = CGAffineTransformTranslate(t, p.location.x, p.location.y);
+	t = CGAffineTransformScale(t, p.scale, p.scale);
+	t = CGAffineTransformRotate(t, p.rotation);
+	t = CGAffineTransformTranslate(t, -p.origin.x, -p.origin.y);
+	return t;
+}
+
 #endif

@@ -26,6 +26,7 @@
 @property(nonatomic) UInt64 currentColor; // the drawing color as an int
 - (void)createManipulatorForGroup:(PSDrawingGroup*)group;
 - (void)removeManipulatorForGroup:(PSDrawingGroup*)group;
+- (void)flattenSelectedGroup;
 @end
 
 
@@ -130,8 +131,10 @@
 	{
 		self.selectionHelper = nil;
 		self.createCharacterButton.enabled = NO;
-		
 	}
+	
+	if ( self.selectionGroup )
+		[self flattenSelectedGroup];
 }
 
 
@@ -172,8 +175,49 @@
 
 - (void)removeManipulatorForGroup:(PSDrawingGroup*)group
 {
-	//NYI
+	// Find the manipulator by searching through the rendering view
+	PSSRTManipulator* groupMan = nil;
+	for (UIView* v in self.renderingController.view.subviews)
+	{
+		if ([v class] == [PSSRTManipulator class])
+		{
+			PSSRTManipulator* man = (PSSRTManipulator*)v;
+			if ([man group] == group)
+			{
+				groupMan = man;
+				break;
+			}
+		}
+	}
 	
+	[PSHelpers assert:(groupMan != nil) withMessage:@"removeManipulator for group without one!"];
+	
+	[groupMan removeFromSuperview];
+}
+
+
+- (void)flattenSelectedGroup
+{
+	// Take the currently selected group merge it into its parent
+	// It's location becomes the currently visible location (for all times)
+	
+	[PSHelpers assert:(self.selectionGroup != nil) withMessage:@"need a selectionGroup to flatten"];
+	
+	// Get the  transform that will move from group-space to parent-space
+	SRTPosition groupPosition = [self.selectionGroup positionAtTime:0]; //TODO: current time
+	CGAffineTransform groupToWorldTransform = SRTPositionToTransform(groupPosition);
+	
+	//Apply to the lines
+	[self.selectionGroup applyTransform:groupToWorldTransform];
+	
+	//add to parent group
+	for (PSDrawingLine* line in self.selectionGroup.drawingLines)
+		line.group = self.selectionGroup.parent;
+	
+	//Delete the selection Group
+	[self removeManipulatorForGroup:self.selectionGroup];
+	[PSDataModel deleteDrawingGroup:self.selectionGroup];
+	self.selectionGroup = nil;
 }
 
 
@@ -223,6 +267,10 @@
 		self.selectionHelper = nil;
 		self.createCharacterButton.enabled = NO;
 	}
+	
+	if ( self.selectionGroup )
+		[self flattenSelectedGroup];
+
 	
 	if (! self.isSelecting )
 	{
