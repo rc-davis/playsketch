@@ -22,6 +22,7 @@
 
 @implementation PSSRTManipulator
 @synthesize delegate = _delegate;
+@synthesize group = _group;
 
 
 -(id)initWithFrame:(CGRect)frame

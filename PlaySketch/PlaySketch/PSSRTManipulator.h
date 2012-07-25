@@ -13,6 +13,7 @@
 
 #define PSSRT_BACKGROUND_UICOLOR [UIColor colorWithRed:1.000 green:0.490 blue:0.000 alpha:0.3]
 #define PSSRT_BORDER_UICOLOR [UIColor colorWithRed:1.000 green:0.490 blue:0.000 alpha:1.000]
+@class PSDrawingGroup;
 
 
 #import <UIKit/UIKit.h>
@@ -23,6 +24,7 @@
 
 @interface PSSRTManipulator : UIView
 @property(nonatomic,weak) id<PSSRTManipulatoDelegate> delegate;
+@property(nonatomic,weak) PSDrawingGroup* group;
 -(id)initWithFrame:(CGRect)frame;
 
 @end
