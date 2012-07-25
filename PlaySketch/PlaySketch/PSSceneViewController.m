@@ -153,23 +153,21 @@
 
 - (void)createManipulatorForGroup:(PSDrawingGroup*)group
 {
-	// Calculate a frame for it
-	CGRect linesFrame = [PSDrawingLine calculateFrameForLines:self.selectionHelper.selectedLines];
 
+	// Figure out the frame & its offsets at the current time
+	CGRect groupFrame = [group boundingRect];
+	NSLog(@"group: %@", NSStringFromCGRect(groupFrame));
+	SRTPosition groupPosition = [group positionAtTime:0];
+	NSLog(@"offset %lf %lf", groupPosition.location.x, groupPosition.location.y);
+	groupFrame.origin.x += groupPosition.location.x;
+	groupFrame.origin.y += groupPosition.location.y;
+	
 	// Create the manipulator & set its location
-	PSSRTManipulator* man = [[PSSRTManipulator alloc] initWithFrame:linesFrame];
+	PSSRTManipulator* man = [[PSSRTManipulator alloc] initWithFrame:groupFrame];
 	[self.renderingController.view addSubview:man];
 	man.delegate = self;
 	man.group = group;
 	
-	//Make the new centerpoint be the origin for the group
-	CGAffineTransform fixOrigin = 
-		CGAffineTransformMakeTranslation(-(linesFrame.origin.x + linesFrame.size.width/2.0),
-										 -(linesFrame.origin.y + linesFrame.size.height/2.0));
-	[group applyTransform:fixOrigin];
-	
-	//Add a new item to the model to hold the current location
-	//TODO
 }
 
 - (void)removeManipulatorForGroup:(PSDrawingGroup*)group
@@ -282,6 +280,8 @@
 			// create a new group for the lines
 			self.selectionGroup = [PSDataModel newChildGroup:self.currentDocument.rootGroup
 												   withLines:self.selectionHelper.selectedLines];
+			
+			[self.selectionGroup jumpToFrame:0]; //TODO: right frame!
 			
 			// create a new manipulator for the new group
 			[self createManipulatorForGroup:self.selectionGroup];

@@ -89,6 +89,19 @@
 		line.group = newGroup;
 	}
 	
+	
+	// Fix up the offsets of the new group to treat a new center-point as (0,0)
+	CGRect groupFrame = [newGroup boundingRect];
+	CGAffineTransform fixOrigin = 
+			CGAffineTransformMakeTranslation(-(groupFrame.origin.x + groupFrame.size.width/2.0),
+											 -(groupFrame.origin.y + groupFrame.size.height/2.0));
+	[newGroup applyTransform:fixOrigin];
+	
+
+	// Add a new item to the model to hold the current location
+	SRTPosition p = SRTPositionMake(0, -fixOrigin.tx, -fixOrigin.ty, 1, 0, 0, 0);
+	[newGroup addPosition:p];
+	
 	return newGroup;
 }
 
