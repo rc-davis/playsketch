@@ -15,6 +15,7 @@
 #define PlaySketch_PSPrimitiveDataStructs_h
 
 #import <GLKit/GLKMath.h>
+#import "PSHelpers.h"
 
 typedef struct
 {
@@ -74,6 +75,8 @@ static inline SRTPosition SRTPositionZero()
 
 static inline SRTPosition SRTPositionInterpolate(float frame, SRTPosition p1, SRTPosition p2)
 {
+	[PSHelpers assert:(p1.frame != p2.frame) withMessage:@"Should be different times"];
+	[PSHelpers assert:(p1.frame <= frame && p2.frame >= frame) withMessage:@"time should be within range"];
 	float pcnt = (frame - p1.frame)/(float)(p2.frame - p1.frame);
 	
 	SRTPosition pos;
