@@ -23,18 +23,38 @@
 @implementation PSSRTManipulator
 @synthesize delegate = _delegate;
 @synthesize group = _group;
+@synthesize selected = _selected;
 
 
 -(id)initWithFrame:(CGRect)frame
 {
 	if (self = [super initWithFrame:frame])
 	{
-		self.backgroundColor = PSSRT_BACKGROUND_UICOLOR;
-		self.layer.borderColor = (PSSRT_BORDER_UICOLOR).CGColor;
-		self.layer.borderWidth = 4.0;
+		self.selected = NO;
 	}
 	
 	return self;
+}
+
+
+/*
+	Override the selected setter so we can set the appearance for the manipulator
+*/
+- (void)setSelected:(BOOL)selected
+{
+	_selected = selected;
+	if(selected)
+	{
+		self.backgroundColor = [UIColor colorWithRed:0.950 green:1.000 blue:0.045 alpha:0.2];
+		self.layer.borderColor = [UIColor colorWithRed:0.950 green:1.000 blue:0.045 alpha:1.0].CGColor;
+		self.layer.borderWidth = 4.0;
+	}
+	else
+	{
+		self.backgroundColor = [UIColor colorWithRed:0.494 green:0.495 blue:0.470 alpha:0.2];
+		self.layer.borderWidth = 0.0;
+	}	
+	
 }
 
 

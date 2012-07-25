@@ -25,6 +25,7 @@
 @interface PSSRTManipulator : UIView
 @property(nonatomic,weak) id<PSSRTManipulatoDelegate> delegate;
 @property(nonatomic,weak) PSDrawingGroup* group;
+@property(nonatomic) BOOL selected;
 -(id)initWithFrame:(CGRect)frame;
 
 @end
