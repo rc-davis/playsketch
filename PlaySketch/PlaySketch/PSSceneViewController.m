@@ -155,6 +155,15 @@
 
 
 - (void)createManipulatorForGroup:(PSDrawingGroup*)group
+- (IBAction)createCharacterWithCurrentSelection:(id)sender
+{
+	[PSHelpers assert:(self.selectionGroup != nil) withMessage:@"need a selection to make character"];
+	
+	// Keep the selection group by not flattening it when it is unselected
+	self.selectionGroup.explicitCharacter = [NSNumber numberWithBool:YES];
+}
+
+
 {
 
 	// Figure out the frame & its offsets at the current time

@@ -33,5 +33,6 @@
 - (IBAction)startDrawing:(id)sender;
 - (IBAction)startSelecting:(id)sender;
 - (IBAction)setColor:(id)sender;
+- (IBAction)createCharacterWithCurrentSelection:(id)sender;
 
 @end

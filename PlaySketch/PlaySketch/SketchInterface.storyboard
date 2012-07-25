@@ -127,6 +127,9 @@
                                 <state key="highlighted">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <connections>
+                                    <action selector="createCharacterWithCurrentSelection:" destination="UPZ-Bt-XHw" eventType="touchUpInside" id="8e7-bf-aHi"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="DCx-w9-FxX">
                                 <rect key="frame" x="748" y="681" width="109" height="47"/>
@@ -306,6 +309,7 @@
         <class className="PSSceneViewController" superclassName="UIViewController">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/PSSceneViewController.h"/>
             <relationships>
+                <relationship kind="action" name="createCharacterWithCurrentSelection:"/>
                 <relationship kind="action" name="dismissSceneView:"/>
                 <relationship kind="action" name="setColor:"/>
                 <relationship kind="action" name="startDrawing:"/>
