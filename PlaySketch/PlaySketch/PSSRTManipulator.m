@@ -40,25 +40,49 @@
 
 -(void)setFrame:(CGRect)frame
 {
-	self.transform = CGAffineTransformIdentity;
-	[super setFrame:frame];
+	/*	
+		We are using the self.transform property to display and interpret the 
+		multi-touch gestures that are being input using this class.
+		A UIView's transform is always relative to the center-point of the view,
+		so a rotation, for example, will happen about the center of the view.
+		We want the PSDrawingGroups to share this definition of center-point,
+		even as we translate the manipulator around.
+		This is easiest if we do ALL translations of this manipulator by adjusting
+		the self.transform property instead of the normal self.frame or self.center
+		properties.
+		To make this happen transparently, we're overriding the self.frame setter
+		to center the view's frame on 0,0, then translate it using self.transform.
+		
+		This will also zero out any Scales and Rotates and return to identity.
+	 
+		If none of this makes any sense, read the UIView documenation on frame, 
+		bounds, center, and transform:
+		http://developer.apple.com/library/ios/#documentation/uikit/reference/uiview_class/uiview/uiview.html
+	 */
+	
+	CGRect frameAboutZero = CGRectMake(-frame.size.width/2.0, -frame.size.height/2.0,
+									   frame.size.width, frame.size.height);
+	CGPoint centerPoint = CGPointMake(frame.origin.x + frame.size.width/2.0,
+									  frame.origin.y + frame.size.height/2.0);
+	[super setFrame:frameAboutZero];	
+	self.transform = CGAffineTransformMakeTranslation(centerPoint.x, centerPoint.y);
 }
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-	//Consume the event so it isn't passed up the chain
+	//Consume the event so it isn't passed up the UIResponder chain
 }
 
 -(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {		
 	CGAffineTransform incrementalT = [self incrementalTransformWithTouches:event.allTouches];
+	self.transform = CGAffineTransformConcat(self.transform, incrementalT);
 	
 	if(self.delegate)
 		[self.delegate manipulator:self
 					   didUpdateBy:incrementalT
 					   toTransform:self.transform];
 
-	self.transform = CGAffineTransformConcat(self.transform, incrementalT);
 }
 
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
@@ -71,13 +95,15 @@
 	
 }
 
+
 /*
 	Turns a set of touches from touchesMoved: into an affine transform representing
 	the S,R,T change being made.
 	Heavily borrowed from:
 	https://github.com/erica/iphone-3.0-cookbook-/tree/master/C08-Gestures/14-Resize%20And%20Rotate
-	(which is "heavily borrowed" from Apple sample code)
-	concatenating this with the view's current transform will update properly
+	(which is "heavily borrowed" from Apple sample code).
+	Concatenating this with the view's current transform (self.transform) will
+	properly update the the location of the view to respond to multi-touch
 */
 - (CGAffineTransform)incrementalTransformWithTouches:(NSSet *)touches 
 {
@@ -137,7 +163,7 @@
 					x3*(y2*y2 + x2*x2) + x4*(y1*y1 + x1*x1);
 		double ty = (x1*x2 + y1*y2)*(-y4-y3) + (y1*x2 - x1*y2)*(x3-x4) + 
 					y3*(y2*y2 + x2*x2) + y4*(y1*y1 + x1*x1);
-
+		
 		return CGAffineTransformMake(a/D, -b/D, b/D, a/D, tx/D, ty/D);
 	}
 }
