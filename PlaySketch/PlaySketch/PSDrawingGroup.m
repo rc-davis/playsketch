@@ -86,6 +86,24 @@
 }
 
 
+- (SRTPosition)positionAtTime:(float)time
+{
+	int positionCount = self.positionCount;
+	SRTPosition* positions = self.positions;
+	
+	if ( positionCount == 0 )
+		return SRTPositionZero();
+	
+	// find i that upper-bounds our time
+	int i = 0;
+	while( i + 1 < positionCount && positions[i].frame < time)
+		i++;
+
+	if(i == 0) return positions[i];
+	else if (positions[i].frame < time) return positions[i];
+	else return SRTPositionInterpolate(time, positions[i-1], positions[i]);
+}
+
 /*
  This is called the first time our object is inserted into a store
  Create our transient C-style points here

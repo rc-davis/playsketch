@@ -40,6 +40,7 @@
 - (void)addPosition:(SRTPosition)position;
 - (SRTPosition*)positions;
 - (int)positionCount;
+- (SRTPosition)positionAtTime:(float)time;
 
 - (void)addChildrenObject:(PSDrawingGroup *)value;
 - (void)removeChildrenObject:(PSDrawingGroup *)value;
