@@ -41,10 +41,14 @@
 -(void)setFrame:(CGRect)frame
 {
 	/*	
-		We are using the self.transform property to display and interpret the 
-		multi-touch gestures that are being input using this class.
-		A UIView's transform is always relative to the center-point of the view,
-		so a rotation, for example, will happen about the center of the view.
+		We are using the self.transform property to display the multi-touch 
+		gestures that are scaling, rotating and translating this manipulator.
+		To combine these three values and make the math easier, we are
+		representing them as a CGAffineTransform, which is assigned to the
+		manipulator's self.transform property.
+	 
+		A UIView's transform is always relative to the center-point of the view.
+		(A rotation, for example, will happen about the center of the view)
 		We want the PSDrawingGroups to share this definition of center-point,
 		even as we translate the manipulator around.
 		This is easiest if we do ALL translations of this manipulator by adjusting
