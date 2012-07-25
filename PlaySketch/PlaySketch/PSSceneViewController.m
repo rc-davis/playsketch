@@ -326,7 +326,7 @@
 			self.createCharacterButton.enabled = YES;
 			
 			// create a new group for the lines
-			self.selectionGroup = [PSDataModel newChildGroup:self.currentDocument.rootGroup
+			self.selectionGroup = [PSDataModel newChildOfGroup:self.currentDocument.rootGroup
 												   withLines:self.selectionHelper.selectedLines];
 			
 			[self.selectionGroup jumpToFrame:0]; //TODO: right frame!

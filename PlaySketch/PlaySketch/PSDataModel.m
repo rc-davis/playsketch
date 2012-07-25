@@ -77,7 +77,7 @@
 }
 
 
-+(PSDrawingGroup*)newChildGroup:(PSDrawingGroup*)parentGroup withLines:(NSSet*)lines
++(PSDrawingGroup*)newChildOfGroup:(PSDrawingGroup*)parentGroup withLines:(NSSet*)lines
 {
 	// This creates a new group that is a child of parentGroup
 	// all of the lines in lines are removed from parentGroup and added to the
