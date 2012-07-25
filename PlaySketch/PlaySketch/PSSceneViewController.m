@@ -24,9 +24,9 @@
 @property(nonatomic,retain) PSSelectionHelper* selectionHelper;
 @property(nonatomic,retain) PSDrawingGroup* selectionGroup;
 @property(nonatomic) UInt64 currentColor; // the drawing color as an int
-- (void)createManipulatorForGroup:(PSDrawingGroup*)group;
+- (PSSRTManipulator*)createManipulatorForGroup:(PSDrawingGroup*)group;
 - (void)removeManipulatorForGroup:(PSDrawingGroup*)group;
-- (void)flattenSelectedGroup;
+- (PSSRTManipulator*)manipulatorForGroup:(PSDrawingGroup*)group;
 @end
 
 
@@ -73,6 +73,11 @@
 																alpha:1.0]];	
 
 	self.createCharacterButton.enabled = NO;
+	
+
+	//Create manipulator views for our current document's children
+	for (PSDrawingGroup* child in self.currentDocument.rootGroup.children)
+		[self createManipulatorForGroup:child];
 }
 
 
@@ -133,8 +138,7 @@
 		self.createCharacterButton.enabled = NO;
 	}
 	
-	if ( self.selectionGroup )
-		[self flattenSelectedGroup];
+	self.selectionGroup = nil;
 }
 
 
@@ -154,7 +158,6 @@
 }
 
 
-- (void)createManipulatorForGroup:(PSDrawingGroup*)group
 - (IBAction)createCharacterWithCurrentSelection:(id)sender
 {
 	[PSHelpers assert:(self.selectionGroup != nil) withMessage:@"need a selection to make character"];
@@ -164,6 +167,16 @@
 }
 
 
+/*
+ ----------------------------------------------------------------------------
+ Private functions
+ (they are private because they are declared at the top of this file instead of
+ in the .h file)
+ ----------------------------------------------------------------------------
+ */
+
+
+- (PSSRTManipulator*)createManipulatorForGroup:(PSDrawingGroup*)group
 {
 
 	// Figure out the frame & its offsets at the current time
@@ -179,10 +192,18 @@
 	[self.renderingController.view addSubview:man];
 	man.delegate = self;
 	man.group = group;
-	
+
+	return man;
 }
 
 - (void)removeManipulatorForGroup:(PSDrawingGroup*)group
+{
+	PSSRTManipulator* groupMan = [self manipulatorForGroup:group];
+	[PSHelpers assert:(groupMan != nil) withMessage:@"removeManipulator for group without one!"];
+	[groupMan removeFromSuperview];
+}
+
+- (PSSRTManipulator*)manipulatorForGroup:(PSDrawingGroup*)group
 {
 	// Find the manipulator by searching through the rendering view
 	PSSRTManipulator* groupMan = nil;
@@ -198,37 +219,8 @@
 			}
 		}
 	}
-	
-	[PSHelpers assert:(groupMan != nil) withMessage:@"removeManipulator for group without one!"];
-	
-	[groupMan removeFromSuperview];
+	return groupMan;
 }
-
-
-- (void)flattenSelectedGroup
-{
-	// Take the currently selected group merge it into its parent
-	// It's location becomes the currently visible location (for all times)
-	
-	[PSHelpers assert:(self.selectionGroup != nil) withMessage:@"need a selectionGroup to flatten"];
-	
-	// Get the  transform that will move from group-space to parent-space
-	SRTPosition groupPosition = [self.selectionGroup positionAtTime:0]; //TODO: current time
-	CGAffineTransform groupToWorldTransform = SRTPositionToTransform(groupPosition);
-	
-	//Apply to the lines
-	[self.selectionGroup applyTransform:groupToWorldTransform];
-	
-	//add to parent group
-	for (PSDrawingLine* line in self.selectionGroup.drawingLines)
-		line.group = self.selectionGroup.parent;
-	
-	//Delete the selection Group
-	[self removeManipulatorForGroup:self.selectionGroup];
-	[PSDataModel deleteDrawingGroup:self.selectionGroup];
-	self.selectionGroup = nil;
-}
-
 
 /*
  ----------------------------------------------------------------------------
@@ -245,7 +237,9 @@
 	_currentDocument = currentDocument;
 	//Also tell the rendering controller about the group to render it
 	self.renderingController.rootGroup = currentDocument.rootGroup;
+	
 }
+
 
 -(void)setSelectionHelper:(PSSelectionHelper *)selectionHelper
 {
@@ -255,6 +249,36 @@
 }
 
 
+- (void)setSelectionGroup:(PSDrawingGroup *)selectionGroup
+{
+	if (selectionGroup == _selectionGroup)
+		return;
+	
+	// De select the current one
+	if (_selectionGroup)
+	{
+		PSSRTManipulator* oldManipulator = [self manipulatorForGroup:_selectionGroup];
+		if(oldManipulator)
+			oldManipulator.selected = NO;
+		
+		// Merge it back into the parent if it hasn't been explicitly made a character
+		if([_selectionGroup.explicitCharacter boolValue] == NO)
+		{
+			[self removeManipulatorForGroup:_selectionGroup];
+			[PSDataModel mergeGroup:_selectionGroup intoParentAtTime:0];//TODO: real time
+		}		
+	}
+	
+	_selectionGroup = selectionGroup;
+	
+	// Start the new one being selected
+	if ( selectionGroup )
+	{
+		PSSRTManipulator* newManipulator = [self manipulatorForGroup:selectionGroup];
+		if (newManipulator)
+			newManipulator.selected = YES;
+	}
+}
 
 
 /*
@@ -277,8 +301,7 @@
 		self.createCharacterButton.enabled = NO;
 	}
 	
-	if ( self.selectionGroup )
-		[self flattenSelectedGroup];
+	self.selectionGroup = nil;
 
 	
 	if (! self.isSelecting )
@@ -341,7 +364,8 @@
 			[self.selectionGroup jumpToFrame:0]; //TODO: right frame!
 			
 			// create a new manipulator for the new group
-			[self createManipulatorForGroup:self.selectionGroup];
+			PSSRTManipulator* newMan = [self createManipulatorForGroup:self.selectionGroup];
+			newMan.selected = YES;
 			
 		}
 	}
@@ -370,6 +394,9 @@
 
 -(void)manipulatorDidStartInteraction:(id)sender
 {
+	PSSRTManipulator* manipulator = sender;
+	[manipulator setSelected:YES];
+	self.selectionGroup = manipulator.group;
 }
 
 -(void)manipulator:(id)sender didUpdateBy:(CGAffineTransform)incrementalTransform toTransform:(CGAffineTransform)fullTransform

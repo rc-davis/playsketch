@@ -6,9 +6,6 @@ MILESTONE 3
 - button to reset time clock
 
 aniimation widget animates drawing
-	design data structures for TimeLists
-	Implementent them in coredata
-	test TimeLists
 	basic timeline
 
 MILESTONE 4:
@@ -68,6 +65,7 @@ LATER
 
 - Turn off full draw loop when we aren't animating (to maximize drawing responsiveness)
 
+- UNDO/REDO
 
 - Document picker screen
 
