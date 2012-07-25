@@ -28,7 +28,6 @@
 @property(nonatomic,retain)IBOutlet UIButton* startSelectingButton;
 @property(nonatomic,retain)IBOutlet UIButton* createCharacterButton;
 @property(nonatomic,retain)PSDrawingDocument* currentDocument;
-@property(nonatomic,retain)PSSRTManipulator* selectedSetManipulator;
 
 - (IBAction)dismissSceneView:(id)sender;
 - (IBAction)startDrawing:(id)sender;

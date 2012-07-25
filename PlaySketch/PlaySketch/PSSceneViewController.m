@@ -22,7 +22,10 @@
 @interface PSSceneViewController ()
 @property(nonatomic)BOOL isSelecting; // If we are selecting instead of drawing
 @property(nonatomic,retain) PSSelectionHelper* selectionHelper;
+@property(nonatomic,retain) PSDrawingGroup* selectionGroup;
 @property(nonatomic) UInt64 currentColor; // the drawing color as an int
+- (void)createManipulatorForGroup:(PSDrawingGroup*)group;
+- (void)removeManipulatorForGroup:(PSDrawingGroup*)group;
 @end
 
 
@@ -34,9 +37,9 @@
 @synthesize startSelectingButton = _startSelectingButton;
 @synthesize createCharacterButton = _createCharacterButton;
 @synthesize currentDocument = _currentDocument;
-@synthesize selectedSetManipulator = _manipulator;
 @synthesize isSelecting = _isSelecting;
 @synthesize selectionHelper = _selectionHelper;
+@synthesize selectionGroup = _selectionGroup;
 @synthesize currentColor = _currentColor;
 
 
@@ -66,13 +69,8 @@
 	self.currentColor = [PSHelpers colorToInt64:[UIColor colorWithRed:0.2 
 																green:0.2 
 																 blue:0.2 
-																alpha:1.0]];
-	
-	//Create a manipulator and add it to our rendering view hidden
-	self.selectedSetManipulator = [[PSSRTManipulator alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
-	[self.renderingController.view addSubview:self.selectedSetManipulator];
-	self.selectedSetManipulator.hidden = YES;
-	self.selectedSetManipulator.delegate = self;
+																alpha:1.0]];	
+
 	self.createCharacterButton.enabled = NO;
 }
 
@@ -80,6 +78,8 @@
 - (void)viewDidUnload
 {
     [super viewDidUnload];
+	
+	//TODO: zero out our references
 }
 
 
@@ -129,7 +129,6 @@
 	if(self.selectionHelper)
 	{
 		self.selectionHelper = nil;
-		self.selectedSetManipulator.hidden = YES;
 		self.createCharacterButton.enabled = NO;
 		
 	}
@@ -150,6 +149,35 @@
 	UIColor* c = [sender backgroundColor];
 	self.currentColor = [PSHelpers colorToInt64:c];
 }
+
+
+- (void)createManipulatorForGroup:(PSDrawingGroup*)group
+{
+	// Calculate a frame for it
+	CGRect linesFrame = [PSDrawingLine calculateFrameForLines:self.selectionHelper.selectedLines];
+
+	// Create the manipulator & set its location
+	PSSRTManipulator* man = [[PSSRTManipulator alloc] initWithFrame:linesFrame];
+	[self.renderingController.view addSubview:man];
+	man.delegate = self;
+	man.group = group;
+	
+	//Make the new centerpoint be the origin for the group
+	CGAffineTransform fixOrigin = 
+		CGAffineTransformMakeTranslation(-(linesFrame.origin.x + linesFrame.size.width/2.0),
+										 -(linesFrame.origin.y + linesFrame.size.height/2.0));
+	[group applyTransform:fixOrigin];
+	
+	//Add a new item to the model to hold the current location
+	//TODO
+}
+
+- (void)removeManipulatorForGroup:(PSDrawingGroup*)group
+{
+	//NYI
+	
+}
+
 
 /*
  ----------------------------------------------------------------------------
@@ -195,7 +223,6 @@
 	if(self.selectionHelper)
 	{
 		self.selectionHelper = nil;
-		self.selectedSetManipulator.hidden = YES;
 		self.createCharacterButton.enabled = NO;
 	}
 	
@@ -250,19 +277,15 @@
 		//Show the manipulator if it was worthwhile
 		if(self.selectionHelper.selectedLines.count > 0)
 		{
-			self.selectedSetManipulator.hidden = NO;
 			self.createCharacterButton.enabled = YES;
 			
-			CGRect linesFrame = [PSDrawingLine calculateFrameForLines:self.selectionHelper.selectedLines];
+			// create a new group for the lines
+			self.selectionGroup = [PSDataModel newChildGroup:self.currentDocument.rootGroup
+												   withLines:self.selectionHelper.selectedLines];
 			
-			self.selectedSetManipulator.frame = CGRectMake(-linesFrame.size.width/2, 
-														   -linesFrame.size.height/2,
-														   linesFrame.size.width,
-														   linesFrame.size.height);
-			CGPoint middle = CGPointMake(linesFrame.origin.x + linesFrame.size.width/2, 
-										 linesFrame.origin.y + linesFrame.size.height/2);
-			self.selectedSetManipulator.transform = CGAffineTransformMakeTranslation(middle.x, middle.y);
-																					 
+			// create a new manipulator for the new group
+			[self createManipulatorForGroup:self.selectionGroup];
+			
 		}
 	}
 	else
@@ -291,9 +314,17 @@
 
 -(void)manipulator:(id)sender didUpdateBy:(CGAffineTransform)incrementalTransform toTransform:(CGAffineTransform)fullTransform
 {
+	PSSRTManipulator* manipulator = sender;
+
+	//turn the current full transform into an S,R,T Position
+	SRTPosition position = SRTPositionFromTransform(fullTransform);
+
+	//Store the position at the current time
+	position.frame = 0; //TODO: pick current time
+	[manipulator.group addPosition:position];
 	
-	for (PSDrawingLine* line in self.selectionHelper.selectedLines)
-		[line applyIncrementalTransform:incrementalTransform];
+	//Refresh the display of the object
+	[manipulator.group jumpToFrame:0]; //TODO: pick current time
 }
 
 @end
