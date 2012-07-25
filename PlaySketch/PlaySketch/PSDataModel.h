@@ -37,6 +37,7 @@
 +(PSDrawingGroup*)newDrawingGroupWithParent:(PSDrawingGroup*)parent;
 +(PSDrawingLine*)newLineInGroup:(PSDrawingGroup*)group;
 +(PSDrawingGroup*)newChildOfGroup:(PSDrawingGroup*)parentGroup withLines:(NSSet*)lines;
++(PSDrawingGroup*)mergeGroup:(PSDrawingGroup*)group intoParentAtTime:(float)time;
 +(void)deleteDrawingDocument:(PSDrawingDocument*)doc;
 +(void)deleteDrawingGroup:(PSDrawingGroup*)group;
 +(void)deleteDrawingLine:(PSDrawingLine*)line;

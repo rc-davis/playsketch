@@ -106,6 +106,29 @@
 }
 
 
++(PSDrawingGroup*)mergeGroup:(PSDrawingGroup*)group intoParentAtTime:(float)time
+{
+	[PSHelpers assert:(group.parent != nil) withMessage:@"need a parent to flatten to!"];
+	PSDrawingGroup* parent = group.parent;
+	
+	// Get the  transform that will move from group-space to parent-space
+	SRTPosition groupPosition = [group positionAtTime:time];
+	CGAffineTransform groupToWorldTransform = SRTPositionToTransform(groupPosition);
+
+	//Apply to the lines
+	[group applyTransform:groupToWorldTransform];
+
+	//add to parent group
+	for (PSDrawingLine* line in group.drawingLines)
+		line.group = parent;
+
+	//Delete the selection Group
+	[PSDataModel deleteDrawingGroup:group];
+
+	return parent;
+}
+
+
 +(void)deleteDrawingDocument:(PSDrawingDocument*)doc
 {
 	
