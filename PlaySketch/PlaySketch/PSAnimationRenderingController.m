@@ -144,21 +144,6 @@ enum
 	[self.rootGroup renderGroupWithMatrix:_projectionMatrix uniforms:_uniforms];
 
 	
-	// Draw our selected lines again, with a different color to show them highlighted
-	// It may seem crazy to draw selected lines twice per frame, but it isn't that
-	// bad and saves us having to do expensive comparisons against the selected set
-	// or maintaining thread-safety while running selection code in the background
-	if (self.selectionHelper.selectedLines.count > 0)
-	{
-		//Set the brush's color for highlighting
-		glUniform4f(_uniforms[UNIFORMS_BRUSH_COLOR], PSANIM_SELECTED_LINE_COLOR);
-		glUniformMatrix4fv(_uniforms[UNIFORMS_MODELMATRIX], 1, 0, _projectionMatrix.m);
-		
-		for (PSDrawingLine* line in self.selectionHelper.selectedLines)
-			[line renderWithUniforms:_uniforms overrideColor:YES];
-	}
-
-	
 	//Draw our selection line on top of everything
 	if(self.selectionHelper.selectionLoupeLine)
 	{
