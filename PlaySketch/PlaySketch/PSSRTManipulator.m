@@ -94,7 +94,8 @@
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-	//Consume the event so it isn't passed up the UIResponder chain
+	if(self.delegate)
+		[self.delegate manipulatorDidStartInteraction:self];
 }
 
 -(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event

@@ -359,6 +359,9 @@
  ----------------------------------------------------------------------------
  */
 
+-(void)manipulatorDidStartInteraction:(id)sender
+{
+}
 
 -(void)manipulator:(id)sender didUpdateBy:(CGAffineTransform)incrementalTransform toTransform:(CGAffineTransform)fullTransform
 {
