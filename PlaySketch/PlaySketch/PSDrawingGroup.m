@@ -68,6 +68,23 @@
 	currentPositions[newIndex] = position;
 }
 
+
+- (void)clearPositionsAfterTime:(float)time
+{
+	// Get a handle to some mutable data
+	int currentPositionCount = self.positionCount;
+	SRTPosition* currentPositions = [self mutablePositionBytes];
+
+	int i = 0;
+	while (i < currentPositionCount && currentPositions[i].timeStamp <= time)
+		i++;
+
+	// Truncate our array
+	_mutablePositionsAsData.length = i * sizeof(SRTPosition);
+	
+}
+
+
 - (SRTPosition*)positions
 {
 	if (_mutablePositionsAsData != nil)

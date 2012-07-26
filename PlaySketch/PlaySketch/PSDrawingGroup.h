@@ -38,6 +38,7 @@
 @interface PSDrawingGroup (CoreDataGeneratedAccessors)
 
 - (void)addPosition:(SRTPosition)position;
+- (void)clearPositionsAfterTime:(float)time;
 - (SRTPosition*)positions;
 - (int)positionCount;
 - (void)getStateAtTime:(float)time
