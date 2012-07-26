@@ -29,14 +29,14 @@
 @property(nonatomic,retain) PSSelectionHelper* selectionHelper; 
 @property(nonatomic, readonly)int currentFrame; // the time frame that we are at right now
 @property(nonatomic)BOOL playing;
-- (void)startPlayingAtFrame:(int)frame;
-
+- (void)playFromTime:(float)frame;
+- (void)jumpToTime:(float)time;
 @end
 
 
 // Use categories to add a render and animation function to our drawing items
 @interface PSDrawingGroup ( renderingCategory )
-- (void)jumpToFrame:(int)frame;
+- (void)jumpToTime:(float)time;
 - (void)renderGroupWithMatrix:(GLKMatrix4)parentModelMatrix uniforms:(GLint*)uniforms;
 - (void)updateWithTimeInterval:(NSTimeInterval)timeSinceLastUpdate toTime:(NSTimeInterval)currentTime;
 @end

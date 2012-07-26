@@ -171,10 +171,17 @@
 
 - (IBAction)playPressed:(id)sender
 {
+	[self.renderingController playFromTime:0.00];
+	self.timelineSlider.value = 0;
 }
+
+
 - (IBAction)timelineScrubbed:(id)sender
 {
+	[self.renderingController jumpToTime:self.timelineSlider.value];
 }
+
+
 /*
  ----------------------------------------------------------------------------
  Private functions
@@ -189,11 +196,11 @@
 
 	// Figure out the frame & its offsets at the current time
 	CGRect groupFrame = [group boundingRect];
-	NSLog(@"group: %@", NSStringFromCGRect(groupFrame));
-	SRTPosition groupPosition = [group positionAtTime:0];
-	NSLog(@"offset %lf %lf", groupPosition.location.x, groupPosition.location.y);
+	SRTPosition groupPosition;
+	[group getStateAtTime:0 position:&groupPosition rate:nil helperIndex:nil]; //TODO: not 0!
 	groupFrame.origin.x += groupPosition.location.x;
 	groupFrame.origin.y += groupPosition.location.y;
+	//TODO: need to take scale and rotation into account here.
 	
 	// Create the manipulator & set its location
 	PSSRTManipulator* man = [[PSSRTManipulator alloc] initWithFrame:groupFrame];
@@ -369,7 +376,7 @@
 			self.selectionGroup = [PSDataModel newChildOfGroup:self.currentDocument.rootGroup
 												   withLines:self.selectionHelper.selectedLines];
 			
-			[self.selectionGroup jumpToFrame:0]; //TODO: right frame!
+			[self.selectionGroup jumpToTime:0]; //TODO: right frame!
 			
 			// create a new manipulator for the new group
 			PSSRTManipulator* newMan = [self createManipulatorForGroup:self.selectionGroup];
@@ -419,7 +426,7 @@
 	[manipulator.group addPosition:position];
 	
 	//Refresh the display of the object
-	[manipulator.group jumpToFrame:0]; //TODO: pick current time
+	[manipulator.group jumpToTime:0]; //TODO: pick current time
 }
 
 @end

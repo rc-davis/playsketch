@@ -76,19 +76,21 @@ enum
 		[PSHelpers failWithMessage:@"Failed to load shaders in PSAnimationRenderingController"];
 	}
 	
-	
-	//TEMPORARY:
-	[self startPlayingAtFrame:0];
-	
 }
 
 
-- (void)startPlayingAtFrame:(int)frame
+- (void)playFromTime:(float)time
 {
-	[self.rootGroup willAccessValueForKey:nil];
-	[self.rootGroup jumpToFrame:frame];
-	_currentTimeContinuous = frame;
+	[self.rootGroup jumpToTime:time];
+	_currentTimeContinuous = time;
 	self.playing = YES;
+}
+
+- (void)jumpToTime:(float)time
+{
+	[self.rootGroup jumpToTime:time];
+	_currentTimeContinuous = time;
+	self.playing = NO;	
 }
 
 
@@ -160,12 +162,10 @@ enum
 
 - (void)update
 {
-	if(_playing)
-	{
-		_currentTimeContinuous += self.timeSinceLastUpdate;
-		[self.rootGroup updateWithTimeInterval:self.timeSinceLastUpdate 
-										toTime:_currentTimeContinuous];
-	}
+	NSTimeInterval elapsedGameTime = self.playing ? self.timeSinceLastUpdate : 0.0;
+	_currentTimeContinuous += elapsedGameTime;
+	[self.rootGroup updateWithTimeInterval:elapsedGameTime
+									toTime:_currentTimeContinuous];
 }
 
 
@@ -373,44 +373,17 @@ enum
 
 @implementation PSDrawingGroup ( renderingCategory )
 
-- (void)jumpToFrame:(int)frame
+- (void)jumpToTime:(float)time
 {
-	currentPositionIndex = 0;
-	
-	//Advance to the location <= frame
-	while (currentPositionIndex + 1 < self.positionCount &&
-		   frame > self.positions[currentPositionIndex + 1].frame )
-	{
-		currentPositionIndex++;
-	}
-	
-	// Set position and momentum
-	if (self.positionCount == 0)
-	{
-		currentSRTPosition = SRTPositionZero();
-		currentSRTRate = SRTRateZero();
-	}
-	else if ( (currentPositionIndex == 0 && 
-			   self.positions[currentPositionIndex].frame > frame) ||
-			  (currentPositionIndex + 1 >= self.positionCount) )
-	{
-		SRTPosition currentPos = self.positions[currentPositionIndex];
-		currentSRTPosition = currentPos;
-		currentSRTRate = SRTRateZero();
-	}
-	else
-	{
-		SRTPosition currentPos = self.positions[currentPositionIndex];
-		SRTPosition nextPos = self.positions[currentPositionIndex+1];
-		currentSRTPosition = SRTPositionInterpolate(frame, currentPos, nextPos);
-		currentSRTRate = SRTRateInterpolate(currentPos, nextPos);
-	}
+	[self getStateAtTime:time
+				position:&currentSRTPosition
+					rate:&currentSRTRate
+			 helperIndex:&currentPositionIndex];
 	
 	//Recurse!
 	for (PSDrawingGroup* child in self.children)
 	{
-		[child willAccessValueForKey:nil];
-		[child jumpToFrame:frame];
+		[child jumpToTime:time];
 	}
 
 }

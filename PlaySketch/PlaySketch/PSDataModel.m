@@ -112,7 +112,8 @@
 	PSDrawingGroup* parent = group.parent;
 	
 	// Get the  transform that will move from group-space to parent-space
-	SRTPosition groupPosition = [group positionAtTime:time];
+	SRTPosition groupPosition;
+	[group getStateAtTime:time position:&groupPosition rate:nil helperIndex:nil];
 	CGAffineTransform groupToWorldTransform = SRTPositionToTransform(groupPosition);
 
 	//Apply to the lines
