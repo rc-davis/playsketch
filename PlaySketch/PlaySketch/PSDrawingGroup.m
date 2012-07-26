@@ -19,6 +19,7 @@
 {
 	NSMutableData* _mutablePositionsAsData;
 }
+- (SRTPosition*)mutablePositionBytes;
 @end
 
 @implementation PSDrawingGroup
@@ -34,17 +35,16 @@
 
 - (void)addPosition:(SRTPosition)position
 {
-	// Get a handle to some mutable data
+	
+
+	// Get a handle to a mutable version of our positions list
 	int currentPositionCount = self.positionCount;
-	SRTPosition* currentPositions;
-	if ( _mutablePositionsAsData == nil )
-		_mutablePositionsAsData = [NSMutableData dataWithData:self.positionsAsData];
-	currentPositions = (SRTPosition*)_mutablePositionsAsData.bytes;	
+	SRTPosition* currentPositions = [self mutablePositionBytes];
 	
-	
+
 	// Find the index to insert it at
 	int newIndex = 0;
-	while (newIndex < currentPositionCount && 
+	while (newIndex < currentPositionCount &&
 		   currentPositions[newIndex].timeStamp < position.timeStamp)
 		newIndex++;
 	
@@ -235,6 +235,14 @@
 		max.y = MAX(max.y, CGRectGetMaxY(lineRect));
 	}
 	return CGRectMake(min.x, min.y, max.x - min.x, max.y - min.y);
+}
+
+
+- (SRTPosition*)mutablePositionBytes
+{
+	if ( _mutablePositionsAsData == nil )
+		_mutablePositionsAsData = [NSMutableData dataWithData:self.positionsAsData];
+	return (SRTPosition*)_mutablePositionsAsData.bytes;
 }
 
 @end
