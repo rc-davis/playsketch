@@ -461,4 +461,8 @@
 	[manipulator.group jumpToTime:self.timelineSlider.value];
 }
 
+-(void)manipulatorDidStopInteraction:(id)sender
+{
+}
+
 @end

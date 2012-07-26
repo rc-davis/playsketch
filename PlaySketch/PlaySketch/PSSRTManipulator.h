@@ -19,6 +19,7 @@
 @protocol PSSRTManipulatoDelegate
 -(void)manipulatorDidStartInteraction:(id)sender;
 -(void)manipulator:(id)sender didUpdateBy:(CGAffineTransform)incrementalTransform toTransform:(CGAffineTransform)fullTransform;
+-(void)manipulatorDidStopInteraction:(id)sender;
 @end
 
 @interface PSSRTManipulator : UIView

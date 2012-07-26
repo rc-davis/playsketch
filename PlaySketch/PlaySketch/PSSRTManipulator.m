@@ -112,12 +112,15 @@
 
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-	
+	if (self.delegate)
+		[self.delegate manipulatorDidStopInteraction:self];
 }
 
 -(void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
 {
-	
+	if (self.delegate)
+		[self.delegate manipulatorDidStopInteraction:self];
+	//TODO: should this be a 'manipulatorDidCancelInteraction:'?
 }
 
 
