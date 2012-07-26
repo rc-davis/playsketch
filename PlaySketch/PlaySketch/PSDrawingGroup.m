@@ -35,6 +35,12 @@
 
 - (void)addPosition:(SRTPosition)position
 {
+	const float POSITION_FPS = 10.0;
+	// Position data points can't be stored closer together than this
+	// They'll still be interpolated on playback
+	// Keeping the flow of data low will make life a lot easier on playback
+	// To do this: quantize the position's time!
+	position.timeStamp = floorf(position.timeStamp * POSITION_FPS)/POSITION_FPS;
 	
 
 	// Get a handle to a mutable version of our positions list
