@@ -147,6 +147,12 @@
 }
 
 
+- (CGAffineTransform)currentAffineTransform
+{
+	return SRTPositionToTransform(currentSRTPosition);
+}
+
+
 /*
  This is called the first time our object is inserted into a store
  Create our transient C-style points here
