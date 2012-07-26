@@ -86,11 +86,18 @@ enum
 	self.playing = YES;
 }
 
+
 - (void)jumpToTime:(float)time
 {
 	[self.rootGroup jumpToTime:time];
 	_currentTimeContinuous = time;
 	self.playing = NO;	
+}
+
+
+- (void)stopPlaying
+{
+	self.playing = NO;
 }
 
 

@@ -31,6 +31,7 @@
 @property(nonatomic)BOOL playing;
 - (void)playFromTime:(float)frame;
 - (void)jumpToTime:(float)time;
+- (void)stopPlaying;
 @end
 
 
