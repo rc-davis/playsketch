@@ -198,7 +198,8 @@
 		self.timelineSlider.value = time;
 		self.timelineSlider.playing = YES;
 		for (PSSRTManipulator* m in self.manipulators)
-			m.hidden = YES;
+			if ( ! (self.isRecording && m.group == self.selectionGroup) )
+				m.hidden = YES;
 	}
 }
 
@@ -444,6 +445,17 @@
 	PSSRTManipulator* manipulator = sender;
 	[manipulator setSelected:YES];
 	self.selectionGroup = manipulator.group;
+	
+	if(self.isRecording)
+	{
+		//Remember this location and clear everything after it
+		SRTPosition currentPos = SRTPositionFromTransform(manipulator.transform);
+		currentPos.timeStamp = self.timelineSlider.value;
+		[manipulator.group addPosition:currentPos];
+		[manipulator.group clearPositionsAfterTime:self.timelineSlider.value];
+		
+		[self playPressed:nil]; //TODO: should abstract this out of an IBAction
+	}
 }
 
 -(void)manipulator:(id)sender didUpdateBy:(CGAffineTransform)incrementalTransform toTransform:(CGAffineTransform)fullTransform
@@ -463,6 +475,18 @@
 
 -(void)manipulatorDidStopInteraction:(id)sender
 {
+	PSSRTManipulator* manipulator = sender;
+	
+	if(self.isRecording)
+	{
+		// Put a marker at this location and stop playing
+		SRTPosition currentPos = SRTPositionFromTransform(manipulator.transform);
+		currentPos.timeStamp = self.timelineSlider.value;
+		[manipulator.group addPosition:currentPos];
+
+		[self playPressed:nil]; //TODO: should abstract this out of an IBAction
+	}
+	
 }
 
 @end
