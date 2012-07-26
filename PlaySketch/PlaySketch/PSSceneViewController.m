@@ -37,6 +37,8 @@
 @synthesize startDrawingButton = _startDrawingButton;
 @synthesize startSelectingButton = _startSelectingButton;
 @synthesize createCharacterButton = _createCharacterButton;
+@synthesize playButton = _playButton;
+@synthesize timelineSlider = _timelineSlider;
 @synthesize currentDocument = _currentDocument;
 @synthesize isSelecting = _isSelecting;
 @synthesize selectionHelper = _selectionHelper;
@@ -167,6 +169,12 @@
 }
 
 
+- (IBAction)playPressed:(id)sender
+{
+}
+- (IBAction)timelineScrubbed:(id)sender
+{
+}
 /*
  ----------------------------------------------------------------------------
  Private functions
