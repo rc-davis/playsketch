@@ -14,7 +14,7 @@
 #define PSANIM_BACKGROUND_COLOR 1.0, 0.977, 0.842, 1.00
 #define PSANIM_LINE_COLOR 0.5, 0.35, 0, 1.0
 #define PSANIM_SELECTION_LOOP_COLOR 1.000, 1.000, 0.012, 1.0
-#define PSANIM_SELECTED_LINE_COLOR 0.933, 1.000, 0.012, 1.0
+#define PSANIM_SELECTED_LINE_COLOR 0.933, 0.000, 0.012, 0.6
 
 #import <UIKit/UIKit.h>
 #import <GLKit/GLKit.h>
@@ -26,7 +26,8 @@
 @interface PSAnimationRenderingController : GLKViewController
 
 @property(nonatomic,retain) PSDrawingGroup* rootGroup;
-@property(nonatomic,retain) PSSelectionHelper* selectionHelper; 
+@property(nonatomic,retain) PSSelectionHelper* selectionHelper;
+@property(nonatomic,retain) PSDrawingGroup* selectedGroup;
 @property(nonatomic, readonly)int currentFrame; // the time frame that we are at right now
 @property(nonatomic)BOOL playing;
 - (void)playFromTime:(float)frame;
@@ -38,7 +39,7 @@
 // Use categories to add a render and animation function to our drawing items
 @interface PSDrawingGroup ( renderingCategory )
 - (void)jumpToTime:(float)time;
-- (void)renderGroupWithMatrix:(GLKMatrix4)parentModelMatrix uniforms:(GLint*)uniforms;
+- (void)renderGroupWithMatrix:(GLKMatrix4)parentModelMatrix uniforms:(GLint*)uniforms overrideColor:(BOOL)overrideColor;
 - (void)updateWithTimeInterval:(NSTimeInterval)timeSinceLastUpdate toTime:(NSTimeInterval)currentTime;
 @end
 

@@ -320,6 +320,7 @@
 	}
 	
 	_selectedGroup = selectedGroup;
+	self.renderingController.selectedGroup = selectedGroup;
 	
 	// Start the new one being selected
 	if ( selectedGroup )
@@ -416,6 +417,9 @@
 			// create a new manipulator for the new group
 			PSSRTManipulator* newMan = [self createManipulatorForGroup:self.selectedGroup];
 			newMan.selected = YES;
+			
+			// get rid of the selection helper so our lines are highlighted anymore
+			self.selectionHelper = nil;
 			
 		}
 	}
