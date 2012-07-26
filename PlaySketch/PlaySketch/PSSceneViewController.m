@@ -201,7 +201,10 @@
 	// Figure out the frame & its offsets at the current time
 	CGRect groupFrame = [group boundingRect];
 	SRTPosition groupPosition;
-	[group getStateAtTime:0 position:&groupPosition rate:nil helperIndex:nil]; //TODO: not 0!
+	[group getStateAtTime:self.timelineSlider.value
+				 position:&groupPosition
+					 rate:nil
+			  helperIndex:nil];
 	groupFrame.origin.x += groupPosition.location.x;
 	groupFrame.origin.y += groupPosition.location.y;
 	//TODO: need to take scale and rotation into account here.
@@ -284,7 +287,7 @@
 		if([_selectionGroup.explicitCharacter boolValue] == NO)
 		{
 			[self removeManipulatorForGroup:_selectionGroup];
-			[PSDataModel mergeGroup:_selectionGroup intoParentAtTime:0];//TODO: real time
+			[PSDataModel mergeGroup:_selectionGroup intoParentAtTime:self.timelineSlider.value];
 		}		
 	}
 	
@@ -380,7 +383,7 @@
 			self.selectionGroup = [PSDataModel newChildOfGroup:self.currentDocument.rootGroup
 												   withLines:self.selectionHelper.selectedLines];
 			
-			[self.selectionGroup jumpToTime:0]; //TODO: right frame!
+			[self.selectionGroup jumpToTime:self.timelineSlider.value];
 			
 			// create a new manipulator for the new group
 			PSSRTManipulator* newMan = [self createManipulatorForGroup:self.selectionGroup];
@@ -426,11 +429,11 @@
 	SRTPosition position = SRTPositionFromTransform(fullTransform);
 
 	//Store the position at the current time
-	position.frame = 0; //TODO: pick current time
+	position.frame = self.timelineSlider.value;
 	[manipulator.group addPosition:position];
 	
 	//Refresh the display of the object
-	[manipulator.group jumpToTime:0]; //TODO: pick current time
+	[manipulator.group jumpToTime:self.timelineSlider.value];
 }
 
 @end
