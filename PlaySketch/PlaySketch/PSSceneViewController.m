@@ -172,8 +172,9 @@
 
 - (IBAction)playPressed:(id)sender
 {
-	[self.renderingController playFromTime:0.00];
-	self.timelineSlider.value = 0;
+	float time = self.timelineSlider.value;
+	[self.renderingController playFromTime:time];
+	self.timelineSlider.value = time;
 	self.timelineSlider.playing = YES;
 }
 
