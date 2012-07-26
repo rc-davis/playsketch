@@ -22,6 +22,7 @@
 
 @interface PSSceneViewController ()
 @property(nonatomic)BOOL isSelecting; // If we are selecting instead of drawing
+@property(nonatomic)BOOL isRecording; // If manipulations should be treated as recording
 @property(nonatomic,retain) PSSelectionHelper* selectionHelper;
 @property(nonatomic,retain) PSDrawingGroup* selectionGroup;
 @property(nonatomic) UInt64 currentColor; // the drawing color as an int
@@ -44,6 +45,7 @@
 @synthesize timelineSlider = _timelineSlider;
 @synthesize currentDocument = _currentDocument;
 @synthesize isSelecting = _isSelecting;
+@synthesize isRecording = _isRecording;
 @synthesize selectionHelper = _selectionHelper;
 @synthesize selectionGroup = _selectionGroup;
 @synthesize currentColor = _currentColor;
@@ -71,6 +73,7 @@
 	
 	//Start off in drawing mode
 	self.isSelecting = NO;
+	self.isRecording = NO;
 	self.startDrawingButton.enabled = NO;
 	self.startSelectingButton.enabled = YES;
 	self.currentColor = [PSHelpers colorToInt64:[UIColor colorWithRed:0.2 
@@ -207,6 +210,17 @@
 	[self refreshManipulatorLocations];
 	for (PSSRTManipulator* m in self.manipulators)
 		m.hidden = NO;
+}
+
+
+- (IBAction)toggleRecording:(id)sender
+{
+	if(self.isRecording)
+		[sender setTitle:@"Start Recording" forState:UIControlStateNormal];
+	else
+		[sender setTitle:@"Stop Recording" forState:UIControlStateNormal];
+	
+	self.isRecording = ! self.isRecording;
 }
 
 

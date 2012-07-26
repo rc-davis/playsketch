@@ -37,5 +37,6 @@
 - (IBAction)createCharacterWithCurrentSelection:(id)sender;
 - (IBAction)playPressed:(id)sender;
 - (IBAction)timelineScrubbed:(id)sender;
+- (IBAction)toggleRecording:(id)sender;
 
 @end
