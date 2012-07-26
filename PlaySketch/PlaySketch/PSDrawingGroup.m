@@ -86,23 +86,61 @@
 }
 
 
-- (SRTPosition)positionAtTime:(float)time
+- (void)getStateAtTime:(float)time
+			  position:(SRTPosition*)pPosition
+				  rate:(SRTRate*)pRate
+		   helperIndex:(int*)pIndex
 {
 	int positionCount = self.positionCount;
 	SRTPosition* positions = self.positions;
+	SRTPosition resultPosition;
+	SRTRate resultRate;
+	int i = 0;
 	
 	if ( positionCount == 0 )
-		return SRTPositionZero();
+	{
+		resultPosition = SRTPositionZero();
+		resultRate = SRTRateZero();
+	}
+	else
+	{
 	
-	// find i that upper-bounds our time
-	int i = 0;
-	while( i + 1 < positionCount && positions[i].frame < time)
-		i++;
+		// find i that upper-bounds our requested time
+		while( i + 1 < positionCount && positions[i].frame < time)
+			i++;
+		
+		if(positions[i].frame == time)
+		{
+			// If we are right on a position keyframe, return that keyframe
+			// Interpolate the Rate if there is a following keyframe to interpolate to
+			resultPosition = positions[i];
+			resultRate = (i + 1 < positionCount) ?	SRTRateInterpolate(positions[i], positions[i+1]) :
+													SRTRateZero();
+		}
+		else if( (positions[i].frame > time && i == 0 ) ||
+				 (positions[i].frame < time && i == positionCount - 1) )
+		{
+			// If we are before the first keyframe or after the last keyframe,
+			// return the current keyframe and set no rate of motion
+			resultPosition = positions[i];
+			resultRate = SRTRateZero();
+		}
+		else
+		{
+			// Otherwise, we are between two keyframes, so just interpolation the
+			// position and the rate of motion
+			resultPosition = SRTPositionInterpolate(time, positions[i-1], positions[i]);
+			resultRate = SRTRateInterpolate(positions[i-1], positions[i]);
+		}
+	}
+	
+	//Return results
+	if(pPosition) *pPosition = resultPosition;
+	if(pRate) *pRate = resultRate;
+	if(pIndex) *pIndex = i;
 
-	if(i == 0) return positions[i];
-	else if (positions[i].frame < time) return positions[i];
-	else return SRTPositionInterpolate(time, positions[i-1], positions[i]);
 }
+
 
 /*
  This is called the first time our object is inserted into a store
