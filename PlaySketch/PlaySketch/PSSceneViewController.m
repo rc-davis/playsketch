@@ -25,6 +25,7 @@
 @property(nonatomic,retain) PSSelectionHelper* selectionHelper;
 @property(nonatomic,retain) PSDrawingGroup* selectionGroup;
 @property(nonatomic) UInt64 currentColor; // the drawing color as an int
+@property(nonatomic,retain) NSMutableSet* manipulators;
 - (PSSRTManipulator*)createManipulatorForGroup:(PSDrawingGroup*)group;
 - (void)removeManipulatorForGroup:(PSDrawingGroup*)group;
 - (PSSRTManipulator*)manipulatorForGroup:(PSDrawingGroup*)group;
@@ -45,6 +46,7 @@
 @synthesize selectionHelper = _selectionHelper;
 @synthesize selectionGroup = _selectionGroup;
 @synthesize currentColor = _currentColor;
+@synthesize manipulators = _manipulators;
 
 
 
@@ -79,6 +81,7 @@
 	
 
 	//Create manipulator views for our current document's children
+	self.manipulators = [NSMutableSet set];
 	for (PSDrawingGroup* child in self.currentDocument.rootGroup.children)
 		[self createManipulatorForGroup:child];
 }
@@ -223,6 +226,8 @@
 	man.delegate = self;
 	man.group = group;
 
+	[self.manipulators addObject:man];
+	
 	return man;
 }
 
@@ -231,26 +236,20 @@
 	PSSRTManipulator* groupMan = [self manipulatorForGroup:group];
 	[PSHelpers assert:(groupMan != nil) withMessage:@"removeManipulator for group without one!"];
 	[groupMan removeFromSuperview];
+	[self.manipulators removeObject:groupMan];
 }
 
 - (PSSRTManipulator*)manipulatorForGroup:(PSDrawingGroup*)group
 {
-	// Find the manipulator by searching through the rendering view
-	PSSRTManipulator* groupMan = nil;
-	for (UIView* v in self.renderingController.view.subviews)
-	{
-		if ([v class] == [PSSRTManipulator class])
-		{
-			PSSRTManipulator* man = (PSSRTManipulator*)v;
-			if ([man group] == group)
-			{
-				groupMan = man;
-				break;
-			}
-		}
-	}
-	return groupMan;
+	for (PSSRTManipulator* m in self.manipulators)
+		if ( m.group == group )
+			return m;
+	return nil;
 }
+
+
+}
+
 
 /*
  ----------------------------------------------------------------------------
@@ -411,8 +410,6 @@
 	//TODO: similar to finishedDrawing
 	[PSHelpers NYIWithmessage:@"scene controller view: cancelledDrawingLine"];
 }
-
-
 
 
 /*
