@@ -29,6 +29,7 @@
 - (PSSRTManipulator*)createManipulatorForGroup:(PSDrawingGroup*)group;
 - (void)removeManipulatorForGroup:(PSDrawingGroup*)group;
 - (PSSRTManipulator*)manipulatorForGroup:(PSDrawingGroup*)group;
+- (void)refreshManipulatorLocations;
 @end
 
 
@@ -79,7 +80,9 @@
 
 	self.createCharacterButton.enabled = NO;
 	
-
+	//initialize our objects to the right time
+	[self.renderingController jumpToTime:self.timelineSlider.value];
+	
 	//Create manipulator views for our current document's children
 	self.manipulators = [NSMutableSet set];
 	for (PSDrawingGroup* child in self.currentDocument.rootGroup.children)
@@ -177,15 +180,22 @@
 {
 	if(self.timelineSlider.playing)
 	{
+		// PAUSE!
 		[self.renderingController stopPlaying];
 		self.timelineSlider.playing = NO;
+		[self refreshManipulatorLocations];
+		for (PSSRTManipulator* m in self.manipulators)
+			m.hidden = NO;
 	}
 	else
 	{
+		// PLAY!
 		float time = self.timelineSlider.value;
 		[self.renderingController playFromTime:time];
 		self.timelineSlider.value = time;
 		self.timelineSlider.playing = YES;
+		for (PSSRTManipulator* m in self.manipulators)
+			m.hidden = YES;
 	}
 }
 
@@ -194,6 +204,9 @@
 {
 	self.timelineSlider.playing = NO;
 	[self.renderingController jumpToTime:self.timelineSlider.value];
+	[self refreshManipulatorLocations];
+	for (PSSRTManipulator* m in self.manipulators)
+		m.hidden = NO;
 }
 
 
@@ -208,23 +221,12 @@
 
 - (PSSRTManipulator*)createManipulatorForGroup:(PSDrawingGroup*)group
 {
-
-	// Figure out the frame & its offsets at the current time
-	CGRect groupFrame = [group boundingRect];
-	SRTPosition groupPosition;
-	[group getStateAtTime:self.timelineSlider.value
-				 position:&groupPosition
-					 rate:nil
-			  helperIndex:nil];
-	groupFrame.origin.x += groupPosition.location.x;
-	groupFrame.origin.y += groupPosition.location.y;
-	//TODO: need to take scale and rotation into account here.
-	
 	// Create the manipulator & set its location
-	PSSRTManipulator* man = [[PSSRTManipulator alloc] initWithFrame:groupFrame];
+	PSSRTManipulator* man = [[PSSRTManipulator alloc] initWithFrame:[group boundingRect]];
 	[self.renderingController.view addSubview:man];
 	man.delegate = self;
 	man.group = group;
+	man.transform = [group currentAffineTransform];
 
 	[self.manipulators addObject:man];
 	
@@ -248,6 +250,10 @@
 }
 
 
+- (void)refreshManipulatorLocations
+{
+	for (PSSRTManipulator* m in self.manipulators)
+			m.transform = [m.group currentAffineTransform];
 }
 
 
