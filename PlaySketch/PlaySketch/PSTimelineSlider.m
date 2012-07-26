@@ -13,25 +13,52 @@
 
 
 #import "PSTimelineSlider.h"
+@interface PSTimelineSlider ()
+@property(nonatomic,retain)NSTimer* timer;
+@end
+
 
 @implementation PSTimelineSlider
+@synthesize playing = _playing;
+@synthesize timer = _timer;
 
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
-    if (self) {
-        // Initialization code
+    if (self)
+	{
+
     }
     return self;
 }
 
-/*
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect
+
+-(void)setPlaying:(BOOL)playing
 {
-    // Drawing code
+	if (playing && !_playing)
+	{
+		//create a new timer to update our animation
+		self.timer = [NSTimer scheduledTimerWithTimeInterval:1/30.0
+												  target:self
+												selector:@selector(timerUpdate)
+												userInfo:nil
+												 repeats:YES];
+	}
+	else if (!playing && _playing)
+	{
+		[self.timer invalidate];
+		self.timer = nil;
+	}
+	
+	_playing = playing;
 }
-*/
+
+-(void)timerUpdate
+{
+	self.value += self.timer.timeInterval;
+	
+	if(self.value >= self.maximumValue)
+		self.playing = NO;
+}
 
 @end

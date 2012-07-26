@@ -14,5 +14,5 @@
 #import <UIKit/UIKit.h>
 
 @interface PSTimelineSlider : UISlider
-
+@property(nonatomic) BOOL playing; //starts and stops animation
 @end

@@ -174,11 +174,13 @@
 {
 	[self.renderingController playFromTime:0.00];
 	self.timelineSlider.value = 0;
+	self.timelineSlider.playing = YES;
 }
 
 
 - (IBAction)timelineScrubbed:(id)sender
 {
+	self.timelineSlider.playing = NO;
 	[self.renderingController jumpToTime:self.timelineSlider.value];
 }
 
