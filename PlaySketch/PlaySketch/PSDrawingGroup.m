@@ -95,17 +95,19 @@
 	SRTPosition* positions = self.positions;
 	SRTPosition resultPosition;
 	SRTRate resultRate;
-	int i = 0;
+	int resultIndex;
 	
 	if ( positionCount == 0 )
 	{
 		resultPosition = SRTPositionZero();
 		resultRate = SRTRateZero();
+		resultIndex = -1;
 	}
 	else
 	{
 	
 		// find i that upper-bounds our requested time
+		int i = 0;
 		while( i + 1 < positionCount && positions[i].frame < time)
 			i++;
 		
@@ -116,6 +118,7 @@
 			resultPosition = positions[i];
 			resultRate = (i + 1 < positionCount) ?	SRTRateInterpolate(positions[i], positions[i+1]) :
 													SRTRateZero();
+			resultIndex = i;
 		}
 		else if( (positions[i].frame > time && i == 0 ) ||
 				 (positions[i].frame < time && i == positionCount - 1) )
@@ -124,6 +127,7 @@
 			// return the current keyframe and set no rate of motion
 			resultPosition = positions[i];
 			resultRate = SRTRateZero();
+			resultIndex = i;
 		}
 		else
 		{
@@ -131,13 +135,14 @@
 			// position and the rate of motion
 			resultPosition = SRTPositionInterpolate(time, positions[i-1], positions[i]);
 			resultRate = SRTRateInterpolate(positions[i-1], positions[i]);
+			resultIndex = i - 1;
 		}
 	}
 	
 	//Return results
 	if(pPosition) *pPosition = resultPosition;
 	if(pRate) *pRate = resultRate;
-	if(pIndex) *pIndex = i;
+	if(pIndex) *pIndex = resultIndex;
 
 }
 
