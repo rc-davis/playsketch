@@ -24,7 +24,7 @@
 @property(nonatomic)BOOL isSelecting; // If we are selecting instead of drawing
 @property(nonatomic)BOOL isRecording; // If manipulations should be treated as recording
 @property(nonatomic,retain) PSSelectionHelper* selectionHelper;
-@property(nonatomic,retain) PSDrawingGroup* selectionGroup;
+@property(nonatomic,retain) PSDrawingGroup* selectedGroup;
 @property(nonatomic) UInt64 currentColor; // the drawing color as an int
 @property(nonatomic,retain) NSMutableSet* manipulators;
 - (PSSRTManipulator*)createManipulatorForGroup:(PSDrawingGroup*)group;
@@ -47,7 +47,7 @@
 @synthesize isSelecting = _isSelecting;
 @synthesize isRecording = _isRecording;
 @synthesize selectionHelper = _selectionHelper;
-@synthesize selectionGroup = _selectionGroup;
+@synthesize selectedGroup = _selectionGroup;
 @synthesize currentColor = _currentColor;
 @synthesize manipulators = _manipulators;
 
@@ -150,7 +150,7 @@
 		self.createCharacterButton.enabled = NO;
 	}
 	
-	self.selectionGroup = nil;
+	self.selectedGroup = nil;
 }
 
 
@@ -172,10 +172,10 @@
 
 - (IBAction)createCharacterWithCurrentSelection:(id)sender
 {
-	[PSHelpers assert:(self.selectionGroup != nil) withMessage:@"need a selection to make character"];
+	[PSHelpers assert:(self.selectedGroup != nil) withMessage:@"need a selection to make character"];
 	
 	// Keep the selection group by not flattening it when it is unselected
-	self.selectionGroup.explicitCharacter = [NSNumber numberWithBool:YES];
+	self.selectedGroup.explicitCharacter = [NSNumber numberWithBool:YES];
 }
 
 
@@ -198,7 +198,7 @@
 		self.timelineSlider.value = time;
 		self.timelineSlider.playing = YES;
 		for (PSSRTManipulator* m in self.manipulators)
-			if ( ! (self.isRecording && m.group == self.selectionGroup) )
+			if ( ! (self.isRecording && m.group == self.selectedGroup) )
 				m.hidden = YES;
 	}
 }
@@ -351,7 +351,7 @@
 		self.createCharacterButton.enabled = NO;
 	}
 	
-	self.selectionGroup = nil;
+	self.selectedGroup = nil;
 
 	
 	if (! self.isSelecting )
@@ -408,13 +408,13 @@
 			self.createCharacterButton.enabled = YES;
 			
 			// create a new group for the lines
-			self.selectionGroup = [PSDataModel newChildOfGroup:self.currentDocument.rootGroup
+			self.selectedGroup = [PSDataModel newChildOfGroup:self.currentDocument.rootGroup
 												   withLines:self.selectionHelper.selectedLines];
 			
-			[self.selectionGroup jumpToTime:self.timelineSlider.value];
+			[self.selectedGroup jumpToTime:self.timelineSlider.value];
 			
 			// create a new manipulator for the new group
-			PSSRTManipulator* newMan = [self createManipulatorForGroup:self.selectionGroup];
+			PSSRTManipulator* newMan = [self createManipulatorForGroup:self.selectedGroup];
 			newMan.selected = YES;
 			
 		}
@@ -444,7 +444,7 @@
 {
 	PSSRTManipulator* manipulator = sender;
 	[manipulator setSelected:YES];
-	self.selectionGroup = manipulator.group;
+	self.selectedGroup = manipulator.group;
 	
 	if(self.isRecording)
 	{
