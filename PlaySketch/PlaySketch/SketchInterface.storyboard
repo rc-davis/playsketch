@@ -276,7 +276,7 @@
                                     <action selector="setColor:" destination="UPZ-Bt-XHw" eventType="touchUpInside" id="tPO-q3-rBU"/>
                                 </connections>
                             </button>
-                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="15" id="7Eo-kn-03o">
+                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="15" id="7Eo-kn-03o" customClass="PSTimelineSlider">
                                 <rect key="frame" x="175" y="639" width="831" height="23"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <connections>
@@ -346,8 +346,11 @@
                 <relationship kind="outlet" name="renderingController" candidateClass="PSAnimationRenderingController"/>
                 <relationship kind="outlet" name="startDrawingButton" candidateClass="UIButton"/>
                 <relationship kind="outlet" name="startSelectingButton" candidateClass="UIButton"/>
-                <relationship kind="outlet" name="timelineSlider" candidateClass="UISlider"/>
+                <relationship kind="outlet" name="timelineSlider" candidateClass="PSTimelineSlider"/>
             </relationships>
+        </class>
+        <class className="PSTimelineSlider" superclassName="UISlider">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/PSTimelineSlider.h"/>
         </class>
     </classes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">

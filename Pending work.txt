@@ -1,12 +1,9 @@
 MILESTONE 3
 
-- time clock
-- store positions
-- interpolate based on time clock
-- button to reset time clock
+- slider: subclass, animates as it slides
+- play goes from current time
+- keyframing! can set keyframes at times
 
-aniimation widget animates drawing
-	basic timeline
 
 MILESTONE 4:
 - clicking the button pushes a detail view

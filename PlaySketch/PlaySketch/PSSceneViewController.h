@@ -14,8 +14,7 @@
 #import <UIKit/UIKit.h>
 #import "PSDrawingEventsView.h"
 #import "PSSRTManipulator.h"
-@class PSAnimationRenderingController;
-@class PSDrawingDocument;
+@class PSAnimationRenderingController, PSDrawingDocument, PSTimelineSlider;
 
 
 
@@ -28,7 +27,7 @@
 @property(nonatomic,retain)IBOutlet UIButton* startSelectingButton;
 @property(nonatomic,retain)IBOutlet UIButton* createCharacterButton;
 @property(nonatomic,retain)IBOutlet UIButton* playButton;
-@property(nonatomic,retain)IBOutlet UISlider* timelineSlider;
+@property(nonatomic,retain)IBOutlet PSTimelineSlider* timelineSlider;
 @property(nonatomic,retain)PSDrawingDocument* currentDocument;
 
 - (IBAction)dismissSceneView:(id)sender;

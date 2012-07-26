@@ -18,6 +18,7 @@
 #import "PSSelectionHelper.h"
 #import "PSSRTManipulator.h"
 #import "PSHelpers.h"
+#import "PSTimelineSlider.h"
 
 @interface PSSceneViewController ()
 @property(nonatomic)BOOL isSelecting; // If we are selecting instead of drawing
