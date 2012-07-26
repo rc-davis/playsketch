@@ -47,7 +47,7 @@
 @synthesize isSelecting = _isSelecting;
 @synthesize isRecording = _isRecording;
 @synthesize selectionHelper = _selectionHelper;
-@synthesize selectedGroup = _selectionGroup;
+@synthesize selectedGroup = _selectedGroup;
 @synthesize currentColor = _currentColor;
 @synthesize manipulators = _manipulators;
 
@@ -299,32 +299,32 @@
 }
 
 
-- (void)setSelectionGroup:(PSDrawingGroup *)selectionGroup
+- (void)setSelectedGroup:(PSDrawingGroup *)selectedGroup
 {
-	if (selectionGroup == _selectionGroup)
+	if (selectedGroup == _selectedGroup)
 		return;
 	
 	// De select the current one
-	if (_selectionGroup)
+	if (_selectedGroup)
 	{
-		PSSRTManipulator* oldManipulator = [self manipulatorForGroup:_selectionGroup];
+		PSSRTManipulator* oldManipulator = [self manipulatorForGroup:_selectedGroup];
 		if(oldManipulator)
 			oldManipulator.selected = NO;
-		
+
 		// Merge it back into the parent if it hasn't been explicitly made a character
-		if([_selectionGroup.explicitCharacter boolValue] == NO)
+		if([_selectedGroup.explicitCharacter boolValue] == NO)
 		{
-			[self removeManipulatorForGroup:_selectionGroup];
-			[PSDataModel mergeGroup:_selectionGroup intoParentAtTime:self.timelineSlider.value];
+			[self removeManipulatorForGroup:_selectedGroup];
+			[PSDataModel mergeGroup:_selectedGroup intoParentAtTime:self.timelineSlider.value];
 		}		
 	}
 	
-	_selectionGroup = selectionGroup;
+	_selectedGroup = selectedGroup;
 	
 	// Start the new one being selected
-	if ( selectionGroup )
+	if ( selectedGroup )
 	{
-		PSSRTManipulator* newManipulator = [self manipulatorForGroup:selectionGroup];
+		PSSRTManipulator* newManipulator = [self manipulatorForGroup:selectedGroup];
 		if (newManipulator)
 			newManipulator.selected = YES;
 	}
