@@ -425,7 +425,7 @@ enum
 
 	// Check if it is time for us to advance
 	BOOL shouldAdvance = ( currentPositionIndex + 1 < self.positionCount ) &&
-						 ( self.positions[currentPositionIndex + 1].frame <= currentTime );
+						 ( self.positions[currentPositionIndex + 1].timeStamp <= currentTime );
 	
 	if( shouldAdvance )
 	{

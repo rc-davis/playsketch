@@ -1,9 +1,5 @@
 MILESTONE 3
-
-- slider: subclass, animates as it slides
-- play goes from current time
-- keyframing! can set keyframes at times
-
+- recording!
 
 MILESTONE 4:
 - clicking the button pushes a detail view
@@ -87,6 +83,8 @@ https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/CodingGu
 BUGS:
 transforms not saved
 image previews look like crap
+lines need to be drawn in a fixed order
+that order should be respected when changing groups.
 
 
 

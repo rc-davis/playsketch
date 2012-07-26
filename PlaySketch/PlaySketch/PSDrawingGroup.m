@@ -45,12 +45,12 @@
 	// Find the index to insert it at
 	int newIndex = 0;
 	while (newIndex < currentPositionCount && 
-		   currentPositions[newIndex].frame < position.frame)
+		   currentPositions[newIndex].timeStamp < position.timeStamp)
 		newIndex++;
 	
 
 	BOOL overwriting = newIndex < currentPositionCount && 
-						currentPositions[newIndex].frame == position.frame;
+						currentPositions[newIndex].timeStamp == position.timeStamp;
 
 	//Make space for the new entry if necessary
 	if(!overwriting)
@@ -108,10 +108,10 @@
 	
 		// find i that upper-bounds our requested time
 		int i = 0;
-		while( i + 1 < positionCount && positions[i].frame < time)
+		while( i + 1 < positionCount && positions[i].timeStamp < time)
 			i++;
 		
-		if(positions[i].frame == time)
+		if(positions[i].timeStamp == time)
 		{
 			// If we are right on a position keyframe, return that keyframe
 			// Interpolate the Rate if there is a following keyframe to interpolate to
@@ -120,8 +120,8 @@
 													SRTRateZero();
 			resultIndex = i;
 		}
-		else if( (positions[i].frame > time && i == 0 ) ||
-				 (positions[i].frame < time && i == positionCount - 1) )
+		else if( (positions[i].timeStamp > time && i == 0 ) ||
+				 (positions[i].timeStamp < time && i == positionCount - 1) )
 		{
 			// If we are before the first keyframe or after the last keyframe,
 			// return the current keyframe and set no rate of motion

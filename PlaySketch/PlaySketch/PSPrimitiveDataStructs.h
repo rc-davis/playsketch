@@ -19,7 +19,7 @@
 
 typedef struct
 {
-	int frame; // The time to be at this position
+	float timeStamp; // The time to be at this position
 	GLKVector2 location; // in Parent's coordinates
 	float scale; // About origin
 	float rotation; // About origin
@@ -37,12 +37,12 @@ typedef struct
 
 // Helpers for making
 
-static inline SRTPosition SRTPositionMake(int frame, float x, float y, 
+static inline SRTPosition SRTPositionMake(int timeStamp, float x, float y,
 										  float scale, float rotation, 
 										  float originX, float originY)
 {
 	SRTPosition p;
-	p.frame = frame;
+	p.timeStamp = timeStamp;
 	p.location.x = x;
 	p.location.y = y;
 	p.scale = scale;
@@ -73,14 +73,15 @@ static inline SRTPosition SRTPositionZero()
 	return SRTPositionMake(0, 0, 0, 1, 0, 0, 0);
 }
 
-static inline SRTPosition SRTPositionInterpolate(float frame, SRTPosition p1, SRTPosition p2)
+static inline SRTPosition SRTPositionInterpolate(float time, SRTPosition p1, SRTPosition p2)
 {
-	[PSHelpers assert:(p1.frame != p2.frame) withMessage:@"Should be different times"];
-	[PSHelpers assert:(p1.frame <= frame && p2.frame >= frame) withMessage:@"time should be within range"];
-	float pcnt = (frame - p1.frame)/(float)(p2.frame - p1.frame);
+	[PSHelpers assert:(p1.timeStamp != p2.timeStamp) withMessage:@"Should be different times"];
+	[PSHelpers assert:(p1.timeStamp <= time &&
+					   p2.timeStamp >= time) withMessage:@"time should be within range"];
+	float pcnt = (time - p1.timeStamp)/(float)(p2.timeStamp - p1.timeStamp);
 	
 	SRTPosition pos;
-	pos.frame = frame;
+	pos.timeStamp = time;
 	pos.location.x = (1 - pcnt) * p1.location.x + pcnt * p2.location.x;
 	pos.location.y = (1 - pcnt) * p1.location.y + pcnt * p2.location.y;
 	pos.scale = (1 - pcnt) * p1.scale + pcnt * p2.scale;
@@ -92,7 +93,7 @@ static inline SRTPosition SRTPositionInterpolate(float frame, SRTPosition p1, SR
 
 static inline SRTRate SRTRateInterpolate(SRTPosition p1, SRTPosition p2)
 {
-	float frameSpan = p2.frame - p1.frame;
+	float frameSpan = p2.timeStamp - p1.timeStamp;
 	SRTRate rate;
 	rate.locationRate.x = (p2.location.x - p1.location.x)/frameSpan;
 	rate.locationRate.y = (p2.location.y - p1.location.y)/frameSpan;

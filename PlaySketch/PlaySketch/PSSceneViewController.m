@@ -440,7 +440,7 @@
 	SRTPosition position = SRTPositionFromTransform(fullTransform);
 
 	//Store the position at the current time
-	position.frame = self.timelineSlider.value;
+	position.timeStamp = self.timelineSlider.value;
 	[manipulator.group addPosition:position];
 	
 	//Refresh the display of the object
