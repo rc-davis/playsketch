@@ -23,17 +23,15 @@
 
 @property(nonatomic,retain)IBOutlet PSAnimationRenderingController* renderingController;
 @property(nonatomic,retain)IBOutlet PSDrawingEventsView* drawingTouchView;
-@property(nonatomic,retain)IBOutlet UIButton* startDrawingButton;
-@property(nonatomic,retain)IBOutlet UIButton* startSelectingButton;
 @property(nonatomic,retain)IBOutlet UIButton* createCharacterButton;
 @property(nonatomic,retain)IBOutlet UIButton* playButton;
+@property(nonatomic,retain)IBOutlet UIButton* initialColorButton;
 @property(nonatomic,retain)IBOutlet PSTimelineSlider* timelineSlider;
 @property(nonatomic,retain)PSDrawingDocument* currentDocument;
 
 - (IBAction)dismissSceneView:(id)sender;
-- (IBAction)startDrawing:(id)sender;
-- (IBAction)startSelecting:(id)sender;
 - (IBAction)setColor:(id)sender;
+- (IBAction)startSelecting:(id)sender;
 - (IBAction)createCharacterWithCurrentSelection:(id)sender;
 - (IBAction)playPressed:(id)sender;
 - (IBAction)timelineScrubbed:(id)sender;

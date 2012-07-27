@@ -19,6 +19,8 @@
 #import "PSSRTManipulator.h"
 #import "PSHelpers.h"
 #import "PSTimelineSlider.h"
+#import <QuartzCore/QuartzCore.h>
+
 
 @interface PSSceneViewController ()
 @property(nonatomic)BOOL isSelecting; // If we are selecting instead of drawing
@@ -27,10 +29,12 @@
 @property(nonatomic,retain) PSDrawingGroup* selectedGroup;
 @property(nonatomic) UInt64 currentColor; // the drawing color as an int
 @property(nonatomic,retain) NSMutableSet* manipulators;
+@property(nonatomic,retain) UIButton* highlightedButton;
 - (PSSRTManipulator*)createManipulatorForGroup:(PSDrawingGroup*)group;
 - (void)removeManipulatorForGroup:(PSDrawingGroup*)group;
 - (PSSRTManipulator*)manipulatorForGroup:(PSDrawingGroup*)group;
 - (void)refreshManipulatorLocations;
+- (void)highlightButton:(UIButton*)b;
 @end
 
 
@@ -38,10 +42,9 @@
 @implementation PSSceneViewController
 @synthesize renderingController = _renderingController;
 @synthesize drawingTouchView = _drawingTouchView;
-@synthesize startDrawingButton = _startDrawingButton;
-@synthesize startSelectingButton = _startSelectingButton;
 @synthesize createCharacterButton = _createCharacterButton;
 @synthesize playButton = _playButton;
+@synthesize initialColorButton = _initialColorButton;
 @synthesize timelineSlider = _timelineSlider;
 @synthesize currentDocument = _currentDocument;
 @synthesize isSelecting = _isSelecting;
@@ -50,6 +53,7 @@
 @synthesize selectedGroup = _selectedGroup;
 @synthesize currentColor = _currentColor;
 @synthesize manipulators = _manipulators;
+@synthesize highlightedButton = _highlightedButton;
 
 
 
@@ -74,12 +78,9 @@
 	//Start off in drawing mode
 	self.isSelecting = NO;
 	self.isRecording = NO;
-	self.startDrawingButton.enabled = NO;
-	self.startSelectingButton.enabled = YES;
-	self.currentColor = [PSHelpers colorToInt64:[UIColor colorWithRed:0.2 
-																green:0.2 
-																 blue:0.2 
-																alpha:1.0]];	
+	
+	//Initialize to be drawing with an initial color
+	[self setColor:self.initialColorButton];
 
 	self.createCharacterButton.enabled = NO;
 	
@@ -138,35 +139,24 @@
 	[self dismissModalViewControllerAnimated:YES];
 }
 
-
--(IBAction)startDrawing:(id)sender
-{
-	self.startDrawingButton.enabled = NO;
-	self.startSelectingButton.enabled = YES;
-	self.isSelecting = NO;
-	if(self.selectionHelper)
-	{
-		self.selectionHelper = nil;
-		self.createCharacterButton.enabled = NO;
-	}
-	
-	self.selectedGroup = nil;
-}
-
-
--(IBAction)startSelecting:(id)sender
-{
-	self.startDrawingButton.enabled = YES;
-	self.startSelectingButton.enabled = NO;	
-	self.isSelecting = YES;	
-}
-
-
 - (IBAction)setColor:(id)sender
 {
 	// Grab the background color of the button that called us and remember it
 	UIColor* c = [sender backgroundColor];
 	self.currentColor = [PSHelpers colorToInt64:c];
+	
+	//Stop any selection that is happening
+	self.isSelecting = NO;
+	self.selectionHelper = nil;
+	self.selectedGroup = nil;
+	
+	[self highlightButton:sender];
+}
+
+- (IBAction)startSelecting:(id)sender
+{
+	self.isSelecting = YES;
+	[self highlightButton:sender];
 }
 
 
@@ -269,6 +259,26 @@
 {
 	for (PSSRTManipulator* m in self.manipulators)
 			m.transform = [m.group currentAffineTransform];
+}
+
+
+- (void)highlightButton:(UIButton*)b
+{
+	if(self.highlightedButton)
+	{
+		self.highlightedButton.layer.shadowRadius = 0.0;
+		self.highlightedButton.layer.shadowOpacity = 0.0;
+	}
+	
+	if (b)
+	{
+		b.layer.shadowRadius = 10.0;
+		b.layer.shadowColor = [UIColor whiteColor].CGColor;
+		b.layer.shadowOffset = CGSizeMake(0,0);
+		b.layer.shadowOpacity = 1.0;
+	}
+	
+	self.highlightedButton = b;
 }
 
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="2.0" toolsVersion="2549" systemVersion="12A269" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" initialViewController="cg4-D5-CV4">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="2.0" toolsVersion="2818" systemVersion="12A269" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" initialViewController="cg4-D5-CV4">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="1498"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="1900"/>
     </dependencies>
     <scenes>
         <!--Document List Controller - Item-->
@@ -109,11 +109,11 @@
                                     <action selector="playPressed:" destination="UPZ-Bt-XHw" eventType="touchUpInside" id="G5w-6R-Q3g"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="Ejk-xx-DMZ">
-                                <rect key="frame" x="549" y="687" width="70" height="47"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="Ejk-xx-DMZ">
+                                <rect key="frame" x="548" y="684" width="50" height="50"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                                <state key="normal" title="SELECT">
+                                <state key="normal" backgroundImage="lasso.png">
                                     <color key="titleColor" red="0.19607843459999999" green="0.30980393290000002" blue="0.52156865600000002" alpha="1" colorSpace="calibratedRGB"/>
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
@@ -124,7 +124,7 @@
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
-                                    <action selector="startSelecting:" destination="UPZ-Bt-XHw" eventType="touchUpInside" id="Xii-cj-og0"/>
+                                    <action selector="startSelecting:" destination="UPZ-Bt-XHw" eventType="touchUpInside" id="1vc-ie-cvX"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="JSE-6k-jO1">
@@ -145,28 +145,10 @@
                                     <action selector="createCharacterWithCurrentSelection:" destination="UPZ-Bt-XHw" eventType="touchUpInside" id="8e7-bf-aHi"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="DCx-w9-FxX">
-                                <rect key="frame" x="471" y="687" width="70" height="47"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" id="lsC-IX-KML">
+                                <rect key="frame" x="780" y="684" width="50" height="50"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                                <state key="normal" title="DRAW">
-                                    <color key="titleColor" red="0.19607843459999999" green="0.30980393290000002" blue="0.52156865600000002" alpha="1" colorSpace="calibratedRGB"/>
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <state key="disabled">
-                                    <color key="titleColor" red="0.50196081399917603" green="0.50196081399917603" blue="0.50196081399917603" alpha="1" colorSpace="calibratedRGB"/>
-                                </state>
-                                <state key="highlighted">
-                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <connections>
-                                    <action selector="startDrawing:" destination="UPZ-Bt-XHw" eventType="touchUpInside" id="FTP-fy-WJC"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="lsC-IX-KML">
-                                <rect key="frame" x="792" y="687" width="47" height="47"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" red="0.8247805122980999" green="0.86734693877551017" blue="0.1973417560550213" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="backgroundColor" red="0.83991444110870361" green="0.8926624059677124" blue="0.31944191455841064" alpha="1" colorSpace="calibratedRGB"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
                                 <state key="normal">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -179,8 +161,8 @@
                                     <action selector="setColor:" destination="UPZ-Bt-XHw" eventType="touchUpInside" id="kVe-4V-Kjy"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="1hd-vG-wJl">
-                                <rect key="frame" x="737" y="687" width="47" height="47"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" id="1hd-vG-wJl">
+                                <rect key="frame" x="722" y="684" width="50" height="50"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" red="0.86734693877551017" green="0.47147101823327536" blue="0.17959778428772802" alpha="1" colorSpace="calibratedRGB"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
@@ -195,14 +177,13 @@
                                     <action selector="setColor:" destination="UPZ-Bt-XHw" eventType="touchUpInside" id="Wwa-FB-sfi"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="m0r-Hu-Ram">
-                                <rect key="frame" x="957" y="687" width="47" height="47"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" id="m0r-Hu-Ram">
+                                <rect key="frame" x="954" y="684" width="50" height="50"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" red="0.7544829249382019" green="0.47455556663657289" blue="0.66131497880506263" alpha="1" colorSpace="calibratedRGB"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
                                 <state key="normal">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <state key="highlighted">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -211,8 +192,8 @@
                                     <action selector="setColor:" destination="UPZ-Bt-XHw" eventType="touchUpInside" id="yRy-9q-qto"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="fAb-Pk-55R">
-                                <rect key="frame" x="627" y="687" width="47" height="47"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" id="fAb-Pk-55R">
+                                <rect key="frame" x="606" y="684" width="50" height="50"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" red="0.20000000300000001" green="0.20000000300000001" blue="0.20000000300000001" alpha="1" colorSpace="calibratedRGB"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
@@ -227,8 +208,8 @@
                                     <action selector="setColor:" destination="UPZ-Bt-XHw" eventType="touchUpInside" id="fZo-Qb-KVq"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="Rzm-Ze-kRg">
-                                <rect key="frame" x="847" y="687" width="47" height="47"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" id="Rzm-Ze-kRg">
+                                <rect key="frame" x="838" y="684" width="50" height="50"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" red="0.45841490309058397" green="0.7544829249382019" blue="0.31046947064683805" alpha="1" colorSpace="calibratedRGB"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
@@ -243,8 +224,8 @@
                                     <action selector="setColor:" destination="UPZ-Bt-XHw" eventType="touchUpInside" id="3eI-BR-rAx"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="qKH-3I-sp9">
-                                <rect key="frame" x="682" y="687" width="47" height="47"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" id="qKH-3I-sp9">
+                                <rect key="frame" x="664" y="684" width="50" height="50"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" red="0.7544829249382019" green="0.24576608688313215" blue="0.1137480957849468" alpha="1" colorSpace="calibratedRGB"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
@@ -259,8 +240,8 @@
                                     <action selector="setColor:" destination="UPZ-Bt-XHw" eventType="touchUpInside" id="KiA-pn-Oxw"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="XLN-Ck-XDT">
-                                <rect key="frame" x="902" y="687" width="47" height="47"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" id="XLN-Ck-XDT">
+                                <rect key="frame" x="896" y="684" width="50" height="50"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" red="0.26315854179122361" green="0.51497189897858442" blue="0.7544829249382019" alpha="1" colorSpace="calibratedRGB"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
@@ -306,10 +287,9 @@
                     <connections>
                         <outlet property="createCharacterButton" destination="JSE-6k-jO1" id="oc7-0t-p14"/>
                         <outlet property="drawingTouchView" destination="DvE-31-fMP" id="pqD-gn-SQF"/>
+                        <outlet property="initialColorButton" destination="fAb-Pk-55R" id="gFY-4O-xND"/>
                         <outlet property="playButton" destination="7R9-rS-8Ys" id="hAU-yy-ZrF"/>
                         <outlet property="renderingController" destination="RgX-PA-EXf" id="MOH-b8-4Tp"/>
-                        <outlet property="startDrawingButton" destination="DCx-w9-FxX" id="RVe-Iw-ncO"/>
-                        <outlet property="startSelectingButton" destination="Ejk-xx-DMZ" id="54f-Qd-LBv"/>
                         <outlet property="timelineSlider" destination="7Eo-kn-03o" id="sJh-Jk-VPf"/>
                     </connections>
                 </viewController>
@@ -323,6 +303,9 @@
             <point key="canvasLocation" x="671" y="-2161"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="lasso.png" width="100" height="100"/>
+    </resources>
     <classes>
         <class className="PSAnimationRenderingController" superclassName="GLKViewController">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/PSAnimationRenderingController.h"/>
@@ -351,15 +334,14 @@
                 <relationship kind="action" name="dismissSceneView:"/>
                 <relationship kind="action" name="playPressed:"/>
                 <relationship kind="action" name="setColor:"/>
-                <relationship kind="action" name="startDrawing:"/>
                 <relationship kind="action" name="startSelecting:"/>
                 <relationship kind="action" name="timelineScrubbed:"/>
+                <relationship kind="action" name="toggleRecording:"/>
                 <relationship kind="outlet" name="createCharacterButton" candidateClass="UIButton"/>
                 <relationship kind="outlet" name="drawingTouchView" candidateClass="PSDrawingEventsView"/>
+                <relationship kind="outlet" name="initialColorButton" candidateClass="UIButton"/>
                 <relationship kind="outlet" name="playButton" candidateClass="UIButton"/>
                 <relationship kind="outlet" name="renderingController" candidateClass="PSAnimationRenderingController"/>
-                <relationship kind="outlet" name="startDrawingButton" candidateClass="UIButton"/>
-                <relationship kind="outlet" name="startSelectingButton" candidateClass="UIButton"/>
                 <relationship kind="outlet" name="timelineSlider" candidateClass="PSTimelineSlider"/>
             </relationships>
         </class>
