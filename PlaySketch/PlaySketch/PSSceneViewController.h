@@ -14,7 +14,7 @@
 #import <UIKit/UIKit.h>
 #import "PSDrawingEventsView.h"
 #import "PSSRTManipulator.h"
-@class PSAnimationRenderingController, PSDrawingDocument, PSTimelineSlider;
+@class PSAnimationRenderingController, PSDrawingDocument, PSTimelineSlider, PSGroupOverlayButtons;
 
 
 
@@ -27,6 +27,7 @@
 @property(nonatomic,retain)IBOutlet UIButton* playButton;
 @property(nonatomic,retain)IBOutlet UIButton* initialColorButton;
 @property(nonatomic,retain)IBOutlet PSTimelineSlider* timelineSlider;
+@property(nonatomic,retain)IBOutlet PSGroupOverlayButtons* selectionOverlayButtons;
 @property(nonatomic,retain)PSDrawingDocument* currentDocument;
 
 - (IBAction)dismissSceneView:(id)sender;

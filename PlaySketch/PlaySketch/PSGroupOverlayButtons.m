@@ -12,30 +12,26 @@
  */
 
 #import "PSGroupOverlayButtons.h"
+#import "PSDrawingGroup.h"
 
 @implementation PSGroupOverlayButtons
-
-
-- (id)init
-{
-	CGRect defaultFrame = CGRectMake(0, 0, 100, 100);
-	self = [super initWithFrame:defaultFrame];
-    if (self)
-	{
-		self.backgroundColor = [UIColor redColor];
-    }
-    return self;	
-}
-
+@synthesize createGroupButton;
 
 - (void)configureForGroup:(PSDrawingGroup*)group
 {
-	//Decide what buttons to show
+	// Decide what buttons to show
+	self.createGroupButton.hidden = [group.explicitCharacter boolValue];
 	
 }
 
+-(void)setFrame:(CGRect)frame
+{
+	[super setFrame:frame];
+	
+}
 - (void)setLocation:(CGPoint)p
 {
+	NSLog(@"setting loc");
 	CGRect newFrame = self.frame;
 	newFrame.origin = p;
 	self.frame = newFrame;

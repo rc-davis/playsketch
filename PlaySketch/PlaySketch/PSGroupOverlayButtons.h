@@ -15,9 +15,11 @@
 @class PSDrawingGroup;
 
 @interface PSGroupOverlayButtons : UIView
+@property(nonatomic,retain)IBOutlet UIButton* createGroupButton;
 
 - (void)configureForGroup:(PSDrawingGroup*)group;
 - (void)setLocation:(CGPoint)p;
 - (void)show:(BOOL)animated;
 - (void)hide:(BOOL)animated;
+
 @end
