@@ -1,31 +1,52 @@
-//
-//  PSGroupOverlayButtons.m
-//  PlaySketch
-//
-//  Created by Ryder Ziola on 2012-07-30.
-//  Copyright (c) 2012 Singapore Management University. All rights reserved.
-//
+/*
+ 
+ --------------
+ Copyright 2012 Singapore Management University
+ 
+ This Source Code Form is subject to the terms of the
+ Mozilla Public License, v. 2.0. If a copy of the MPL was
+ not distributed with this file, You can obtain one at
+ http://mozilla.org/MPL/2.0/.
+ --------------
+ 
+ */
 
 #import "PSGroupOverlayButtons.h"
 
 @implementation PSGroupOverlayButtons
 
-- (id)initWithFrame:(CGRect)frame
+
+- (id)init
 {
-    self = [super initWithFrame:frame];
-    if (self) {
-        // Initialization code
+	CGRect defaultFrame = CGRectMake(0, 0, 100, 100);
+	self = [super initWithFrame:defaultFrame];
+    if (self)
+	{
+		self.backgroundColor = [UIColor redColor];
     }
-    return self;
+    return self;	
 }
 
-/*
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect
+
+- (void)configureForGroup:(PSDrawingGroup*)group
 {
-    // Drawing code
+	//Decide what buttons to show
+	
 }
-*/
+
+- (void)show:(BOOL)animated
+{
+	if(animated) [UIView beginAnimations:@"GroupOverlayAppearance" context:nil];
+	self.alpha = 1.0;
+	if(animated) [UIView commitAnimations];
+}
+
+- (void)hide:(BOOL)animated;
+{
+	if(animated) [UIView beginAnimations:@"GroupOverlayAppearance" context:nil];
+	self.alpha = 0.0;
+	if(animated) [UIView commitAnimations];
+
+}
 
 @end

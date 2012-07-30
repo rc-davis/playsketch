@@ -11,6 +11,7 @@
 		4633559415B6D820001AE6CD /* Shader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 4625EA2115B6D56900316216 /* Shader.vsh */; };
 		4673A46A15B6A9100053FDF0 /* PSHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 4673A46915B6A9100053FDF0 /* PSHelpers.m */; };
 		467E4E4215B4235700F70C1E /* PSSelectionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 467E4E4115B4235700F70C1E /* PSSelectionHelper.m */; };
+		468E2A2D15C61C0600AA20D2 /* PSGroupOverlayButtons.m in Sources */ = {isa = PBXBuildFile; fileRef = 468E2A2C15C61C0600AA20D2 /* PSGroupOverlayButtons.m */; };
 		46973BE815C103170092D236 /* PSTimelineSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = 46973BE715C103170092D236 /* PSTimelineSlider.m */; };
 		469E009A15C2437500EE7EC9 /* lasso.png in Resources */ = {isa = PBXBuildFile; fileRef = 469E009915C2437500EE7EC9 /* lasso.png */; };
 		46BAC13415B52741007C288E /* PSSRTManipulator.m in Sources */ = {isa = PBXBuildFile; fileRef = 46BAC13315B52741007C288E /* PSSRTManipulator.m */; };
@@ -61,6 +62,8 @@
 		4673A46915B6A9100053FDF0 /* PSHelpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSHelpers.m; sourceTree = "<group>"; };
 		467E4E4015B4235700F70C1E /* PSSelectionHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSSelectionHelper.h; sourceTree = "<group>"; };
 		467E4E4115B4235700F70C1E /* PSSelectionHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSSelectionHelper.m; sourceTree = "<group>"; };
+		468E2A2B15C61C0600AA20D2 /* PSGroupOverlayButtons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PSGroupOverlayButtons.h; path = PlaySketch/PSGroupOverlayButtons.h; sourceTree = "<group>"; };
+		468E2A2C15C61C0600AA20D2 /* PSGroupOverlayButtons.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PSGroupOverlayButtons.m; path = PlaySketch/PSGroupOverlayButtons.m; sourceTree = "<group>"; };
 		46973BE615C103170092D236 /* PSTimelineSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PSTimelineSlider.h; path = PlaySketch/PSTimelineSlider.h; sourceTree = "<group>"; };
 		46973BE715C103170092D236 /* PSTimelineSlider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PSTimelineSlider.m; path = PlaySketch/PSTimelineSlider.m; sourceTree = "<group>"; };
 		469E009915C2437500EE7EC9 /* lasso.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = lasso.png; sourceTree = "<group>"; };
@@ -196,6 +199,8 @@
 				46BAC13315B52741007C288E /* PSSRTManipulator.m */,
 				46973BE615C103170092D236 /* PSTimelineSlider.h */,
 				46973BE715C103170092D236 /* PSTimelineSlider.m */,
+				468E2A2B15C61C0600AA20D2 /* PSGroupOverlayButtons.h */,
+				468E2A2C15C61C0600AA20D2 /* PSGroupOverlayButtons.m */,
 			);
 			name = Interface;
 			path = ..;
@@ -435,6 +440,7 @@
 				46BAC13415B52741007C288E /* PSSRTManipulator.m in Sources */,
 				4673A46A15B6A9100053FDF0 /* PSHelpers.m in Sources */,
 				46973BE815C103170092D236 /* PSTimelineSlider.m in Sources */,
+				468E2A2D15C61C0600AA20D2 /* PSGroupOverlayButtons.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -19,6 +19,7 @@
 #import "PSSRTManipulator.h"
 #import "PSHelpers.h"
 #import "PSTimelineSlider.h"
+#import "PSGroupOverlayButtons.h"
 #import <QuartzCore/QuartzCore.h>
 
 
@@ -27,6 +28,7 @@
 @property(nonatomic)BOOL isRecording; // If manipulations should be treated as recording
 @property(nonatomic,retain) PSSelectionHelper* selectionHelper;
 @property(nonatomic,retain) PSDrawingGroup* selectedGroup;
+@property(nonatomic,retain) PSGroupOverlayButtons* selectionOverlayButtons;
 @property(nonatomic) UInt64 currentColor; // the drawing color as an int
 @property(nonatomic,retain) NSMutableSet* manipulators;
 @property(nonatomic,retain) UIButton* highlightedButton;
@@ -51,6 +53,7 @@
 @synthesize isRecording = _isRecording;
 @synthesize selectionHelper = _selectionHelper;
 @synthesize selectedGroup = _selectedGroup;
+@synthesize selectionOverlayButtons = _selectionOverlayButtons;
 @synthesize currentColor = _currentColor;
 @synthesize manipulators = _manipulators;
 @synthesize highlightedButton = _highlightedButton;
@@ -83,6 +86,12 @@
 	[self setColor:self.initialColorButton];
 
 	self.createCharacterButton.enabled = NO;
+	
+	
+	//Create buttons for controlling the currently selected group
+	self.selectionOverlayButtons = [[PSGroupOverlayButtons alloc] init];
+	[self.renderingController.view addSubview:self.selectionOverlayButtons];
+	[self.selectionOverlayButtons hide:NO];
 	
 	//initialize our objects to the right time
 	[self.renderingController jumpToTime:self.timelineSlider.value];
@@ -326,7 +335,7 @@
 		{
 			[self removeManipulatorForGroup:_selectedGroup];
 			[PSDataModel mergeGroup:_selectedGroup intoParentAtTime:self.timelineSlider.value];
-		}		
+		}
 	}
 	
 	_selectedGroup = selectedGroup;
@@ -338,7 +347,15 @@
 		PSSRTManipulator* newManipulator = [self manipulatorForGroup:selectedGroup];
 		if (newManipulator)
 			newManipulator.selected = YES;
+		
+		[self.selectionOverlayButtons configureForGroup:selectedGroup];
+		[self.selectionOverlayButtons show:YES];
 	}
+	else
+	{
+		[self.selectionOverlayButtons hide:YES];
+	}
+
 }
 
 
