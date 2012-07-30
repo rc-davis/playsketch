@@ -24,14 +24,8 @@
 	
 }
 
--(void)setFrame:(CGRect)frame
-{
-	[super setFrame:frame];
-	
-}
 - (void)setLocation:(CGPoint)p
 {
-	NSLog(@"setting loc");
 	CGRect newFrame = self.frame;
 	newFrame.origin = p;
 	self.frame = newFrame;

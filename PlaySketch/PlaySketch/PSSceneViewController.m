@@ -85,6 +85,7 @@
 	[self setColor:self.initialColorButton];
 
 	self.createCharacterButton.enabled = NO;
+	[self.selectionOverlayButtons hide:NO];
 	
 	//initialize our objects to the right time
 	[self.renderingController jumpToTime:self.timelineSlider.value];
@@ -168,6 +169,8 @@
 	
 	// Keep the selection group by not flattening it when it is unselected
 	self.selectedGroup.explicitCharacter = [NSNumber numberWithBool:YES];
+	
+	[self.selectionOverlayButtons configureForGroup:self.selectedGroup];
 }
 
 
@@ -230,7 +233,7 @@
 {
 	// Create the manipulator & set its location
 	PSSRTManipulator* man = [[PSSRTManipulator alloc] initWithFrame:[group boundingRect]];
-	[self.renderingController.view addSubview:man];
+	[self.renderingController.view insertSubview:man belowSubview:self.selectionOverlayButtons];
 	man.delegate = self;
 	man.group = group;
 	man.transform = [group currentAffineTransform];
