@@ -26,6 +26,7 @@
 @property(nonatomic,weak) id<PSSRTManipulatoDelegate> delegate;
 @property(nonatomic,weak) PSDrawingGroup* group;
 @property(nonatomic) BOOL selected;
--(id)initWithFrame:(CGRect)frame;
+- (id)initWithFrame:(CGRect)frame;
+- (CGPoint)upperRightPoint;
 
 @end

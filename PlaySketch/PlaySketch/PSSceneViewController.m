@@ -349,6 +349,7 @@
 			newManipulator.selected = YES;
 		
 		[self.selectionOverlayButtons configureForGroup:selectedGroup];
+		[self.selectionOverlayButtons setLocation: [newManipulator upperRightPoint]];
 		[self.selectionOverlayButtons show:YES];
 	}
 	else
@@ -436,14 +437,16 @@
 			self.createCharacterButton.enabled = YES;
 			
 			// create a new group for the lines
-			self.selectedGroup = [PSDataModel newChildOfGroup:self.currentDocument.rootGroup
+			PSDrawingGroup* newGroup = [PSDataModel newChildOfGroup:self.currentDocument.rootGroup
 												   withLines:self.selectionHelper.selectedLines];
 			
-			[self.selectedGroup jumpToTime:self.timelineSlider.value];
+			[newGroup jumpToTime:self.timelineSlider.value];
 			
 			// create a new manipulator for the new group
-			PSSRTManipulator* newMan = [self createManipulatorForGroup:self.selectedGroup];
+			PSSRTManipulator* newMan = [self createManipulatorForGroup:newGroup];
 			newMan.selected = YES;
+			
+			self.selectedGroup = newGroup;
 			
 			// get rid of the selection helper so our lines are highlighted anymore
 			self.selectionHelper = nil;
@@ -502,6 +505,9 @@
 	
 	//Refresh the display of the object
 	[manipulator.group jumpToTime:self.timelineSlider.value];
+	
+	//Keep our buttons properly aligned
+	[self.selectionOverlayButtons setLocation:[manipulator upperRightPoint]];
 }
 
 -(void)manipulatorDidStopInteraction:(id)sender

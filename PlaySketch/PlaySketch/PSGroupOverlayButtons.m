@@ -34,6 +34,13 @@
 	
 }
 
+- (void)setLocation:(CGPoint)p
+{
+	CGRect newFrame = self.frame;
+	newFrame.origin = p;
+	self.frame = newFrame;
+}
+
 - (void)show:(BOOL)animated
 {
 	if(animated) [UIView beginAnimations:@"GroupOverlayAppearance" context:nil];

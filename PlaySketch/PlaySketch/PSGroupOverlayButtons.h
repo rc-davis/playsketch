@@ -17,6 +17,7 @@
 @interface PSGroupOverlayButtons : UIView
 
 - (void)configureForGroup:(PSDrawingGroup*)group;
+- (void)setLocation:(CGPoint)p;
 - (void)show:(BOOL)animated;
 - (void)hide:(BOOL)animated;
 @end

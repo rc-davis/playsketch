@@ -36,7 +36,6 @@
 	return self;
 }
 
-
 /*
 	Override the selected setter so we can set the appearance for the manipulator
 */
@@ -91,6 +90,14 @@
 	[super setFrame:frameAboutZero];	
 	self.transform = CGAffineTransformMakeTranslation(centerPoint.x, centerPoint.y);
 }
+
+
+- (CGPoint)upperRightPoint
+{
+	return CGPointMake(CGRectGetMaxX(self.frame),
+					   CGRectGetMinY(self.frame));
+}
+
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
