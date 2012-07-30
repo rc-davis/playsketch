@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		4633559315B6D820001AE6CD /* Shader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 4625EA1E15B6D55100316216 /* Shader.fsh */; };
 		4633559415B6D820001AE6CD /* Shader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 4625EA2115B6D56900316216 /* Shader.vsh */; };
-		4634AD1115B80730009A6E95 /* Brush.png in Resources */ = {isa = PBXBuildFile; fileRef = 4634AD1015B80730009A6E95 /* Brush.png */; };
 		4673A46A15B6A9100053FDF0 /* PSHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 4673A46915B6A9100053FDF0 /* PSHelpers.m */; };
 		467E4E4215B4235700F70C1E /* PSSelectionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 467E4E4115B4235700F70C1E /* PSSelectionHelper.m */; };
 		46973BE815C103170092D236 /* PSTimelineSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = 46973BE715C103170092D236 /* PSTimelineSlider.m */; };
@@ -373,7 +372,6 @@
 				46F7A64515B014E700C7B374 /* InfoPlist.strings in Resources */,
 				46F7A67315B0188600C7B374 /* Pending work.txt in Resources */,
 				46BF25AC15B0266A00834681 /* SketchInterface.storyboard in Resources */,
-				4634AD1115B80730009A6E95 /* Brush.png in Resources */,
 				469E009A15C2437500EE7EC9 /* lasso.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
