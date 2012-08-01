@@ -187,6 +187,8 @@
 	}
 	else
 	{
+		if (! self.isRecording) self.selectedGroup = nil;
+		
 		// PLAY!
 		float time = self.timelineSlider.value;
 		[self.renderingController playFromTime:time];
@@ -212,9 +214,9 @@
 - (IBAction)toggleRecording:(id)sender
 {
 	if(self.isRecording)
-		[sender setTitle:@"Start Recording" forState:UIControlStateNormal];
+		[self.selectionOverlayButtons stopRecordingMode];
 	else
-		[sender setTitle:@"Stop Recording" forState:UIControlStateNormal];
+		[self.selectionOverlayButtons startRecordingMode];
 	
 	self.isRecording = ! self.isRecording;
 }
@@ -485,6 +487,7 @@
 		[manipulator.group clearPositionsAfterTime:self.timelineSlider.value];
 		
 		[self playPressed:nil]; //TODO: should abstract this out of an IBAction
+		self.selectionOverlayButtons.recordPulsing = YES;
 	}
 }
 
@@ -518,6 +521,7 @@
 		[manipulator.group addPosition:currentPos];
 
 		[self playPressed:nil]; //TODO: should abstract this out of an IBAction
+		self.selectionOverlayButtons.recordPulsing = NO;
 	}
 	
 }

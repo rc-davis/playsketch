@@ -16,10 +16,15 @@
 
 @interface PSGroupOverlayButtons : UIView
 @property(nonatomic,retain)IBOutlet UIButton* createGroupButton;
+@property(nonatomic,retain)IBOutlet UIButton* recordingButton;
+@property(nonatomic) BOOL recordPulsing;
 
 - (void)configureForGroup:(PSDrawingGroup*)group;
 - (void)setLocation:(CGPoint)p;
 - (void)show:(BOOL)animated;
 - (void)hide:(BOOL)animated;
+- (void)startRecordingMode;
+- (void)stopRecordingMode;
+
 
 @end
