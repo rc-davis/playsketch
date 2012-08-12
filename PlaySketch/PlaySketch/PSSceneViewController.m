@@ -216,21 +216,6 @@
 
 - (IBAction)toggleRecording:(id)sender
 {
-	if(self.isRecording)
-	{
-		[self.selectionOverlayButtons stopRecordingMode];
-		[[self manipulatorForGroup:self.selectedGroup] setApperanceIsSelected:YES
-																  isCharacter:YES
-																  isRecording:NO];
-	}
-	else
-	{
-		[self.selectionOverlayButtons startRecordingMode];
-		[[self manipulatorForGroup:self.selectedGroup] setApperanceIsSelected:YES
-																  isCharacter:YES
-																  isRecording:YES];
-	}
-	
 	self.isRecording = ! self.isRecording;
 }
 
@@ -372,7 +357,33 @@
 	{
 		[self.selectionOverlayButtons hide:YES];
 	}
+	
+	// Reset any recording we are doing
+	self.isRecording = NO;
 
+}
+
+- (void)setIsRecording:(BOOL)isRecording
+{
+	if(_isRecording && !isRecording)
+	{
+		//Stop Recording
+		[self.selectionOverlayButtons stopRecordingMode];
+		[[self manipulatorForGroup:self.selectedGroup] setApperanceIsSelected:YES
+																  isCharacter:YES
+																  isRecording:NO];
+	}
+	
+	if(!_isRecording && isRecording)
+	{
+		//Start Recording
+		[self.selectionOverlayButtons startRecordingMode];
+		[[self manipulatorForGroup:self.selectedGroup] setApperanceIsSelected:YES
+																  isCharacter:YES
+																  isRecording:YES];
+	}
+	
+	_isRecording = isRecording;
 }
 
 
