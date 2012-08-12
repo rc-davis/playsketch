@@ -270,6 +270,12 @@
 {
 	for (PSSRTManipulator* m in self.manipulators)
 			m.transform = [m.group currentAffineTransform];
+	
+	if(self.selectedGroup)
+	{
+		CGPoint newPoint = [[self manipulatorForGroup:self.selectedGroup] upperRightPoint];
+		[self.selectionOverlayButtons setLocation: newPoint];
+	}
 }
 
 
