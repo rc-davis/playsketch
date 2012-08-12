@@ -12,6 +12,7 @@
  */
 
 #import "PSSRTManipulator.h"
+#import "PSHelpers.h"
 #import <GLKit/GLKit.h> // for the math
 #import <QuartzCore/QuartzCore.h>
 
@@ -23,37 +24,57 @@
 @implementation PSSRTManipulator
 @synthesize delegate = _delegate;
 @synthesize group = _group;
-@synthesize selected = _selected;
 
 
 -(id)initWithFrame:(CGRect)frame
 {
 	if (self = [super initWithFrame:frame])
 	{
-		self.selected = NO;
+		// sensible defaults
+		[self setApperanceIsSelected:YES isCharacter:NO isRecording:NO];
 	}
 	
 	return self;
 }
 
-/*
-	Override the selected setter so we can set the appearance for the manipulator
-*/
-- (void)setSelected:(BOOL)selected
+- (void)setApperanceIsSelected:(BOOL)selected isCharacter:(BOOL)character isRecording:(BOOL)recording
 {
-	_selected = selected;
-	if(selected)
+	UIColor* newBackground = [UIColor blackColor];
+	
+	if( selected && !character && !recording )
 	{
-		self.backgroundColor = [UIColor colorWithRed:0.950 green:1.000 blue:0.045 alpha:0.2];
-		self.layer.borderColor = [UIColor colorWithRed:0.950 green:1.000 blue:0.045 alpha:1.0].CGColor;
-		self.layer.borderWidth = 4.0;
+		// Inital selection, yellow color
+		newBackground = [UIColor colorWithRed:0.950 green:1.000 blue:0.045 alpha:0.5];
+		
+	}
+	else if(!selected && !character && !recording)
+	{
+		// A zombie manipulator...
+		newBackground = [UIColor blackColor];
+	}
+	else if( !selected && character && !recording )
+	{
+		// A character that isn't selected, grey background color
+		newBackground = [UIColor colorWithRed:0.494 green:0.495 blue:0.470 alpha:0.2];
+	}
+	else if ( selected && character && !recording )
+	{
+		// A character that is selected but not recording, orange color
+		newBackground = [UIColor colorWithRed:1.000 green:0.734 blue:0.116 alpha:0.5];
+
+	}
+	else if ( selected && character && recording )
+	{
+		// A character that is selected and in recording mode, red!
+		newBackground = [UIColor colorWithRed:1.000 green:0.000 blue:0.000 alpha:0.5];
+
 	}
 	else
 	{
-		self.backgroundColor = [UIColor colorWithRed:0.494 green:0.495 blue:0.470 alpha:0.2];
-		self.layer.borderWidth = 0.0;
-	}	
-	
+		NSLog(@"selected? %d\tcharacter? %d\trecording? %d", selected, character, recording);
+		[PSHelpers NYIWithmessage:@"This combination has not been considered..."];
+	}
+	self.backgroundColor = newBackground;
 }
 
 

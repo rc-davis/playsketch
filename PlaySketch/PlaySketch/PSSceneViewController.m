@@ -171,6 +171,9 @@
 	self.selectedGroup.explicitCharacter = [NSNumber numberWithBool:YES];
 	
 	[self.selectionOverlayButtons configureForGroup:self.selectedGroup];
+	[[self manipulatorForGroup:self.selectedGroup] setApperanceIsSelected:YES
+															  isCharacter:YES
+															  isRecording:NO];
 }
 
 
@@ -239,6 +242,9 @@
 	man.delegate = self;
 	man.group = group;
 	man.transform = [group currentAffineTransform];
+	[man setApperanceIsSelected:(group == self.selectedGroup)
+					   isCharacter:[group.explicitCharacter boolValue]
+					   isRecording:NO];
 
 	[self.manipulators addObject:man];
 	
@@ -325,8 +331,9 @@
 	if (_selectedGroup)
 	{
 		PSSRTManipulator* oldManipulator = [self manipulatorForGroup:_selectedGroup];
-		if(oldManipulator)
-			oldManipulator.selected = NO;
+		[oldManipulator setApperanceIsSelected:NO
+								   isCharacter:[_selectedGroup.explicitCharacter boolValue]
+								   isRecording:NO];
 
 		// Merge it back into the parent if it hasn't been explicitly made a character
 		if([_selectedGroup.explicitCharacter boolValue] == NO)
@@ -343,8 +350,9 @@
 	if ( selectedGroup )
 	{
 		PSSRTManipulator* newManipulator = [self manipulatorForGroup:selectedGroup];
-		if (newManipulator)
-			newManipulator.selected = YES;
+		[newManipulator setApperanceIsSelected:YES
+								   isCharacter:[selectedGroup.explicitCharacter boolValue]
+								   isRecording:NO];
 		
 		[self.selectionOverlayButtons configureForGroup:selectedGroup];
 		[self.selectionOverlayButtons setLocation: [newManipulator upperRightPoint]];
@@ -442,7 +450,10 @@
 			
 			// create a new manipulator for the new group
 			PSSRTManipulator* newMan = [self createManipulatorForGroup:newGroup];
-			newMan.selected = YES;
+			[newMan setApperanceIsSelected:YES
+							   isCharacter:NO
+							   isRecording:NO];
+
 			
 			self.selectedGroup = newGroup;
 			
@@ -475,8 +486,10 @@
 -(void)manipulatorDidStartInteraction:(id)sender
 {
 	PSSRTManipulator* manipulator = sender;
-	[manipulator setSelected:YES];
 	self.selectedGroup = manipulator.group;
+	[manipulator setApperanceIsSelected:YES
+							isCharacter:[self.selectedGroup.explicitCharacter boolValue]
+							isRecording:self.isRecording];
 	
 	if(self.isRecording)
 	{
