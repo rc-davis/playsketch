@@ -1,26 +1,25 @@
-- selection style should change between characters and just selections
-	- just selection should keep the selected style probably?
-- button / graphic for making a character
+NEXT:
+Detailview
+button
+pushes new view
+inherits new frame of reference
+(recursive!)
 
-- move recording button to overlay
-	- turns on/off
-	- pulses while recording (investigate other styles)
 
 
+
+Odds + ends
+
+Drawing stuff:
+- Nicer selection background
+- nicer drawing texture?
 
 - video export
 - eraser!
 
-
-MILESTONE 4:
-- clicking the button pushes a detail view
-- dismiss detail view
-- drawing in detail view (pause rendering on 
-
-	
-MILESTONE 4:
-	puppets inside the animation
-
+- minimum size for manipulator
+- button for rotation
+- toolbar should be better placed
 
 
 for selection line to not be created IN the model:
