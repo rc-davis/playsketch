@@ -319,57 +319,6 @@
         <image name="record_down.png" width="120" height="120"/>
         <image name="record_up.png" width="120" height="120"/>
     </resources>
-    <classes>
-        <class className="PSAnimationRenderingController" superclassName="GLKViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/PSAnimationRenderingController.h"/>
-        </class>
-        <class className="PSDocumentListController" superclassName="UIViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/PSDocumentListController.h"/>
-            <relationships>
-                <relationship kind="action" name="deleteDocument:"/>
-                <relationship kind="action" name="newDocument:"/>
-                <relationship kind="action" name="startRenameDocument:"/>
-                <relationship kind="outlet" name="deleteButton" candidateClass="UIButton"/>
-                <relationship kind="outlet" name="documentNameButton" candidateClass="UIButton"/>
-                <relationship kind="outlet" name="scrollView" candidateClass="UIScrollView"/>
-            </relationships>
-        </class>
-        <class className="PSDrawingEventsView" superclassName="GLKView">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/PSDrawingEventsView.h"/>
-            <relationships>
-                <relationship kind="outlet" name="drawingDelegate"/>
-            </relationships>
-        </class>
-        <class className="PSGroupOverlayButtons" superclassName="UIView">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/PSGroupOverlayButtons.h"/>
-            <relationships>
-                <relationship kind="outlet" name="createGroupButton" candidateClass="UIButton"/>
-                <relationship kind="outlet" name="recordingButton" candidateClass="UIButton"/>
-            </relationships>
-        </class>
-        <class className="PSSceneViewController" superclassName="UIViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/PSSceneViewController.h"/>
-            <relationships>
-                <relationship kind="action" name="createCharacterWithCurrentSelection:"/>
-                <relationship kind="action" name="dismissSceneView:"/>
-                <relationship kind="action" name="playPressed:"/>
-                <relationship kind="action" name="setColor:"/>
-                <relationship kind="action" name="startSelecting:"/>
-                <relationship kind="action" name="timelineScrubbed:"/>
-                <relationship kind="action" name="toggleRecording:"/>
-                <relationship kind="outlet" name="createCharacterButton" candidateClass="UIButton"/>
-                <relationship kind="outlet" name="drawingTouchView" candidateClass="PSDrawingEventsView"/>
-                <relationship kind="outlet" name="initialColorButton" candidateClass="UIButton"/>
-                <relationship kind="outlet" name="playButton" candidateClass="UIButton"/>
-                <relationship kind="outlet" name="renderingController" candidateClass="PSAnimationRenderingController"/>
-                <relationship kind="outlet" name="selectionOverlayButtons" candidateClass="PSGroupOverlayButtons"/>
-                <relationship kind="outlet" name="timelineSlider" candidateClass="PSTimelineSlider"/>
-            </relationships>
-        </class>
-        <class className="PSTimelineSlider" superclassName="UISlider">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/PSTimelineSlider.h"/>
-        </class>
-    </classes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar" statusBarStyle="blackTranslucent"/>
         <simulatedOrientationMetrics key="orientation" orientation="landscapeRight"/>
