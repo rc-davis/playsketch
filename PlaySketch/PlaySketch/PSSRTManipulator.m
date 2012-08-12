@@ -83,6 +83,22 @@
 		http://developer.apple.com/library/ios/#documentation/uikit/reference/uiview_class/uiview/uiview.html
 	 */
 	
+	// Add some padding to the frame if necessary
+	float MIN_FRAME_DIMENSION = 75.0; //Bigger than the recommended minimum touch target
+	if(frame.size.width < MIN_FRAME_DIMENSION)
+	{
+		float deltaWidth = MIN_FRAME_DIMENSION - frame.size.width;
+		frame.size.width += deltaWidth;
+		frame.origin.x -= deltaWidth/2.0;
+	}
+	if(frame.size.height < MIN_FRAME_DIMENSION) //Recommended minimum touch target
+	{
+		float deltaHeight = MIN_FRAME_DIMENSION - frame.size.height;
+		frame.size.height += deltaHeight;
+		frame.origin.y -= deltaHeight/2.0;
+	}
+	
+	
 	CGRect frameAboutZero = CGRectMake(-frame.size.width/2.0, -frame.size.height/2.0,
 									   frame.size.width, frame.size.height);
 	CGPoint centerPoint = CGPointMake(frame.origin.x + frame.size.width/2.0,
