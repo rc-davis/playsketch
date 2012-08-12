@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		46186F6F15D78D3200A1E1A2 /* character.png in Resources */ = {isa = PBXBuildFile; fileRef = 46186F6E15D78D3200A1E1A2 /* character.png */; };
 		4633559315B6D820001AE6CD /* Shader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 4625EA1E15B6D55100316216 /* Shader.fsh */; };
 		4633559415B6D820001AE6CD /* Shader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 4625EA2115B6D56900316216 /* Shader.vsh */; };
 		4673A46A15B6A9100053FDF0 /* PSHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 4673A46915B6A9100053FDF0 /* PSHelpers.m */; };
@@ -57,6 +58,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		46186F6E15D78D3200A1E1A2 /* character.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = character.png; sourceTree = "<group>"; };
 		4625EA1E15B6D55100316216 /* Shader.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = Shader.fsh; sourceTree = "<group>"; };
 		4625EA2115B6D56900316216 /* Shader.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = Shader.vsh; sourceTree = "<group>"; };
 		4634AD1015B80730009A6E95 /* Brush.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Brush.png; sourceTree = "<group>"; };
@@ -170,6 +172,7 @@
 		469E009C15C2438000EE7EC9 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				46186F6E15D78D3200A1E1A2 /* character.png */,
 				469E009915C2437500EE7EC9 /* lasso.png */,
 				46CF96FA15C7E083007B5682 /* record_down.png */,
 				46CF96FB15C7E083007B5682 /* record_up.png */,
@@ -386,6 +389,7 @@
 				469E009A15C2437500EE7EC9 /* lasso.png in Resources */,
 				46CF96FC15C7E083007B5682 /* record_down.png in Resources */,
 				46CF96FD15C7E083007B5682 /* record_up.png in Resources */,
+				46186F6F15D78D3200A1E1A2 /* character.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
