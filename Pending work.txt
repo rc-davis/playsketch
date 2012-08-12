@@ -1,10 +1,22 @@
+selection line & highlight lines are marching ants
+
+
+1) Just selected
+	- lines still selected!
+	
+
+
+2) selected character
+
+3) unselected character
+	- as is: no outline, grey background square.
+
+4) recording character
+
+
 - selection style should change between characters and just selections
 	- just selection should keep the selected style probably?
 - button / graphic for making a character
-
-- move recording button to overlay
-	- turns on/off
-	- pulses while recording (investigate other styles)
 
 
 

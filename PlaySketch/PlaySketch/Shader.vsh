@@ -29,12 +29,13 @@
 
 attribute vec4 position;
 uniform mat4 modelViewProjectionMatrix;
+uniform vec2 textureOffset;
+varying vec2 texCoordVarying;
 
 void main()
 {
-
-    gl_PointSize = 10.0; //This only matters if we are using brushes instead of lines
     gl_Position = modelViewProjectionMatrix * position;
-
+	texCoordVarying[0] = position[0]/128.0 + textureOffset[0];
+	texCoordVarying[1] = position[1]/128.0;
 }
 

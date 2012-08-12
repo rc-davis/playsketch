@@ -26,11 +26,10 @@
  */
 precision mediump float; // Set the default precision for floats to medium
 uniform vec4 brushColor;
+varying highp vec2 texCoordVarying;
+uniform sampler2D texture;
 
 void main()
 {
-    gl_FragColor = brushColor;
-	
-	//Or use this instead to draw with a brush:
-	//texture2D(brushTexture, gl_PointCoord) * brushColor;
+	gl_FragColor = texture2D(texture, texCoordVarying);
 }

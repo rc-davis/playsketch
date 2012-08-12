@@ -17,7 +17,14 @@ enum
 	// indices into _uniforms array for tracking uniform handles in our shaders
 	UNIFORMS_MODELMATRIX,
 	UNIFORMS_BRUSH_COLOR,
+	UNIFORMS_BRUSH_TEXTURE,
+	UNIFORMS_TEXTURE_OFFSET,
 	NUM_UNIFORMS
+};
+
+enum {
+    ATTRIB_VERTEX,
+    NUM_ATTRIBUTES
 };
 
 
@@ -34,6 +41,7 @@ enum
 	NSTimeInterval _currentTimeContinuous;
 }
 @property (strong, nonatomic, retain) EAGLContext* context;
+@property(nonatomic,retain) GLKTextureInfo* brushSelectionTextureInfo;
 @end
 
 
@@ -42,6 +50,7 @@ enum
 
 @implementation PSAnimationRenderingController
 @synthesize context = _context;
+@synthesize brushSelectionTextureInfo = _brushSelectionTextureInfo;
 @synthesize rootGroup = _rootGroup;
 @synthesize playing = _playing;
 @synthesize selectionHelper = _selectionHelper;
@@ -70,6 +79,11 @@ enum
     GLKView *view = (GLKView *)self.view;
     view.context = self.context;
     [EAGLContext setCurrentContext:self.context];
+	
+	// Load the image to use for texturing our selection info
+	self.brushSelectionTextureInfo = [GLKTextureLoader textureWithCGImage:[UIImage imageNamed:@"selection_bands"].CGImage
+														 options:nil
+														   error:nil];
 	
 	//Compile our shaders for drawing
 	if (! [self loadShaders] )
@@ -120,7 +134,7 @@ enum
 					  -1024, 1024);
 }
 
-
+static float OFFSET = 0;
 
 /*	------------
  
@@ -149,6 +163,16 @@ enum
 	
 	// Set the brush's color
 	glUniform4f(_uniforms[UNIFORMS_BRUSH_COLOR], PSANIM_LINE_COLOR);
+
+	glUniform2f(_uniforms[UNIFORMS_TEXTURE_OFFSET], OFFSET, OFFSET);	
+	
+	// Pass the brush we want to draw with
+	glUniform1i(_uniforms[UNIFORMS_BRUSH_TEXTURE], 0);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, self.brushSelectionTextureInfo.name);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
 	
 	// Now we can recurse on our root and will only have to push vertices and matrices
 	[self.rootGroup renderGroupWithMatrix:_projectionMatrix uniforms:_uniforms overrideColor:NO];
@@ -187,6 +211,8 @@ enum
 	_currentTimeContinuous += elapsedGameTime;
 	[self.rootGroup updateWithTimeInterval:elapsedGameTime
 									toTime:_currentTimeContinuous];
+	
+	OFFSET += 1.0 * self.timeSinceLastUpdate;
 }
 
 
@@ -266,6 +292,10 @@ enum
 	// This are the addresses we can use later for passing arguments into the shader program
 	_uniforms[UNIFORMS_MODELMATRIX] = glGetUniformLocation(_program, "modelViewProjectionMatrix");
 	_uniforms[UNIFORMS_BRUSH_COLOR] = glGetUniformLocation(_program, "brushColor");
+	//_uniforms[UNIFORMS_BRUSH_TEXTURE] = glGetUniformLocation(_program, "brushTexture");
+	_uniforms[UNIFORMS_TEXTURE_OFFSET] = glGetUniformLocation(_program, "textureOffset");
+//	glBindAttribLocation(_program, ATTRIB_TEXTURE_COORD, "a_texCoord");
+
 
 	// Release vertex and fragment shaders.
 	if (vertShader)

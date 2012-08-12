@@ -87,7 +87,7 @@
 	{
 		// Start pulsing
 		self.recordingButton.backgroundColor = color1;
-		[UIView animateWithDuration:1.0
+		[UIView animateWithDuration:0.5
 							  delay:0.0
 							options:UIViewAnimationOptionRepeat |
 									UIViewAnimationOptionAutoreverse |
