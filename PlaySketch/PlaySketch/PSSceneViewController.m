@@ -25,7 +25,8 @@
 
 @interface PSSceneViewController ()
 @property(nonatomic)BOOL isSelecting; // If we are selecting instead of drawing
-@property(nonatomic)BOOL isRecording; // If manipulations should be treated as recording
+@property(nonatomic)BOOL isReadyToRecord; // If manipulations should be treated as recording
+@property(nonatomic)BOOL isRecording;
 @property(nonatomic,retain) PSSelectionHelper* selectionHelper;
 @property(nonatomic,retain) PSDrawingGroup* selectedGroup;
 @property(nonatomic) UInt64 currentColor; // the drawing color as an int
@@ -50,6 +51,7 @@
 @synthesize selectionOverlayButtons = _selectionOverlayButtons;
 @synthesize currentDocument = _currentDocument;
 @synthesize isSelecting = _isSelecting;
+@synthesize isReadyToRecord = _isReadyToRecord;
 @synthesize isRecording = _isRecording;
 @synthesize selectionHelper = _selectionHelper;
 @synthesize selectedGroup = _selectedGroup;
@@ -79,6 +81,7 @@
 	
 	//Start off in drawing mode
 	self.isSelecting = NO;
+	self.isReadyToRecord = NO;
 	self.isRecording = NO;
 	
 	//Initialize to be drawing with an initial color
@@ -216,7 +219,7 @@
 
 - (IBAction)toggleRecording:(id)sender
 {
-	self.isRecording = ! self.isRecording;
+	self.isReadyToRecord = ! self.isReadyToRecord;
 }
 
 
@@ -359,13 +362,13 @@
 	}
 	
 	// Reset any recording we are doing
-	self.isRecording = NO;
+	self.isReadyToRecord = NO;
 
 }
 
-- (void)setIsRecording:(BOOL)isRecording
+- (void)setIsReadyToRecord:(BOOL)isReadyToRecord
 {
-	if(_isRecording && !isRecording)
+	if(_isReadyToRecord && !isReadyToRecord)
 	{
 		//Stop Recording
 		[self.selectionOverlayButtons stopRecordingMode];
@@ -374,7 +377,7 @@
 																  isRecording:NO];
 	}
 	
-	if(!_isRecording && isRecording)
+	if(!_isReadyToRecord && isReadyToRecord)
 	{
 		//Start Recording
 		[self.selectionOverlayButtons startRecordingMode];
@@ -383,7 +386,7 @@
 																  isRecording:YES];
 	}
 	
-	_isRecording = isRecording;
+	_isReadyToRecord = isReadyToRecord;
 }
 
 
@@ -510,10 +513,12 @@
 	self.selectedGroup = manipulator.group;
 	[manipulator setApperanceIsSelected:YES
 							isCharacter:[self.selectedGroup.explicitCharacter boolValue]
-							isRecording:self.isRecording];
+							isRecording:self.isReadyToRecord];
 	
-	if(self.isRecording)
+	if(self.isReadyToRecord)
 	{
+		self.isRecording = YES;
+		
 		//Remember this location and clear everything after it
 		SRTPosition currentPos = SRTPositionFromTransform(manipulator.transform);
 		currentPos.timeStamp = self.timelineSlider.value;
@@ -549,6 +554,8 @@
 	
 	if(self.isRecording)
 	{
+		self.isRecording = NO;
+		
 		// Put a marker at this location and stop playing
 		SRTPosition currentPos = SRTPositionFromTransform(manipulator.transform);
 		currentPos.timeStamp = self.timelineSlider.value;
