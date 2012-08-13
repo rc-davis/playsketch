@@ -50,6 +50,7 @@
 @synthesize timelineSlider = _timelineSlider;
 @synthesize selectionOverlayButtons = _selectionOverlayButtons;
 @synthesize currentDocument = _currentDocument;
+@synthesize rootGroup = _rootGroup;
 @synthesize isSelecting = _isSelecting;
 @synthesize isReadyToRecord = _isReadyToRecord;
 @synthesize isRecording = _isRecording;
@@ -93,9 +94,9 @@
 	//initialize our objects to the right time
 	[self.renderingController jumpToTime:self.timelineSlider.value];
 	
-	//Create manipulator views for our current document's children
+	//Create manipulator views for our root group's children
 	self.manipulators = [NSMutableSet set];
-	for (PSDrawingGroup* child in self.currentDocument.rootGroup.children)
+	for (PSDrawingGroup* child in self.rootGroup.children)
 		[self createManipulatorForGroup:child];
 }
 
@@ -121,11 +122,15 @@
 	// Then we convert that to a format that will fit in our data store
 	// TODO: the last line of this seems to take a while....
 	// TODO: downsample?
-	GLKView* view = (GLKView*)self.renderingController.view;
-	UIImage* previewImg = [view snapshot];
-	UIImage* previewImgSmall = [PSHelpers imageWithImage:previewImg scaledToSize:CGSizeMake(462, 300)];
-	self.currentDocument.previewImage = UIImagePNGRepresentation(previewImgSmall);
-	[PSDataModel save];
+	// Only do this is if we are the root group for the document
+	if (self.currentDocument.rootGroup == self.rootGroup)
+	{
+		GLKView* view = (GLKView*)self.renderingController.view;
+		UIImage* previewImg = [view snapshot];
+		UIImage* previewImgSmall = [PSHelpers imageWithImage:previewImg scaledToSize:CGSizeMake(462, 300)];
+		self.currentDocument.previewImage = UIImagePNGRepresentation(previewImgSmall);
+		[PSDataModel save];
+	}
 }
 
 
@@ -225,11 +230,16 @@
 
 - (IBAction)showDetailsForSelection:(id)sender
 {
-	// TODO:
-	// Push the new view
-	// Prepare some way to get out of it?
-	NSLog(@"Showing details...");
+	// Create and push a new view
+	UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"SketchInterface" bundle:nil];
+	PSSceneViewController *vc = [storyboard instantiateViewControllerWithIdentifier:@"SceneViewController"];
+	vc.currentDocument = self.currentDocument;
+	vc.rootGroup = self.selectedGroup;
+	[vc setModalPresentationStyle:UIModalPresentationFullScreen];
+	[self presentModalViewController:vc animated:YES];
 	
+	// TODO: Prepare some way to get out of it?
+
 }
 
 /*
@@ -321,9 +331,15 @@
 -(void)setCurrentDocument:(PSDrawingDocument *)currentDocument
 {
 	_currentDocument = currentDocument;
+	//Also tell the rendering controller about the document to render it
+	self.renderingController.currentDocument = currentDocument;
+}
+
+-(void)setRootGroup:(PSDrawingGroup *)rootGroup
+{
+	_rootGroup = rootGroup;
 	//Also tell the rendering controller about the group to render it
-	self.renderingController.rootGroup = currentDocument.rootGroup;
-	
+	self.renderingController.rootGroup = rootGroup;
 }
 
 
@@ -430,7 +446,7 @@
 	
 	if (! self.isSelecting )
 	{
-		PSDrawingLine* line = [PSDataModel newLineInGroup:self.currentDocument.rootGroup];
+		PSDrawingLine* line = [PSDataModel newLineInGroup:self.rootGroup];
 		line.color = [NSNumber numberWithUnsignedLongLong:self.currentColor];
 		return line;
 	}
@@ -441,7 +457,7 @@
 		selectionLine.color = [NSNumber numberWithUnsignedLongLong:[PSHelpers colorToInt64:[UIColor redColor]]];
 		
 		// Start a new selection set helper
-		self.selectionHelper = [[PSSelectionHelper alloc] initWithGroup:self.currentDocument.rootGroup
+		self.selectionHelper = [[PSSelectionHelper alloc] initWithGroup:self.rootGroup
 																	 andLine:selectionLine];		
 		return selectionLine;
 	}
@@ -482,7 +498,7 @@
 			self.createCharacterButton.enabled = YES;
 			
 			// create a new group for the lines
-			PSDrawingGroup* newGroup = [PSDataModel newChildOfGroup:self.currentDocument.rootGroup
+			PSDrawingGroup* newGroup = [PSDataModel newChildOfGroup:self.rootGroup
 												   withLines:self.selectionHelper.selectedLines];
 			
 			[newGroup jumpToTime:self.timelineSlider.value];

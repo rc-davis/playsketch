@@ -29,6 +29,7 @@
 @property(nonatomic,retain)IBOutlet PSTimelineSlider* timelineSlider;
 @property(nonatomic,retain)IBOutlet PSGroupOverlayButtons* selectionOverlayButtons;
 @property(nonatomic,retain)PSDrawingDocument* currentDocument;
+@property(nonatomic,retain)PSDrawingGroup* rootGroup;
 
 - (IBAction)dismissSceneView:(id)sender;
 - (IBAction)setColor:(id)sender;

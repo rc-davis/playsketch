@@ -42,6 +42,7 @@ enum
 
 @implementation PSAnimationRenderingController
 @synthesize context = _context;
+@synthesize currentDocument = _currentDocument;
 @synthesize rootGroup = _rootGroup;
 @synthesize playing = _playing;
 @synthesize selectionHelper = _selectionHelper;
@@ -129,8 +130,12 @@ enum
  ------------*/
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
 {
-
-	// Try to do as much rendering setup as possible so we don't have to call 
+	// Calculate a projection matrix that will keep self.rootGroup from moving
+	// Do this by walking up the tree from self.rootGroup to self.currentDocument's rootGroup
+	// Concatenating the inverse along the way
+	GLKMatrix4 correctionMatrix = GLKMatrix4Multiply(_projectionMatrix, [self.rootGroup getInverseMatrixToDocumentRoot]);
+	
+	// Try to do as much rendering setup as possible so we don't have to call
 	// on each line/group when we recurse:
 	
 	// Use our custom shaders
@@ -145,13 +150,13 @@ enum
 	glEnable(GL_BLEND);
 	
 	// Push the projection matrix
-	glUniformMatrix4fv(_uniforms[UNIFORMS_MODELMATRIX], 1, 0, _projectionMatrix.m);
+	glUniformMatrix4fv(_uniforms[UNIFORMS_MODELMATRIX], 1, 0, correctionMatrix.m);
 	
 	// Set the brush's color
 	glUniform4f(_uniforms[UNIFORMS_BRUSH_COLOR], PSANIM_LINE_COLOR);
 	
 	// Now we can recurse on our root and will only have to push vertices and matrices
-	[self.rootGroup renderGroupWithMatrix:_projectionMatrix uniforms:_uniforms overrideColor:NO];
+	[self.currentDocument.rootGroup renderGroupWithMatrix:correctionMatrix uniforms:_uniforms overrideColor:NO];
 
 	
 	// Draw our selected lines again, with a different color to show them highlighted

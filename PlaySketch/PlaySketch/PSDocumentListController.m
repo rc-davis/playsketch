@@ -298,6 +298,7 @@
 		//Set the root scene view controller from the supplied document
 		PSSceneViewController *vc = [segue destinationViewController];
 		vc.currentDocument = (PSDrawingDocument*)sender;
+		vc.rootGroup = ((PSDrawingDocument*)sender).rootGroup;
     }
 }
 

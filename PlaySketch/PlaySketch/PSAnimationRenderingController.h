@@ -25,6 +25,7 @@
 
 @interface PSAnimationRenderingController : GLKViewController
 
+@property(nonatomic,retain) PSDrawingDocument* currentDocument;
 @property(nonatomic,retain) PSDrawingGroup* rootGroup;
 @property(nonatomic,retain) PSSelectionHelper* selectionHelper;
 @property(nonatomic,retain) PSDrawingGroup* selectedGroup;
