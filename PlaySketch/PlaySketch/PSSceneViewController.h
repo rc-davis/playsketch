@@ -37,5 +37,5 @@
 - (IBAction)playPressed:(id)sender;
 - (IBAction)timelineScrubbed:(id)sender;
 - (IBAction)toggleRecording:(id)sender;
-
+- (IBAction)showDetailsForSelection:(id)sender;
 @end

@@ -16,20 +16,23 @@
 
 
 @implementation PSGroupOverlayButtons
-@synthesize createGroupButton;
-@synthesize recordingButton;
+@synthesize createGroupButton = _createGroupButton;
+@synthesize recordingButton = _recordingButton;
+@synthesize showDetailsButton = _showDetailsButton;
 @synthesize recordPulsing = _recordPulsing;
 
 - (void)configureForGroup:(PSDrawingGroup*)group
 {
 	// Decide what buttons to show
-	self.createGroupButton.hidden = [group.explicitCharacter boolValue];
-	self.recordingButton.hidden = ![group.explicitCharacter boolValue];
-	
+	BOOL isExplicit = [group.explicitCharacter boolValue];
+	self.createGroupButton.hidden = isExplicit;
+	self.recordingButton.hidden = !isExplicit;
+	self.showDetailsButton.hidden = !isExplicit;
 	
 	//Lay them out dynamically
 	NSArray* allButtons = [NSArray arrayWithObjects:self.createGroupButton,
 													self.recordingButton,
+													self.showDetailsButton,
 													nil];
 	CGFloat yOffset = 0;
 	for (UIButton* b in allButtons)
@@ -40,7 +43,6 @@
 		b.frame = f;
 		yOffset += f.size.height;
 	}
-	
 	
 }
 

@@ -223,6 +223,15 @@
 }
 
 
+- (IBAction)showDetailsForSelection:(id)sender
+{
+	// TODO:
+	// Push the new view
+	// Prepare some way to get out of it?
+	NSLog(@"Showing details...");
+	
+}
+
 /*
  ----------------------------------------------------------------------------
  Private functions
