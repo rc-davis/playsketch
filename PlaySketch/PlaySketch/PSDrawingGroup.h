@@ -60,5 +60,7 @@
 - (void)applyTransform:(CGAffineTransform)transform;
 - (CGRect)boundingRect;
 
+- (GLKMatrix4)getInverseMatrixToDocumentRoot;
+
 
 @end

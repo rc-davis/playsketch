@@ -268,4 +268,21 @@
 	return (SRTPosition*)_mutablePositionsAsData.bytes;
 }
 
+
+/*
+	TODO: This really requires some explanation....
+	(Trying to get a projection matrix that will keep this group from moving)
+*/
+- (GLKMatrix4)getInverseMatrixToDocumentRoot
+{
+	GLKMatrix4 parentInverted = (self.parent == nil) ?
+										GLKMatrix4Identity :
+										[self.parent getInverseMatrixToDocumentRoot];
+	
+	bool isInvertable;
+	GLKMatrix4 selfInverted = GLKMatrix4Invert(currentModelViewMatrix, &isInvertable);
+	if(!isInvertable) NSLog(@"!!!! SHOULD ALWAYS BE INVERTABLE!!!");
+	return GLKMatrix4Multiply(selfInverted, parentInverted);
+}
+
 @end
