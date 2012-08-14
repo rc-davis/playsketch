@@ -83,7 +83,7 @@ enum
 
 - (void)playFromTime:(float)time
 {
-	[self.rootGroup jumpToTime:time];
+	[self.currentDocument.rootGroup jumpToTime:time];
 	_currentTimeContinuous = time;
 	self.playing = YES;
 }
@@ -91,7 +91,7 @@ enum
 
 - (void)jumpToTime:(float)time
 {
-	[self.rootGroup jumpToTime:time];
+	[self.currentDocument.rootGroup jumpToTime:time];
 	_currentTimeContinuous = time;
 	self.playing = NO;	
 }
@@ -113,12 +113,12 @@ enum
 */
 - (void)viewDidLayoutSubviews
 {
-    _projectionMatrix = GLKMatrix4MakeOrtho(
-					  self.view.bounds.origin.x,
-					  self.view.bounds.origin.x + self.view.bounds.size.width,
-					  self.view.bounds.origin.y + self.view.bounds.size.height,
-					  self.view.bounds.origin.y,
-					  -1024, 1024);
+	_projectionMatrix = GLKMatrix4MakeOrtho(
+					self.view.bounds.origin.x,
+					self.view.bounds.origin.x + self.view.bounds.size.width,
+					self.view.bounds.origin.y + self.view.bounds.size.height,
+					self.view.bounds.origin.y,
+					-1024, 1024);
 }
 
 
@@ -130,10 +130,12 @@ enum
  ------------*/
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
 {
+	// TODO: lots of cleanup in this section!!
+	// This gets called a LOT so any efficiency gains are important...
+	
 	// Calculate a projection matrix that will keep self.rootGroup from moving
-	// Do this by walking up the tree from self.rootGroup to self.currentDocument's rootGroup
-	// Concatenating the inverse along the way
-	GLKMatrix4 correctionMatrix = GLKMatrix4Multiply(_projectionMatrix, [self.rootGroup getInverseMatrixToDocumentRoot]);
+	GLKMatrix4 correctionMatrix = GLKMatrix4Multiply(_projectionMatrix,
+													 [self.rootGroup getInverseMatrixToDocumentRoot]);
 	
 	// Try to do as much rendering setup as possible so we don't have to call
 	// on each line/group when we recurse:
@@ -190,7 +192,7 @@ enum
 {
 	NSTimeInterval elapsedGameTime = self.playing ? self.timeSinceLastUpdate : 0.0;
 	_currentTimeContinuous += elapsedGameTime;
-	[self.rootGroup updateWithTimeInterval:elapsedGameTime
+	[self.currentDocument.rootGroup updateWithTimeInterval:elapsedGameTime
 									toTime:_currentTimeContinuous];
 }
 
