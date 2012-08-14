@@ -18,6 +18,14 @@
 @synthesize drawingDelegate = _drawingDelegate;
 @synthesize currentLine = _currentLine;
 
+-(void)awakeFromNib
+{
+	CGRect newBounds = self.bounds;
+	newBounds.origin = CGPointMake(-self.bounds.size.width/2.0,
+									 -self.bounds.size.height/2.0);
+	self.bounds = newBounds;
+}
+
 
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event

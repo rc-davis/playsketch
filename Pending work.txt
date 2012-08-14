@@ -1,10 +1,5 @@
-NEXT:
-Detailview
-button
-pushes new view
-inherits new frame of reference
-(recursive!)
-
+detailview:
+- shade out things that aren't in background
 
 
 

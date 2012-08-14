@@ -114,10 +114,10 @@ enum
 - (void)viewDidLayoutSubviews
 {
 	_projectionMatrix = GLKMatrix4MakeOrtho(
-					self.view.bounds.origin.x,
-					self.view.bounds.origin.x + self.view.bounds.size.width,
-					self.view.bounds.origin.y + self.view.bounds.size.height,
-					self.view.bounds.origin.y,
+					-self.view.bounds.size.width/2.0,
+					self.view.bounds.size.width/2.0,
+					self.view.bounds.size.height/2.0,
+					-self.view.bounds.size.height/2.0,
 					-1024, 1024);
 }
 
