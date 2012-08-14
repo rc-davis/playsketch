@@ -185,6 +185,8 @@
 	[super awakeFromInsert];
 	currentSRTPosition = SRTPositionZero();
 	currentSRTRate = SRTRateZero();
+	currentPositionIndex = 0;
+	currentModelViewMatrix = GLKMatrix4Identity;
 }
 
 
@@ -197,6 +199,9 @@
 	[super awakeFromFetch];
 	currentSRTPosition = SRTPositionZero();
 	currentSRTRate = SRTRateZero();
+	currentPositionIndex = 0;
+	currentModelViewMatrix = GLKMatrix4Identity;
+
 }
 
 
@@ -252,10 +257,13 @@
 	for (PSDrawingLine* line in self.drawingLines)
 	{
 		CGRect lineRect = [line boundingRect];
-		min.x = MIN(min.x, CGRectGetMinX(lineRect));
-		min.y = MIN(min.y, CGRectGetMinY(lineRect));
-		max.x = MAX(max.x, CGRectGetMaxX(lineRect));
-		max.y = MAX(max.y, CGRectGetMaxY(lineRect));
+		if(!CGRectIsNull(lineRect))
+		{			
+			min.x = MIN(min.x, CGRectGetMinX(lineRect));
+			min.y = MIN(min.y, CGRectGetMinY(lineRect));
+			max.x = MAX(max.x, CGRectGetMaxX(lineRect));
+			max.y = MAX(max.y, CGRectGetMaxY(lineRect));
+		}
 	}
 	return CGRectMake(min.x, min.y, max.x - min.x, max.y - min.y);
 }
