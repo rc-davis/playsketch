@@ -39,4 +39,6 @@
 - (IBAction)timelineScrubbed:(id)sender;
 - (IBAction)toggleRecording:(id)sender;
 - (IBAction)showDetailsForSelection:(id)sender;
+- (IBAction)exportAsVideo:(id)sender;
+
 @end

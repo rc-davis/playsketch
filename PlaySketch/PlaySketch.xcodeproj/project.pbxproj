@@ -31,6 +31,8 @@
 		46C9AD1615B29D1E00EF3A92 /* PSDataModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 46C9AD1515B29D1E00EF3A92 /* PSDataModel.m */; };
 		46C9AD1815B2ABD400EF3A92 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46C9AD1715B2ABD300EF3A92 /* QuartzCore.framework */; };
 		46C9AD1B15B2B67800EF3A92 /* PSDrawingDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 46C9AD1A15B2B67800EF3A92 /* PSDrawingDocument.m */; };
+		46F1735215DB7AEE00F787AC /* PSGLKitVideoExporter.m in Sources */ = {isa = PBXBuildFile; fileRef = 46F1735115DB7AEE00F787AC /* PSGLKitVideoExporter.m */; };
+		46F1735515DB7C8E00F787AC /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46F1735415DB7C8E00F787AC /* AVFoundation.framework */; };
 		46F7A63915B014E700C7B374 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46F7A63815B014E700C7B374 /* UIKit.framework */; };
 		46F7A63B15B014E700C7B374 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46F7A63A15B014E700C7B374 /* Foundation.framework */; };
 		46F7A63D15B014E700C7B374 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46F7A63C15B014E700C7B374 /* CoreGraphics.framework */; };
@@ -98,6 +100,9 @@
 		46C9AD1715B2ABD300EF3A92 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		46C9AD1915B2B67700EF3A92 /* PSDrawingDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PSDrawingDocument.h; path = PlaySketch/PSDrawingDocument.h; sourceTree = "<group>"; };
 		46C9AD1A15B2B67800EF3A92 /* PSDrawingDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PSDrawingDocument.m; path = PlaySketch/PSDrawingDocument.m; sourceTree = "<group>"; };
+		46F1735015DB7AEE00F787AC /* PSGLKitVideoExporter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSGLKitVideoExporter.h; sourceTree = "<group>"; };
+		46F1735115DB7AEE00F787AC /* PSGLKitVideoExporter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSGLKitVideoExporter.m; sourceTree = "<group>"; };
+		46F1735415DB7C8E00F787AC /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		46F7A63415B014E700C7B374 /* PlaySketch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PlaySketch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		46F7A63815B014E700C7B374 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		46F7A63A15B014E700C7B374 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -124,6 +129,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				46F1735515DB7C8E00F787AC /* AVFoundation.framework in Frameworks */,
 				46C9AD1815B2ABD400EF3A92 /* QuartzCore.framework in Frameworks */,
 				46BF25B815B0302A00834681 /* OpenGLES.framework in Frameworks */,
 				46F7A63915B014E700C7B374 /* UIKit.framework in Frameworks */,
@@ -167,6 +173,8 @@
 				467E4E4115B4235700F70C1E /* PSSelectionHelper.m */,
 				4673A46815B6A9100053FDF0 /* PSHelpers.h */,
 				4673A46915B6A9100053FDF0 /* PSHelpers.m */,
+				46F1735015DB7AEE00F787AC /* PSGLKitVideoExporter.h */,
+				46F1735115DB7AEE00F787AC /* PSGLKitVideoExporter.m */,
 			);
 			name = Helpers;
 			sourceTree = "<group>";
@@ -235,6 +243,7 @@
 		46F7A62915B014E600C7B374 = {
 			isa = PBXGroup;
 			children = (
+				46F1735415DB7C8E00F787AC /* AVFoundation.framework */,
 				46F7A67215B0188600C7B374 /* Pending work.txt */,
 				46F7A64015B014E700C7B374 /* PlaySketch */,
 				46F7A65C15B014E700C7B374 /* PlaySketchTests */,
@@ -457,6 +466,7 @@
 				4673A46A15B6A9100053FDF0 /* PSHelpers.m in Sources */,
 				46973BE815C103170092D236 /* PSTimelineSlider.m in Sources */,
 				468E2A2D15C61C0600AA20D2 /* PSGroupOverlayButtons.m in Sources */,
+				46F1735215DB7AEE00F787AC /* PSGLKitVideoExporter.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

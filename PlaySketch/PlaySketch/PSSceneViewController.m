@@ -20,6 +20,7 @@
 #import "PSHelpers.h"
 #import "PSTimelineSlider.h"
 #import "PSGroupOverlayButtons.h"
+#import "PSGLKitVideoExporter.h"
 #import <QuartzCore/QuartzCore.h>
 
 
@@ -240,6 +241,12 @@
 	
 	// TODO: Prepare some way to get out of it?
 
+}
+
+
+- (IBAction)exportAsVideo:(id)sender
+{
+	PSGLKitVideoExporter* exporter = [PSGLKitVideoExporter beginWithView:(GLKView*)self.renderingController.view];
 }
 
 /*
