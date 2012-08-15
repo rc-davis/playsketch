@@ -86,7 +86,7 @@
 
 - (void)beginRecording
 {
-	NSLog(@"Begining Recording...");
+	NSLog(@"Begin Video Recording...");
 	
 	//Start the session
 	BOOL started = [self.videoWriter startWriting];
@@ -123,6 +123,7 @@
 
 - (void)finishRecording
 {
+	NSLog(@"Finish Video Recording...");
 	// Finish the session
     [self.videoWriterInput markAsFinished];
     [self.videoWriter finishWriting];

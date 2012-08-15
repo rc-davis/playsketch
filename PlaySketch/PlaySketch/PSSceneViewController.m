@@ -20,7 +20,7 @@
 #import "PSHelpers.h"
 #import "PSTimelineSlider.h"
 #import "PSGroupOverlayButtons.h"
-#import "PSGLKitVideoExporter.h"
+#import "PSVideoExportControllerViewController.h"
 #import <QuartzCore/QuartzCore.h>
 
 
@@ -246,27 +246,12 @@
 
 - (IBAction)exportAsVideo:(id)sender
 {
-	//Generate a temporary URL for the file
-	NSString* filename = [NSString stringWithFormat:@"%.0f.%@",
-						  [NSDate timeIntervalSinceReferenceDate] * 1000.0, @"mp4"];
-	NSString* filepath = [NSTemporaryDirectory() stringByAppendingPathComponent:filename];
-	
-	PSGLKitVideoExporter* exporter = [[PSGLKitVideoExporter alloc] initWithView:(GLKView*)self.renderingController.view
-																		 toPath:filepath];
-	
-	[exporter beginRecording];
-	
-	int frameNumber = 0;
-	while (frameNumber < 30*1)
-	{
-		[self.renderingController jumpToTime:frameNumber/30.0];
-		[self.renderingController update];
-		[exporter captureFrameAtTime:CMTimeMake(frameNumber, 30)];
-		frameNumber ++;
-	}
-	[exporter finishRecording];
-	
-	UISaveVideoAtPathToSavedPhotosAlbum(filepath, nil, nil, nil);
+	//Push a new View Controller
+	UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"SketchInterface" bundle:nil];
+	PSVideoExportControllerViewController *vc = [storyboard instantiateViewControllerWithIdentifier:@"VideoExportViewController"];
+	vc.renderingController = self.renderingController;
+	[vc setModalPresentationStyle:UIModalPresentationFormSheet];
+	[self presentModalViewController:vc animated:YES];
 
 }
 
