@@ -1,17 +1,14 @@
+
+handle for rotation?
+
+
+
 detailview:
 - shade out things that aren't in background
 
 
 
-Odds + ends
-
-Drawing stuff:
-- Nicer selection background
-- nicer drawing texture?
-
 - video export
-- eraser!
-
 - minimum size for manipulator
 - button for rotation
 - toolbar should be better placed
@@ -49,36 +46,25 @@ http://stackoverflow.com/questions/3576743/core-data-create-multiple-managed-obj
 LATER
 =========
 
-- eraser
+LINE DRAWING:
+	- eraser
+	- fountain-pen style drawing, where speed affects width.
+	- pen width in general
+	- touching single point?
 
-- fountain-pen style drawing, where speed affects width.
-
-- pen width in general
-
-- touching single point?
-
-- selection line and selection can use a hash patter that moves across them!
-
-- Explore: using msmutabledata's bytes as line point backing (avoiding weird copy back/forward stuff)
+IMPROVED GRAPHICS:
+	- selection line and selection can use a hash patter that moves across them!
+	- background texture for drawing lines, too
 
 - Turn off full draw loop when we aren't animating (to maximize drawing responsiveness)
 
 - UNDO/REDO
 
 - Document picker screen
-
 	- delete button confirm dialog
-
 	- nicer animations
 	
-- add texture to highlighting to make it look better!
-
 - should have some "offstage" workspace beyond the bounds of what is recorded for placing objects.
-
-========
-EVEN LATER
-========
-- Multiple documents (with their own root stores, etc)
 
 
 ========
@@ -91,9 +77,7 @@ https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/CodingGu
 ========
 BUGS:
 transforms not saved
-image previews look like crap
-lines need to be drawn in a fixed order
-that order should be respected when changing groups.
+lines need to be drawn in a fixed order which that order should be respected when changing groups.
 
 
 

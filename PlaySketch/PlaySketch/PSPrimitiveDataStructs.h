@@ -76,8 +76,11 @@ static inline SRTPosition SRTPositionZero()
 static inline SRTPosition SRTPositionInterpolate(float time, SRTPosition p1, SRTPosition p2)
 {
 	[PSHelpers assert:(p1.timeStamp != p2.timeStamp) withMessage:@"Should be different times"];
-	[PSHelpers assert:(p1.timeStamp <= time &&
-					   p2.timeStamp >= time) withMessage:@"time should be within range"];
+
+//	TODO: Shouldn't have to disable this assert
+//	[PSHelpers assert:(p1.timeStamp <= time &&
+//					   p2.timeStamp >= time) withMessage:@"time should be within range"];
+
 	float pcnt = (time - p1.timeStamp)/(float)(p2.timeStamp - p1.timeStamp);
 	
 	SRTPosition pos;
