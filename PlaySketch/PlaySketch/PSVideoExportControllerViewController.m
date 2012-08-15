@@ -69,21 +69,35 @@
 
 	// Step through all of our frames and add them to the movie
 	int frameNumber = 0;
-	int totalFrames = 30*1; // TODO: GRAB THIS PROPERLY FROM THE RENDERING CONTROLLER
+	int totalFrames = 30*10; // TODO: GRAB THIS PROPERLY FROM THE RENDERING CONTROLLER
 
 	while (frameNumber < totalFrames)
 	{
-		[self.renderingController jumpToTime:frameNumber/30.0];
-		[self.renderingController update];
-		[exporter captureFrameAtTime:CMTimeMake(frameNumber, 30)];
-		frameNumber ++;
+		
+		// Important! We are doing lots of memory-heavy things in this loop
+		// Usually, objects that are out of scope don't have their memory freed
+		// until the functions they are created in have totally completed
+		// You can get around this by manually declaring the scope of the
+		// "Auto-release pool" that they belong to.
+		// When we leave the scope of the auto-release pool, all of the zombied
+		// objects are freed when the pool is "drained"
+		// Without this, video export will crash after ~45 frames
+		// https://developer.apple.com/library/mac/#documentation/Cocoa/Reference/Foundation/Classes/nsautoreleasepool_Class/Reference/Reference.html
+		@autoreleasepool
+		{
 
+			[self.renderingController jumpToTime:frameNumber/30.0];
+			[self.renderingController update];
+			[exporter captureFrameAtTime:CMTimeMake(frameNumber, 30)];
+			frameNumber ++;
+		}
+		
 		// Update our progress bar
 		// This has to happen on the main thread, because in iOS, everything that
 		// touches the UI needs to happen on the main thread
 		[self performSelectorOnMainThread:@selector(updateProgress:)
 							   withObject:[NSNumber numberWithFloat:frameNumber/(float)totalFrames]
-							waitUntilDone:NO];
+							waitUntilDone:NO];		
 	}
 	
 	[exporter finishRecording];
