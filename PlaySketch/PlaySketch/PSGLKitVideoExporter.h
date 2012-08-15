@@ -12,10 +12,19 @@
  */
 
 #import <Foundation/Foundation.h>
-@class GLKView;
+@class PSAnimationRenderingController, AVAssetWriter, AVAssetWriterInput, AVAssetWriterInputPixelBufferAdaptor;
 
 @interface PSGLKitVideoExporter : NSObject
+//TODO: should be private
+@property(nonatomic,retain)AVAssetWriter* videoWriter;
+@property(nonatomic,retain)AVAssetWriterInput* videoWriterInput;
+@property(nonatomic,retain)AVAssetWriterInputPixelBufferAdaptor *adaptor;
+@property(nonatomic,retain)PSAnimationRenderingController* renderController;
+@property(nonatomic,retain)NSTimer* timer;
 
-+ (PSGLKitVideoExporter*)beginWithView:(GLKView*)view;
+- (id)initWithController:(PSAnimationRenderingController*)rc;
+- (void)addFrame;
+- (void)finishRecording;
+- (CVPixelBufferRef) pixelBufferFromCGImage: (CGImageRef) image;
 
 @end

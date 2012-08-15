@@ -33,6 +33,8 @@
 		46C9AD1B15B2B67800EF3A92 /* PSDrawingDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 46C9AD1A15B2B67800EF3A92 /* PSDrawingDocument.m */; };
 		46F1735215DB7AEE00F787AC /* PSGLKitVideoExporter.m in Sources */ = {isa = PBXBuildFile; fileRef = 46F1735115DB7AEE00F787AC /* PSGLKitVideoExporter.m */; };
 		46F1735515DB7C8E00F787AC /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46F1735415DB7C8E00F787AC /* AVFoundation.framework */; };
+		46F1735715DB836A00F787AC /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46F1735615DB836A00F787AC /* CoreVideo.framework */; };
+		46F1735915DB83C900F787AC /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46F1735815DB83C900F787AC /* CoreMedia.framework */; };
 		46F7A63915B014E700C7B374 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46F7A63815B014E700C7B374 /* UIKit.framework */; };
 		46F7A63B15B014E700C7B374 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46F7A63A15B014E700C7B374 /* Foundation.framework */; };
 		46F7A63D15B014E700C7B374 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46F7A63C15B014E700C7B374 /* CoreGraphics.framework */; };
@@ -103,6 +105,8 @@
 		46F1735015DB7AEE00F787AC /* PSGLKitVideoExporter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSGLKitVideoExporter.h; sourceTree = "<group>"; };
 		46F1735115DB7AEE00F787AC /* PSGLKitVideoExporter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSGLKitVideoExporter.m; sourceTree = "<group>"; };
 		46F1735415DB7C8E00F787AC /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		46F1735615DB836A00F787AC /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		46F1735815DB83C900F787AC /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		46F7A63415B014E700C7B374 /* PlaySketch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PlaySketch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		46F7A63815B014E700C7B374 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		46F7A63A15B014E700C7B374 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -129,6 +133,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				46F1735915DB83C900F787AC /* CoreMedia.framework in Frameworks */,
+				46F1735715DB836A00F787AC /* CoreVideo.framework in Frameworks */,
 				46F1735515DB7C8E00F787AC /* AVFoundation.framework in Frameworks */,
 				46C9AD1815B2ABD400EF3A92 /* QuartzCore.framework in Frameworks */,
 				46BF25B815B0302A00834681 /* OpenGLES.framework in Frameworks */,
@@ -243,7 +249,6 @@
 		46F7A62915B014E600C7B374 = {
 			isa = PBXGroup;
 			children = (
-				46F1735415DB7C8E00F787AC /* AVFoundation.framework */,
 				46F7A67215B0188600C7B374 /* Pending work.txt */,
 				46F7A64015B014E700C7B374 /* PlaySketch */,
 				46F7A65C15B014E700C7B374 /* PlaySketchTests */,
@@ -264,13 +269,16 @@
 		46F7A63715B014E700C7B374 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				46C9AD1715B2ABD300EF3A92 /* QuartzCore.framework */,
-				46BF25B715B0302A00834681 /* OpenGLES.framework */,
-				46BF25B015B02B8700834681 /* GLKit.framework */,
-				46F7A63815B014E700C7B374 /* UIKit.framework */,
-				46F7A63A15B014E700C7B374 /* Foundation.framework */,
-				46F7A63C15B014E700C7B374 /* CoreGraphics.framework */,
+				46F1735815DB83C900F787AC /* CoreMedia.framework */,
+				46F1735415DB7C8E00F787AC /* AVFoundation.framework */,
 				46F7A63E15B014E700C7B374 /* CoreData.framework */,
+				46F7A63C15B014E700C7B374 /* CoreGraphics.framework */,
+				46F1735615DB836A00F787AC /* CoreVideo.framework */,
+				46F7A63A15B014E700C7B374 /* Foundation.framework */,
+				46BF25B015B02B8700834681 /* GLKit.framework */,
+				46BF25B715B0302A00834681 /* OpenGLES.framework */,
+				46C9AD1715B2ABD300EF3A92 /* QuartzCore.framework */,
+				46F7A63815B014E700C7B374 /* UIKit.framework */,
 				46F7A65515B014E700C7B374 /* SenTestingKit.framework */,
 			);
 			name = Frameworks;

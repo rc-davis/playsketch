@@ -246,7 +246,7 @@
 
 - (IBAction)exportAsVideo:(id)sender
 {
-	PSGLKitVideoExporter* exporter = [PSGLKitVideoExporter beginWithView:(GLKView*)self.renderingController.view];
+	PSGLKitVideoExporter* exporter = [[PSGLKitVideoExporter alloc] initWithController:self.renderingController];
 }
 
 /*

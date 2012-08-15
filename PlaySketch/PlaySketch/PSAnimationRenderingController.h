@@ -34,6 +34,7 @@
 - (void)playFromTime:(float)frame;
 - (void)jumpToTime:(float)time;
 - (void)stopPlaying;
+- (void)update;
 @end
 
 
