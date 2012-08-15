@@ -246,7 +246,28 @@
 
 - (IBAction)exportAsVideo:(id)sender
 {
-	PSGLKitVideoExporter* exporter = [[PSGLKitVideoExporter alloc] initWithController:self.renderingController];
+	//Generate a temporary URL for the file
+	NSString* filename = [NSString stringWithFormat:@"%.0f.%@",
+						  [NSDate timeIntervalSinceReferenceDate] * 1000.0, @"mp4"];
+	NSString* filepath = [NSTemporaryDirectory() stringByAppendingPathComponent:filename];
+	
+	PSGLKitVideoExporter* exporter = [[PSGLKitVideoExporter alloc] initWithView:(GLKView*)self.renderingController.view
+																		 toPath:filepath];
+	
+	[exporter beginRecording];
+	
+	int frameNumber = 0;
+	while (frameNumber < 30*1)
+	{
+		[self.renderingController jumpToTime:frameNumber/30.0];
+		[self.renderingController update];
+		[exporter captureFrameAtTime:CMTimeMake(frameNumber, 30)];
+		frameNumber ++;
+	}
+	[exporter finishRecording];
+	
+	UISaveVideoAtPathToSavedPhotosAlbum(filepath, nil, nil, nil);
+
 }
 
 /*

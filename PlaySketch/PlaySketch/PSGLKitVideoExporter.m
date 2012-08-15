@@ -18,38 +18,41 @@
 #import "PSHelpers.h"
 #import "PSAnimationRenderingController.h"
 #import <GLKit/GLKit.h>
-#import <AVFoundation/AVFoundation.h>
+
+
+@interface PSGLKitVideoExporter ()
+@property(nonatomic,retain)AVAssetWriter* videoWriter;
+@property(nonatomic,retain)AVAssetWriterInput* videoWriterInput;
+@property(nonatomic,retain)AVAssetWriterInputPixelBufferAdaptor *pixelAdaptor;
+@property(nonatomic,retain)GLKView* view;
+- (CVPixelBufferRef) pixelBufferFromCGImage: (CGImageRef) image;
+@end
+
 
 @implementation PSGLKitVideoExporter
 @synthesize videoWriter = _videoWriter;
 @synthesize videoWriterInput = _videoWriterInput;
-@synthesize adaptor = _adaptor;
-@synthesize renderController = _renderController;
-@synthesize timer = _timer;
+@synthesize pixelAdaptor = _pixelAdaptor;
+@synthesize view = _view;
 
-- (id)initWithController:(PSAnimationRenderingController*)rc
+
+- (id)initWithView:(GLKView*)view toPath:(NSString*)path
 {
 	if(self == [super init])
 	{
-		self.renderController = rc;
-		CGSize frameSize = rc.view.frame.size;
-		
-		//Generate a temporary URL for the file
-		NSString* filename = [NSString stringWithFormat:@"%.0f.%@",
-							  [NSDate timeIntervalSinceReferenceDate] * 1000.0, @"mp4"];
-		NSString* filepath = [NSTemporaryDirectory() stringByAppendingPathComponent:filename];
-		NSURL* fileurl = [NSURL fileURLWithPath:filepath];
-		NSLog(@"Creating temp file at path: %@", fileurl);
+		self.view = view;
+
+		CGSize frameSize = view.frame.size;
 		
 		
 		// Create the videoWriter (AVAssetWriter)
 		// This takes frames from the AVAssetWriterInput to build a video
 		NSError *error = nil;
-		self.videoWriter = [[AVAssetWriter alloc] initWithURL:fileurl
+		self.videoWriter = [[AVAssetWriter alloc] initWithURL:[NSURL fileURLWithPath:path]
 													 fileType:AVFileTypeQuickTimeMovie
 														error:&error];
 		[PSHelpers assert:(!error) withMessage:[error description]];
-
+		
 		
 		// Create the videoWriterInput (AVAssetWriterInput)
 		NSDictionary *videoSettings = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -63,68 +66,73 @@
 		
 		// Create an "Adapter" for turning pixels into frames (?)
 		NSDictionary* adapterAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-			[NSNumber numberWithUnsignedInt:kCVPixelFormatType_32ARGB], kCVPixelBufferPixelFormatTypeKey,
-			[NSNumber numberWithUnsignedInt:frameSize.width], kCVPixelBufferWidthKey,
-			[NSNumber numberWithUnsignedInt:frameSize.height], kCVPixelBufferHeightKey, nil];
-		self.adaptor = [AVAssetWriterInputPixelBufferAdaptor
-				assetWriterInputPixelBufferAdaptorWithAssetWriterInput:self.videoWriterInput
-				sourcePixelBufferAttributes:adapterAttributes];
+										   [NSNumber numberWithUnsignedInt:kCVPixelFormatType_32ARGB], kCVPixelBufferPixelFormatTypeKey,
+										   [NSNumber numberWithUnsignedInt:frameSize.width], kCVPixelBufferWidthKey,
+										   [NSNumber numberWithUnsignedInt:frameSize.height], kCVPixelBufferHeightKey, nil];
+		self.pixelAdaptor = [AVAssetWriterInputPixelBufferAdaptor
+							 assetWriterInputPixelBufferAdaptorWithAssetWriterInput:self.videoWriterInput
+							 sourcePixelBufferAttributes:adapterAttributes];
 		[self.videoWriter addInput:self.videoWriterInput];
 		
-
-		//Avoid having to set all of our timestamps?
+		
+		// Avoid having to set all of our timestamps?
+		// TODO: can we get rid of this?
 		self.videoWriterInput.expectsMediaDataInRealTime = YES;
-		
-		//Start the session
-		BOOL start = [self.videoWriter startWriting];
-		NSLog(@"Session started? %d", start);
-		
-
-		int frameNumber = 0;
-		[self.videoWriter startSessionAtSourceTime:CMTimeMake(frameNumber, 30)];
-		GLKView* view = (GLKView*)self.renderController.view;
-		
-		while (frameNumber < 30*1)
-		{
-			[self.renderController jumpToTime:frameNumber/30.0];
-			[self.renderController update];
-			
-			CVPixelBufferRef buffer = [self pixelBufferFromCGImage:view.snapshot.CGImage];
-			
-			if (buffer && self.adaptor.assetWriterInput.readyForMoreMediaData)
-			{
-				BOOL result = [self.adaptor appendPixelBuffer:buffer
-										 withPresentationTime:CMTimeMake(frameNumber, 30)];
-				
-				if (result == NO) //failes on 3GS, but works on iphone 4
-					NSLog(@"failed to append buffer");
-				else NSLog(@"appended: %d", frameNumber);
-			}
-			
-			if(buffer)
-				CVBufferRelease(buffer);
-			
-			frameNumber ++;
-		}
-		
-		[self finishRecording];
-	
-		UISaveVideoAtPathToSavedPhotosAlbum(filepath, nil, nil, nil);
 		
 	}
 	return self;
 }
 
+
+- (void)beginRecording
+{
+	NSLog(@"Begining Recording...");
+	
+	//Start the session
+	BOOL started = [self.videoWriter startWriting];
+	[PSHelpers assert:started withMessage:@"Recordng Session should have started"];
+	
+	[self.videoWriter startSessionAtSourceTime:kCMTimeZero];
+
+}
+
+
+- (void)captureFrameAtTime:(CMTime)timestamp
+{
+	// This trusts that the state of the GLKView has already been set up
+	// properly to correspond with the timestamp
+
+	CVPixelBufferRef buffer = [self pixelBufferFromCGImage:self.view.snapshot.CGImage];
+	
+	if (buffer && self.pixelAdaptor.assetWriterInput.readyForMoreMediaData)
+	{
+		BOOL result = [self.pixelAdaptor appendPixelBuffer:buffer
+									  withPresentationTime:timestamp];
+		
+		if (!result)
+			NSLog(@"FAILURE APPENDING: %lld", timestamp.value);
+		else
+			NSLog(@"appended: %lld", timestamp.value);
+	}
+		
+	if(buffer)
+		CVBufferRelease(buffer);
+	
+}
+
+
 - (void)finishRecording
 {
-	//Finish the session:
+	// Finish the session
     [self.videoWriterInput markAsFinished];
     [self.videoWriter finishWriting];
-    CVPixelBufferPoolRelease(self.adaptor.pixelBufferPool);
 
-	self.adaptor = nil;
+	// Clean up our variables
+    CVPixelBufferPoolRelease(self.pixelAdaptor.pixelBufferPool);
+	self.pixelAdaptor = nil;
 	self.videoWriter = nil;
 	self.videoWriterInput = nil;
+	
 }
 
 
