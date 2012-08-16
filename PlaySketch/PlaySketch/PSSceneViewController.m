@@ -103,13 +103,8 @@
 		[self createManipulatorForGroup:child];
 	
 	// Create motion paths to illustrate our objects
-	NSLog(@"adding children: %d", self.rootGroup.children.count);
 	for (PSDrawingGroup* child in self.rootGroup.children)
-	{
-		NSLog(@"adding child: %d", child.positionCount);
 		[self.motionPathView addLineForGroup:child];
-	}
-
 
 }
 
@@ -208,6 +203,7 @@
 		[self refreshManipulatorLocations];
 		for (PSSRTManipulator* m in self.manipulators)
 			m.hidden = NO;
+		self.motionPathView.hidden = NO;
 	}
 	else
 	{
@@ -221,6 +217,9 @@
 		for (PSSRTManipulator* m in self.manipulators)
 			if ( ! (self.isRecording && m.group == self.selectedGroup) )
 				m.hidden = YES;
+
+		if(!self.isRecording)
+			self.motionPathView.hidden = YES;
 	}
 }
 
@@ -232,6 +231,7 @@
 	[self refreshManipulatorLocations];
 	for (PSSRTManipulator* m in self.manipulators)
 		m.hidden = NO;
+	self.motionPathView.hidden = NO;
 }
 
 
@@ -584,6 +584,13 @@
 		[self playPressed:nil]; //TODO: should abstract this out of an IBAction
 		self.selectionOverlayButtons.recordPulsing = YES;
 	}
+	
+	
+	// We would like to keep the motion paths updating in realtime while we
+	// record, but that's too expensive until we optimize the path updating
+	// So instead we just hide
+	self.motionPathView.hidden = YES;
+	
 }
 
 -(void)manipulator:(id)sender didUpdateBy:(CGAffineTransform)incrementalTransform toTransform:(CGAffineTransform)fullTransform
@@ -602,6 +609,7 @@
 	
 	//Keep our buttons properly aligned
 	[self.selectionOverlayButtons setLocation:[manipulator upperRightPoint]];
+	
 }
 
 -(void)manipulatorDidStopInteraction:(id)sender
@@ -621,6 +629,9 @@
 		self.selectionOverlayButtons.recordPulsing = NO;
 	}
 	
+	// We would rather be doing this real-time instead of at the end of the interaction
+	[self.motionPathView addLineForGroup:manipulator.group];
+	self.motionPathView.hidden = NO;
 }
 
 @end
