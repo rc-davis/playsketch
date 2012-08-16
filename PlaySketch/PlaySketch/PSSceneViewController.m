@@ -83,24 +83,34 @@
 	[self addChildViewController:self.renderingController];
 	[self.renderingController viewDidLoad];
 	
-	//Start off in drawing mode
+	// Start off in drawing mode
 	self.isSelecting = NO;
 	self.isReadyToRecord = NO;
 	self.isRecording = NO;
 	
-	//Initialize to be drawing with an initial color
+	// Initialize to be drawing with an initial color
 	[self setColor:self.initialColorButton];
 
 	self.createCharacterButton.enabled = NO;
 	[self.selectionOverlayButtons hide:NO];
 	
-	//initialize our objects to the right time
+	// initialize our objects to the right time
 	[self.renderingController jumpToTime:self.timelineSlider.value];
 	
-	//Create manipulator views for our root group's children
+	// Create manipulator views for our root group's children
 	self.manipulators = [NSMutableSet set];
 	for (PSDrawingGroup* child in self.rootGroup.children)
 		[self createManipulatorForGroup:child];
+	
+	// Create motion paths to illustrate our objects
+	NSLog(@"adding children: %d", self.rootGroup.children.count);
+	for (PSDrawingGroup* child in self.rootGroup.children)
+	{
+		NSLog(@"adding child: %d", child.positionCount);
+		[self.motionPathView addLineForGroup:child];
+	}
+
+
 }
 
 

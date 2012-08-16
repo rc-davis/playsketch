@@ -131,9 +131,9 @@
                                 <rect key="frame" x="20" y="82" width="984" height="598"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
-                                    <view opaque="NO" contentMode="scaleToFill" id="fPv-RD-Gdt" customClass="PSMotionPathView">
+                                    <view opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" id="fPv-RD-Gdt" customClass="PSMotionPathView">
                                         <rect key="frame" x="0.0" y="0.0" width="984" height="598"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     </view>
                                     <view opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="BT6-W8-XKK" customClass="PSGroupOverlayButtons">
                                         <rect key="frame" x="20" y="20" width="60" height="180"/>
@@ -386,6 +386,7 @@
                     <connections>
                         <outlet property="drawingTouchView" destination="DvE-31-fMP" id="pqD-gn-SQF"/>
                         <outlet property="initialColorButton" destination="fAb-Pk-55R" id="gFY-4O-xND"/>
+                        <outlet property="motionPathView" destination="fPv-RD-Gdt" id="bwQ-KB-ibx"/>
                         <outlet property="playButton" destination="7R9-rS-8Ys" id="hAU-yy-ZrF"/>
                         <outlet property="renderingController" destination="RgX-PA-EXf" id="MOH-b8-4Tp"/>
                         <outlet property="selectionOverlayButtons" destination="BT6-W8-XKK" id="FJn-fU-zZf"/>
