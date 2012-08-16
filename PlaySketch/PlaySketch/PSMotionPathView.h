@@ -13,7 +13,9 @@
 
 
 #import <UIKit/UIKit.h>
+@class PSDrawingGroup;
+
 
 @interface PSMotionPathView : UIView
-
+- (void) addLineForGroup:(PSDrawingGroup*)group;
 @end
