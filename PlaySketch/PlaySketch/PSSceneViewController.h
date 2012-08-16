@@ -14,22 +14,23 @@
 #import <UIKit/UIKit.h>
 #import "PSDrawingEventsView.h"
 #import "PSSRTManipulator.h"
-@class PSAnimationRenderingController, PSDrawingDocument, PSTimelineSlider, PSGroupOverlayButtons;
+@class PSAnimationRenderingController, PSDrawingDocument, PSTimelineSlider, PSGroupOverlayButtons, PSMotionPathView;
 
 
 
 @interface PSSceneViewController : UIViewController <PSDrawingEventsViewDrawingDelegate, 
 														PSSRTManipulatoDelegate>
 
-@property(nonatomic,retain)IBOutlet PSAnimationRenderingController* renderingController;
-@property(nonatomic,retain)IBOutlet PSDrawingEventsView* drawingTouchView;
-@property(nonatomic,retain)IBOutlet UIButton* createCharacterButton;
-@property(nonatomic,retain)IBOutlet UIButton* playButton;
-@property(nonatomic,retain)IBOutlet UIButton* initialColorButton;
-@property(nonatomic,retain)IBOutlet PSTimelineSlider* timelineSlider;
-@property(nonatomic,retain)IBOutlet PSGroupOverlayButtons* selectionOverlayButtons;
-@property(nonatomic,retain)PSDrawingDocument* currentDocument;
-@property(nonatomic,retain)PSDrawingGroup* rootGroup;
+@property(nonatomic,retain) IBOutlet PSAnimationRenderingController* renderingController;
+@property(nonatomic,retain) IBOutlet PSDrawingEventsView* drawingTouchView;
+@property(nonatomic,retain) IBOutlet UIButton* createCharacterButton;
+@property(nonatomic,retain) IBOutlet UIButton* playButton;
+@property(nonatomic,retain) IBOutlet UIButton* initialColorButton;
+@property(nonatomic,retain) IBOutlet PSTimelineSlider* timelineSlider;
+@property(nonatomic,retain) IBOutlet PSGroupOverlayButtons* selectionOverlayButtons;
+@property(nonatomic,retain) IBOutlet PSMotionPathView* motionPathView;
+@property(nonatomic,retain) PSDrawingDocument* currentDocument;
+@property(nonatomic,retain) PSDrawingGroup* rootGroup;
 
 - (IBAction)dismissSceneView:(id)sender;
 - (IBAction)setColor:(id)sender;

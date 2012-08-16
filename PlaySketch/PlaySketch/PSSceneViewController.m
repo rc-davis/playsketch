@@ -21,6 +21,7 @@
 #import "PSTimelineSlider.h"
 #import "PSGroupOverlayButtons.h"
 #import "PSVideoExportControllerViewController.h"
+#import "PSMotionPathView.h"
 #import <QuartzCore/QuartzCore.h>
 
 
@@ -50,6 +51,7 @@
 @synthesize initialColorButton = _initialColorButton;
 @synthesize timelineSlider = _timelineSlider;
 @synthesize selectionOverlayButtons = _selectionOverlayButtons;
+@synthesize motionPathView = _motionPathView;
 @synthesize currentDocument = _currentDocument;
 @synthesize rootGroup = _rootGroup;
 @synthesize isSelecting = _isSelecting;

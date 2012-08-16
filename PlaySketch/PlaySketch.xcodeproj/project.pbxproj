@@ -13,6 +13,7 @@
 		46186F7615D792B900A1E1A2 /* record_up.png in Resources */ = {isa = PBXBuildFile; fileRef = 46186F7515D792B900A1E1A2 /* record_up.png */; };
 		4633559315B6D820001AE6CD /* Shader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 4625EA1E15B6D55100316216 /* Shader.fsh */; };
 		4633559415B6D820001AE6CD /* Shader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 4625EA2115B6D56900316216 /* Shader.vsh */; };
+		464A4F3D15DCAFD4008A59DF /* PSMotionPathView.m in Sources */ = {isa = PBXBuildFile; fileRef = 464A4F3C15DCAFD4008A59DF /* PSMotionPathView.m */; };
 		4673A46A15B6A9100053FDF0 /* PSHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 4673A46915B6A9100053FDF0 /* PSHelpers.m */; };
 		467BF45D15DB963D002321A7 /* PSVideoExportControllerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 467BF45C15DB963D002321A7 /* PSVideoExportControllerViewController.m */; };
 		467E4E4215B4235700F70C1E /* PSSelectionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 467E4E4115B4235700F70C1E /* PSSelectionHelper.m */; };
@@ -71,6 +72,8 @@
 		4625EA1E15B6D55100316216 /* Shader.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = Shader.fsh; sourceTree = "<group>"; };
 		4625EA2115B6D56900316216 /* Shader.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = Shader.vsh; sourceTree = "<group>"; };
 		4634AD1015B80730009A6E95 /* Brush.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Brush.png; sourceTree = "<group>"; };
+		464A4F3B15DCAFD4008A59DF /* PSMotionPathView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PSMotionPathView.h; path = PlaySketch/PSMotionPathView.h; sourceTree = "<group>"; };
+		464A4F3C15DCAFD4008A59DF /* PSMotionPathView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PSMotionPathView.m; path = PlaySketch/PSMotionPathView.m; sourceTree = "<group>"; };
 		4673A46815B6A9100053FDF0 /* PSHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSHelpers.h; sourceTree = "<group>"; };
 		4673A46915B6A9100053FDF0 /* PSHelpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSHelpers.m; sourceTree = "<group>"; };
 		467BF45B15DB963D002321A7 /* PSVideoExportControllerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PSVideoExportControllerViewController.h; path = PlaySketch/PSVideoExportControllerViewController.h; sourceTree = "<group>"; };
@@ -230,6 +233,8 @@
 				46973BE715C103170092D236 /* PSTimelineSlider.m */,
 				468E2A2B15C61C0600AA20D2 /* PSGroupOverlayButtons.h */,
 				468E2A2C15C61C0600AA20D2 /* PSGroupOverlayButtons.m */,
+				464A4F3B15DCAFD4008A59DF /* PSMotionPathView.h */,
+				464A4F3C15DCAFD4008A59DF /* PSMotionPathView.m */,
 			);
 			name = Interface;
 			path = ..;
@@ -481,6 +486,7 @@
 				468E2A2D15C61C0600AA20D2 /* PSGroupOverlayButtons.m in Sources */,
 				46F1735215DB7AEE00F787AC /* PSGLKitVideoExporter.m in Sources */,
 				467BF45D15DB963D002321A7 /* PSVideoExportControllerViewController.m in Sources */,
+				464A4F3D15DCAFD4008A59DF /* PSMotionPathView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
