@@ -24,6 +24,7 @@ typedef struct
 	float scale; // About origin
 	float rotation; // About origin
 	GLKVector2 origin; // point in own coordinates that location is measured to
+	BOOL isKeyframe; // whether should be used to determine scope for interpolation
 } SRTPosition;
 
 
@@ -39,7 +40,7 @@ typedef struct
 
 static inline SRTPosition SRTPositionMake(int timeStamp, float x, float y,
 										  float scale, float rotation, 
-										  float originX, float originY)
+										  float originX, float originY, BOOL isKeyframe)
 {
 	SRTPosition p;
 	p.timeStamp = timeStamp;
@@ -49,6 +50,7 @@ static inline SRTPosition SRTPositionMake(int timeStamp, float x, float y,
 	p.rotation = rotation;
 	p.origin.x = originX;
 	p.origin.y = originY;
+	p.isKeyframe = isKeyframe;
 	return p;
 }
 
@@ -70,7 +72,7 @@ static inline SRTRate SRTRateZero()
 
 static inline SRTPosition SRTPositionZero()
 {
-	return SRTPositionMake(0, 0, 0, 1, 0, 0, 0);
+	return SRTPositionMake(0, 0, 0, 1, 0, 0, 0, NO);
 }
 
 static inline SRTPosition SRTPositionInterpolate(float time, SRTPosition p1, SRTPosition p2)
@@ -91,6 +93,7 @@ static inline SRTPosition SRTPositionInterpolate(float time, SRTPosition p1, SRT
 	pos.rotation = (1 - pcnt) * p1.rotation + pcnt * p2.rotation;
 	pos.origin.x = (1 - pcnt) * p1.origin.y + pcnt * p2.origin.y;
 	pos.origin.y = (1 - pcnt) * p1.origin.y + pcnt * p2.origin.y;
+	pos.isKeyframe = NO;
 	return pos;
 }
 
@@ -124,6 +127,7 @@ static inline SRTPosition SRTPositionFromTransform(CGAffineTransform t)
 	// TODO: I don't think we need to use the origin points at all (yet?)
 	p.origin.x = 0;
 	p.origin.y = 0;
+	
 	
 	return p;
 }
