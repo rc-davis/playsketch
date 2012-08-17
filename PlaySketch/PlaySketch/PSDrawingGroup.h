@@ -37,7 +37,7 @@
 
 @interface PSDrawingGroup (CoreDataGeneratedAccessors)
 
-- (void)addPosition:(SRTPosition)position;
+- (void)addPosition:(SRTPosition)position withInterpolation:(BOOL)shouldInterpolate;
 - (void)clearPositionsAfterTime:(float)time;
 - (SRTPosition*)positions;
 - (int)positionCount;

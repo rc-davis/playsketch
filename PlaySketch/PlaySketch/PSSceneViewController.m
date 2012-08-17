@@ -579,7 +579,7 @@
 		SRTPosition currentPos = SRTPositionFromTransform(manipulator.transform);
 		currentPos.timeStamp = self.timelineSlider.value;
 		currentPos.isKeyframe = YES;
-		[manipulator.group addPosition:currentPos];
+		[manipulator.group addPosition:currentPos withInterpolation:NO];
 		[manipulator.group clearPositionsAfterTime:self.timelineSlider.value];
 		
 		[self playPressed:nil]; //TODO: should abstract this out of an IBAction
@@ -604,7 +604,7 @@
 	//Store the position at the current time
 	position.timeStamp = self.timelineSlider.value;
 	position.isKeyframe = !self.isRecording;
-	[manipulator.group addPosition:position];
+	[manipulator.group addPosition:position withInterpolation:!self.isRecording];
 	
 	//Refresh the display of the object
 	[manipulator.group jumpToTime:self.timelineSlider.value];
@@ -626,7 +626,7 @@
 		SRTPosition currentPos = SRTPositionFromTransform(manipulator.transform);
 		currentPos.timeStamp = self.timelineSlider.value;
 		currentPos.isKeyframe = YES;
-		[manipulator.group addPosition:currentPos];
+		[manipulator.group addPosition:currentPos withInterpolation:NO];
 
 		[self playPressed:nil]; //TODO: should abstract this out of an IBAction
 		self.selectionOverlayButtons.recordPulsing = NO;

@@ -33,7 +33,7 @@
 
 
 
-- (void)addPosition:(SRTPosition)position
+- (void)addPosition:(SRTPosition)position withInterpolation:(BOOL)shouldInterpolate
 {
 	const float POSITION_FPS = 10.0;
 	// Position data points can't be stored closer together than this
@@ -43,6 +43,16 @@
 	position.timeStamp = floorf(position.timeStamp * POSITION_FPS)/POSITION_FPS;
 	
 
+	// For interpolation, save a copy of what the position was at this time before we change it
+	//TODO: THIS SHOULD BE MORE EFFICIENT!! DON'T JUST CALL getStateAtTime!!
+	SRTPosition previousPositionAtTime = SRTPositionZero();
+	if(shouldInterpolate)
+		[self getStateAtTime:position.timeStamp
+					position:&previousPositionAtTime
+						rate:nil
+				 helperIndex:nil];
+	
+	
 	// Get a handle to a mutable version of our positions list
 	int currentPositionCount = self.positionCount;
 	SRTPosition* currentPositions = [self mutablePositionBytes];
@@ -58,7 +68,7 @@
 	BOOL overwriting = newIndex < currentPositionCount && 
 						currentPositions[newIndex].timeStamp == position.timeStamp;
 
-	//Make space for the new entry if necessary
+	// Make space for the new entry if necessary
 	if(!overwriting)
 	{
 		[_mutablePositionsAsData increaseLengthBy:sizeof(SRTPosition)];
@@ -76,6 +86,58 @@
 	
 	//Write the new one
 	currentPositions[newIndex] = position;
+	if (! overwriting) currentPositionCount ++;
+	
+	
+	// Interpolate from previous keyframes if it has been requested
+	// Look for the keyframes that surround our new position
+	// (The first and last position in the list are treated as implicit keyframes)
+	// Then modify them by a percent of the delta between the new position and
+	// our previous position at this time
+	if(shouldInterpolate)
+	{
+		// Figure out what we are interpolating by comparing with previous value for this time
+		SRTPosition delta = SRTPositionGetDelta(previousPositionAtTime, position);
+		
+		// Fix up the elements before our new position
+		if(newIndex > 0)
+		{
+			// Find the previous index to interpolate from
+			int previousKeyframeIndex = newIndex - 1;
+			while ( previousKeyframeIndex > 0 && !currentPositions[previousKeyframeIndex].isKeyframe)
+				previousKeyframeIndex --;
+			
+			SRTPosition previousKeyframe = currentPositions[previousKeyframeIndex];
+			
+			// Apply the change to the intermediate positions
+			for(int i = previousKeyframeIndex + 1; i < newIndex; i++)
+			{
+				float t = currentPositions[i].timeStamp;
+				float pcnt = (t - previousKeyframe.timeStamp)/(position.timeStamp - previousKeyframe.timeStamp);
+				currentPositions[i] = SRTPositionApplyDelta(currentPositions[i], delta, pcnt);
+			}
+		}
+		
+		// Fix up the elements after our new position
+		if(newIndex < currentPositionCount - 1)
+		{
+			// Find the next index to interpolate from
+			int nextKeyframeIndex = newIndex + 1;
+			while ( nextKeyframeIndex < currentPositionCount - 1 && !currentPositions[nextKeyframeIndex].isKeyframe)
+				nextKeyframeIndex ++;
+			
+			SRTPosition nextKeyframe = currentPositions[nextKeyframeIndex];
+			
+			// Apply the change to the intermediate positions
+			for(int i = nextKeyframeIndex - 1; i > newIndex; i--)
+			{
+				float t = currentPositions[i].timeStamp;
+				float pcnt = 1.0 - (t - position.timeStamp)/(nextKeyframe.timeStamp - position.timeStamp);
+				currentPositions[i] = SRTPositionApplyDelta(currentPositions[i], delta, pcnt);
+			}
+		}
+
+	}	
 }
 
 

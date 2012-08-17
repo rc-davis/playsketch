@@ -108,6 +108,31 @@ static inline SRTRate SRTRateInterpolate(SRTPosition p1, SRTPosition p2)
 	return rate;
 }
 
+static inline SRTPosition SRTPositionGetDelta(SRTPosition p1, SRTPosition p2)
+{
+	SRTPosition delta = SRTPositionZero();
+	
+	delta.location.x = p2.location.x - p1.location.x;
+	delta.location.y = p2.location.y - p1.location.y;	
+	delta.scale = p2.scale - p1.scale;
+	delta.rotation = p2.rotation - p1.rotation;
+	delta.timeStamp = p2.timeStamp - p1.timeStamp;
+	delta.origin.x = p2.origin.x - p1.origin.x;
+	delta.origin.y = p2.origin.y - p1.origin.y;
+	return delta;
+}
+
+static inline SRTPosition SRTPositionApplyDelta(SRTPosition p, SRTPosition delta, float pcnt)
+{
+	p.location.x += pcnt * delta.location.x;
+	p.location.y += pcnt * delta.location.y;
+	p.scale += pcnt * delta.scale;
+	p.rotation += pcnt * delta.rotation;
+	p.origin.x += pcnt * delta.origin.x;
+	p.origin.y += pcnt * delta.origin.y;
+	return p;
+}
+
 static inline SRTPosition SRTPositionFromTransform(CGAffineTransform t)
 {
 	SRTPosition p = SRTPositionZero();
