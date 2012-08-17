@@ -113,4 +113,11 @@
 	[self setNeedsDisplay];
 }
 
+- (void) removeLineForGroup:(PSDrawingGroup*)group
+{
+	[self.paths removeObjectForKey:group.objectID];
+	[self.keyframes removeObjectForKey:group.objectID];
+	[self setNeedsDisplay];
+}
+
 @end

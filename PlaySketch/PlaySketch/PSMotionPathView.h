@@ -18,4 +18,5 @@
 
 @interface PSMotionPathView : UIView
 - (void) addLineForGroup:(PSDrawingGroup*)group;
+- (void) removeLineForGroup:(PSDrawingGroup*)group;
 @end

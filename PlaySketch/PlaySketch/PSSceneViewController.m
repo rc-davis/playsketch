@@ -393,6 +393,7 @@
 		if([_selectedGroup.explicitCharacter boolValue] == NO)
 		{
 			[self removeManipulatorForGroup:_selectedGroup];
+			[self.motionPathView removeLineForGroup:_selectedGroup];
 			[PSDataModel mergeGroup:_selectedGroup intoParentAtTime:self.timelineSlider.value];
 		}
 	}
