@@ -185,6 +185,7 @@
 	
 	// Keep the selection group by not flattening it when it is unselected
 	self.selectedGroup.explicitCharacter = [NSNumber numberWithBool:YES];
+	[PSDataModel save];
 	
 	[self.selectionOverlayButtons configureForGroup:self.selectedGroup];
 	[[self manipulatorForGroup:self.selectedGroup] setApperanceIsSelected:YES

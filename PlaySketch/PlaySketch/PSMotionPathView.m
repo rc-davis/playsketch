@@ -65,6 +65,10 @@
 
 - (void) addLineForGroup:(PSDrawingGroup*)group
 {
+	// Skip displaying paths for any groups that haven't been saved yet
+	if ( [group.objectID isTemporaryID])
+		return;
+
 	// Bail if we have a group with no positions!
 	if ( group.positionCount < 1 ) return;
 	
