@@ -69,7 +69,11 @@
 				currentPositions + newIndex ,
 				(currentPositionCount - newIndex)*sizeof(SRTPosition));
 	}
-		
+
+	// If this time is already a keyframe, tag the new position as a keyframe too
+	if(overwriting)
+		position.isKeyframe = (position.isKeyframe) || currentPositions[newIndex].isKeyframe;
+	
 	//Write the new one
 	currentPositions[newIndex] = position;
 }

@@ -578,6 +578,7 @@
 		//Remember this location and clear everything after it
 		SRTPosition currentPos = SRTPositionFromTransform(manipulator.transform);
 		currentPos.timeStamp = self.timelineSlider.value;
+		currentPos.isKeyframe = YES;
 		[manipulator.group addPosition:currentPos];
 		[manipulator.group clearPositionsAfterTime:self.timelineSlider.value];
 		
@@ -602,6 +603,7 @@
 
 	//Store the position at the current time
 	position.timeStamp = self.timelineSlider.value;
+	position.isKeyframe = !self.isRecording;
 	[manipulator.group addPosition:position];
 	
 	//Refresh the display of the object
@@ -623,6 +625,7 @@
 		// Put a marker at this location and stop playing
 		SRTPosition currentPos = SRTPositionFromTransform(manipulator.transform);
 		currentPos.timeStamp = self.timelineSlider.value;
+		currentPos.isKeyframe = YES;
 		[manipulator.group addPosition:currentPos];
 
 		[self playPressed:nil]; //TODO: should abstract this out of an IBAction
