@@ -16,6 +16,7 @@
 
 @interface PSMotionPathView ()
 @property(nonatomic,retain) NSMutableDictionary* paths; // Group -> Bezier path
+@property(nonatomic,retain) NSMutableDictionary* keyframes; // Group -> Bezier path
 @end
 
 @implementation PSMotionPathView
@@ -24,6 +25,7 @@
 - (void) awakeFromNib
 {
 	self.paths = [NSMutableDictionary dictionary];
+	self.keyframes = [NSMutableDictionary dictionary];
 	
 
 	// We need to correct the coordinate system of this view to match the others
@@ -47,10 +49,17 @@
 	// Draw all of our bezier paths
 	[[UIColor colorWithWhite:0.3 alpha:0.5] setStroke];
 	
-	for (NSString* key in self.paths)
+	for (NSManagedObjectID* key in self.paths)
 	{
 		[[self.paths objectForKey:key] stroke];
 	}
+
+	[[UIColor colorWithWhite:0.3 alpha:0.25] setFill];
+	for (NSManagedObjectID* key in self.keyframes)
+	{
+		[[self.keyframes objectForKey:key] fill];
+	}
+
 }
 
 
@@ -64,6 +73,11 @@
 	CGFloat lineDash[] = { 10.0f, 5.0f };
 	[newPath setLineDash:lineDash count:2 phase:0];
 	[newPath setLineCapStyle:kCGLineCapRound];
+
+	// Create a Bezier Path for the keyframes
+	// Todo: probably only for debug
+	UIBezierPath* newKeyframes = [UIBezierPath bezierPath];
+	
 	
 	// Pick a point (in the group's co-ordinates) to tranform into the parent co-ords
 	CGPoint linePoint = CGPointMake(0,0);
@@ -81,9 +95,21 @@
 			[newPath moveToPoint:transformedPoint];
 		else
 			[newPath addLineToPoint:transformedPoint];
+		
+		// Add a keyframe
+		if(positions[i].isKeyframe)
+		{
+			float PADDING = 10.0;
+			CGRect fixedRect = CGRectMake(transformedPoint.x - PADDING,
+										  transformedPoint.y - PADDING,
+										  2.0*PADDING, 2.0*PADDING);
+			[newKeyframes appendPath:[UIBezierPath bezierPathWithOvalInRect:fixedRect]];
+		}
+
 	}
 	
 	[self.paths setObject:newPath forKey:group.objectID];
+	[self.keyframes	setObject:newKeyframes forKey:group.objectID];
 	[self setNeedsDisplay];
 }
 
