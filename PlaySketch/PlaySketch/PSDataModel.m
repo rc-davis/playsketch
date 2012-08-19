@@ -17,19 +17,19 @@
 
 // Private functions:
 @interface PSDataModel ()
-+(NSManagedObjectContext*)context;
++ (NSManagedObjectContext*)context;
 @end
 
 
 @implementation PSDataModel
 
-+(void)save
++ (void)save
 {
 	[[PSDataModel context] save:nil];
 	NSLog(@"SAVING");
 }
 
-+(NSArray*)allDrawingDocuments;
++ (NSArray*)allDrawingDocuments;
 {
 	// Search the data store for all PSDrawingDocuments
 	NSFetchRequest* request = [NSFetchRequest fetchRequestWithEntityName:@"PSDrawingDocument"];
@@ -38,7 +38,7 @@
 }
 
 
-+(PSDrawingDocument*)newDrawingDocumentWithName:(NSString*)name
++ (PSDrawingDocument*)newDrawingDocumentWithName:(NSString*)name
 {
 	//Create a new root object
 	PSDrawingDocument* newDocument = (PSDrawingDocument*)[NSEntityDescription 
@@ -57,7 +57,7 @@
 }
 
 
-+(PSDrawingGroup*)newDrawingGroupWithParent:(PSDrawingGroup*)parent
++ (PSDrawingGroup*)newDrawingGroupWithParent:(PSDrawingGroup*)parent
 {
 	//Create a new root object
 	PSDrawingGroup* newGroup = (PSDrawingGroup*)[NSEntityDescription 
@@ -68,7 +68,7 @@
 }
 
 
-+(PSDrawingLine*)newLineInGroup:(PSDrawingGroup*)group
++ (PSDrawingLine*)newLineInGroup:(PSDrawingGroup*)group
 {
 	PSDrawingLine* newLine = (PSDrawingLine*)[NSEntityDescription 
 											  insertNewObjectForEntityForName:@"PSDrawingLine" inManagedObjectContext:[PSDataModel context]];
@@ -77,7 +77,7 @@
 }
 
 
-+(PSDrawingGroup*)newChildOfGroup:(PSDrawingGroup*)parentGroup withLines:(NSSet*)lines
++ (PSDrawingGroup*)newChildOfGroup:(PSDrawingGroup*)parentGroup withLines:(NSSet*)lines
 {
 	// This creates a new group that is a child of parentGroup
 	// all of the lines in lines are removed from parentGroup and added to the
@@ -106,7 +106,7 @@
 }
 
 
-+(PSDrawingGroup*)mergeGroup:(PSDrawingGroup*)group intoParentAtTime:(float)time
++ (PSDrawingGroup*)mergeGroup:(PSDrawingGroup*)group intoParentAtTime:(float)time
 {
 	[PSHelpers assert:(group.parent != nil) withMessage:@"need a parent to flatten to!"];
 	PSDrawingGroup* parent = group.parent;
@@ -130,7 +130,7 @@
 }
 
 
-+(void)deleteDrawingDocument:(PSDrawingDocument*)doc
++ (void)deleteDrawingDocument:(PSDrawingDocument*)doc
 {
 	
 	[[PSDataModel context] deleteObject:doc];
@@ -139,7 +139,7 @@
 }
 
 
-+(void)deleteDrawingGroup:(PSDrawingGroup*)group
++ (void)deleteDrawingGroup:(PSDrawingGroup*)group
 {
 
 	[[PSDataModel context] deleteObject:group];
@@ -148,7 +148,7 @@
 }
 
 
-+(void)deleteDrawingLine:(PSDrawingLine*)line
++ (void)deleteDrawingLine:(PSDrawingLine*)line
 {
 
 	[[PSDataModel context] deleteObject:line];
@@ -157,12 +157,33 @@
 }
 
 
++ (BOOL)canUndo
+{
+	return YES;
+}
+
++ (BOOL)canRedo
+{
+	return YES;
+}
+
++ (void)undo
+{
+	[[PSDataModel context] undo];
+}
+
++ (void)redo
+{
+	[[PSDataModel context] redo];
+}
+
+
 /*
 	Debug helper methods!
 	To help us with development
 */
  
-+(void)DEBUG_printTotalObjectCount
++ (void)DEBUG_printTotalObjectCount
  {
 	 NSFetchRequest* requestGroup = [NSFetchRequest fetchRequestWithEntityName:@"PSDrawingGroup"];
 	 NSArray* allGroups = [[PSDataModel context] executeFetchRequest:requestGroup error:nil];
@@ -173,7 +194,7 @@
 	 NSLog(@"--- Context contains a total of:\nGroups:%d\nLines:%d", allGroups.count, allLines.count);
  }
  
-+(void)DEBUG_generateTestShapesIntoGroup:(PSDrawingGroup*)parentGroup
++ (void)DEBUG_generateTestShapesIntoGroup:(PSDrawingGroup*)parentGroup
  {
 	 PSDrawingGroup* rootGroup = [PSDataModel newDrawingGroupWithParent:parentGroup];
 	 
@@ -215,7 +236,7 @@
  
  }
 
-+(void)DEBUG_generateRandomLittleLinesIntoGroup:(PSDrawingGroup*)rootGroup lineCount:(int)lineCount
++ (void)DEBUG_generateRandomLittleLinesIntoGroup:(PSDrawingGroup*)rootGroup lineCount:(int)lineCount
 {
 	int POINT_COUNT = 1000;
 	CGSize viewSize = CGSizeMake(400, 300);
@@ -240,7 +261,7 @@
 }
 
 
-+(NSManagedObjectContext*)context
++ (NSManagedObjectContext*)context
 {
 	static NSManagedObjectContext* __context; // A static singleton for the class
 	

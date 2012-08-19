@@ -81,6 +81,12 @@
     NSPersistentStoreCoordinator *coordinator = [self persistentStoreCoordinator];
     if (coordinator != nil) {
         __managedObjectContext = [[NSManagedObjectContext alloc] init];
+		
+		// Create an Undo Manager
+		// See this tutorial to understand how this works:
+		// http://www.ioslearner.com/undo-redo-support-core-data-nsundomanager/
+        [__managedObjectContext setUndoManager:[[NSUndoManager  alloc] init]];
+		
         [__managedObjectContext setPersistentStoreCoordinator:coordinator];
     }
     return __managedObjectContext;

@@ -31,19 +31,23 @@
 @interface PSDataModel : NSObject
 
 
-+(void)save;
-+(NSArray*)allDrawingDocuments;
-+(PSDrawingDocument*)newDrawingDocumentWithName:(NSString*)name;
-+(PSDrawingGroup*)newDrawingGroupWithParent:(PSDrawingGroup*)parent;
-+(PSDrawingLine*)newLineInGroup:(PSDrawingGroup*)group;
-+(PSDrawingGroup*)newChildOfGroup:(PSDrawingGroup*)parentGroup withLines:(NSSet*)lines;
-+(PSDrawingGroup*)mergeGroup:(PSDrawingGroup*)group intoParentAtTime:(float)time;
-+(void)deleteDrawingDocument:(PSDrawingDocument*)doc;
-+(void)deleteDrawingGroup:(PSDrawingGroup*)group;
-+(void)deleteDrawingLine:(PSDrawingLine*)line;
++ (void)save;
++ (NSArray*)allDrawingDocuments;
++ (PSDrawingDocument*)newDrawingDocumentWithName:(NSString*)name;
++ (PSDrawingGroup*)newDrawingGroupWithParent:(PSDrawingGroup*)parent;
++ (PSDrawingLine*)newLineInGroup:(PSDrawingGroup*)group;
++ (PSDrawingGroup*)newChildOfGroup:(PSDrawingGroup*)parentGroup withLines:(NSSet*)lines;
++ (PSDrawingGroup*)mergeGroup:(PSDrawingGroup*)group intoParentAtTime:(float)time;
++ (void)deleteDrawingDocument:(PSDrawingDocument*)doc;
++ (void)deleteDrawingGroup:(PSDrawingGroup*)group;
++ (void)deleteDrawingLine:(PSDrawingLine*)line;
++ (BOOL)canUndo;
++ (BOOL)canRedo;
++ (void)undo;
++ (void)redo;
 
-+(void)DEBUG_printTotalObjectCount;
-+(void)DEBUG_generateTestShapesIntoGroup:(PSDrawingGroup*)rootGroup;
-+(void)DEBUG_generateRandomLittleLinesIntoGroup:(PSDrawingGroup*)rootGroup lineCount:(int)lineCount;
++ (void)DEBUG_printTotalObjectCount;
++ (void)DEBUG_generateTestShapesIntoGroup:(PSDrawingGroup*)rootGroup;
++ (void)DEBUG_generateRandomLittleLinesIntoGroup:(PSDrawingGroup*)rootGroup lineCount:(int)lineCount;
 
 @end
