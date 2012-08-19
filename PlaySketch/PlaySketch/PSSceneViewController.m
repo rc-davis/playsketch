@@ -268,6 +268,17 @@
 
 }
 
+- (IBAction)undo:(id)sender
+{
+	[PSDataModel undo];
+}
+
+- (IBAction)redo:(id)sender
+{
+	[PSDataModel redo];
+}
+
+
 /*
  ----------------------------------------------------------------------------
  Private functions

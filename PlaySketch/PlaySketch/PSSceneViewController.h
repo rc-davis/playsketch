@@ -41,5 +41,7 @@
 - (IBAction)toggleRecording:(id)sender;
 - (IBAction)showDetailsForSelection:(id)sender;
 - (IBAction)exportAsVideo:(id)sender;
+- (IBAction)undo:(id)sender;
+- (IBAction)redo:(id)sender;
 
 @end
