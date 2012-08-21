@@ -18,7 +18,7 @@
 
 @protocol PSSRTManipulatoDelegate
 -(void)manipulatorDidStartInteraction:(id)sender;
-- (void)manipulator:(id)sender didTranslateByX:(float)dX andY:(float)dY;
+- (void)manipulator:(id)sender didTranslateByX:(float)dX andY:(float)dY rotation:(float)dRotation scale:(float)dScale;
 -(void)manipulatorDidStopInteraction:(id)sender;
 @end
 

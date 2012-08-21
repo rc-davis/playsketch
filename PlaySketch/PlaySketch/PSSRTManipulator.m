@@ -114,11 +114,17 @@
 	UITouch* t = [touches anyObject];
 	CGPoint p = [t locationInView:self];
 	CGPoint pPrevious = [t previousLocationInView:self];
+	
+	// Fix up to treat the center as (0,0)
+	p.x -= self.frame.size.width/2.0;
+	p.y -= self.frame.size.height/2.0;
+	pPrevious.x -= self.frame.size.width/2.0;
+	pPrevious.y -= self.frame.size.height/2.0;
+
 
 	// Figure out how we've changed!
 	
-	float dX,dY,dRot,dScale = 0;
-	
+	float dX,dY,dRotation,dScale = 0;
 	if (_isTranslating)
 	{
 		dX = (p.x - pPrevious.x);
@@ -126,15 +132,30 @@
 		self.center = CGPointMake(self.center.x + dX, self.center.y + dY);
 	}
 	
+	if (_isRotating)
+	{
+		// Calculate our change in angles
+		float anglePrevious = atan2f(pPrevious.y, pPrevious.x);
+		float angleNew = atan2f(p.y, p.x);
+		dRotation = angleNew - anglePrevious;
+		
+		// Clean up angle to assume it is the short way around the circle
+		if ( dRotation > M_PI ) dRotation -= 2*M_PI;
+		if ( dRotation < -M_PI ) dRotation += 2*M_PI;
+		
+		[_rotatePath applyTransform:CGAffineTransformMakeRotation(dRotation)];
+		[self setNeedsDisplay];
+	}
+
 	if (_isScaling)
 	{
-		//TODO: SCALE AND ROTATE CALCULATIONS (update our drawn location!
+		//TODO: SCALE CALCULATIONS
 	}
 	
 	//TODO: update delegate to take rotation and scale
 	
 	if(self.delegate)
-		[self.delegate manipulator:self didTranslateByX:dX andY:dY];
+		[self.delegate manipulator:self didTranslateByX:dX andY:dY rotation:dRotation scale:dScale];
 
 }
 

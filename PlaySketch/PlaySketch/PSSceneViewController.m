@@ -601,7 +601,7 @@
 	
 }
 
--(void)manipulator:(id)sender didTranslateByX:(float)dX andY:(float)dY
+-(void)manipulator:(id)sender didTranslateByX:(float)dX andY:(float)dY rotation:(float)dRotation scale:(float)dScale
 {
 	PSSRTManipulator* manipulator = sender;
 
@@ -611,6 +611,7 @@
 	// Update it with these changes
 	position.location.x += dX;
 	position.location.y += dY;
+	position.rotation += dRotation;
 	
 	//Store the position at the current time
 	position.timeStamp = self.timelineSlider.value;
