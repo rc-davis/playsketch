@@ -612,6 +612,7 @@
 	position.location.x += dX;
 	position.location.y += dY;
 	position.rotation += dRotation;
+	position.scale *= dScale;
 	
 	//Store the position at the current time
 	position.timeStamp = self.timelineSlider.value;

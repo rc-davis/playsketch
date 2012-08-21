@@ -124,7 +124,7 @@
 
 	// Figure out how we've changed!
 	
-	float dX,dY,dRotation,dScale = 0;
+	float dX,dY = 0;
 	if (_isTranslating)
 	{
 		dX = (p.x - pPrevious.x);
@@ -132,6 +132,7 @@
 		self.center = CGPointMake(self.center.x + dX, self.center.y + dY);
 	}
 	
+	float dRotation = 0;
 	if (_isRotating)
 	{
 		// Calculate our change in angles
@@ -143,17 +144,20 @@
 		if ( dRotation > M_PI ) dRotation -= 2*M_PI;
 		if ( dRotation < -M_PI ) dRotation += 2*M_PI;
 		
-		[_rotatePath applyTransform:CGAffineTransformMakeRotation(dRotation)];
-		[self setNeedsDisplay];
+		//[_rotatePath applyTransform:CGAffineTransformMakeRotation(dRotation)];
+		//[self setNeedsDisplay];
 	}
 
+	float dScale = 1;
 	if (_isScaling)
 	{
-		//TODO: SCALE CALCULATIONS
+		float distancePrevious = hypotf(pPrevious.x, pPrevious.y);
+		float distanceNew = hypotf(p.x, p.y);
+		[PSHelpers assert:(distancePrevious != 0) withMessage:@"Divide by zero in scaling calculation"];
+		dScale = distanceNew / distancePrevious;
 	}
 	
-	//TODO: update delegate to take rotation and scale
-	
+	// Inform the delegate
 	if(self.delegate)
 		[self.delegate manipulator:self didTranslateByX:dX andY:dY rotation:dRotation scale:dScale];
 
