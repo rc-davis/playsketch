@@ -17,7 +17,17 @@
 #import <QuartzCore/QuartzCore.h>
 
 @interface PSSRTManipulator ()
-- (CGAffineTransform)incrementalTransformWithTouches:(NSSet *)touches;
+{
+	UIBezierPath* _translatePath;
+	UIBezierPath* _rotatePath;
+	UIBezierPath* _scalePath;
+	BOOL _isRotating;
+	BOOL _isTranslating;
+	BOOL _isScaling;
+}
+- (UIBezierPath*)buildTranslatePath;
+- (UIBezierPath*)buildRotatePath;
+- (UIBezierPath*)buildScalePath;
 @end
 
 
@@ -25,108 +35,45 @@
 @synthesize delegate = _delegate;
 @synthesize group = _group;
 
-
 -(id)initWithFrame:(CGRect)frame
 {
 	if (self = [super initWithFrame:frame])
 	{
-		// sensible defaults
-		[self setApperanceIsSelected:YES isCharacter:NO isRecording:NO];
+		self.backgroundColor = [UIColor clearColor];
+		_isRotating = NO;
+		_isTranslating = NO;
+		_isScaling = NO;
+		_translatePath = [self buildTranslatePath];
+		_rotatePath = [self buildRotatePath];
+		_scalePath = [self buildScalePath];
 	}
 	
 	return self;
 }
 
+
+- (void)drawRect:(CGRect)rect
+{
+	CGContextRef context = UIGraphicsGetCurrentContext();
+	CGContextTranslateCTM(context, self.frame.size.width/2.0, self.frame.size.height/2.0);
+
+	[[UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:(_isScaling ? 1.0 : 0.6)] setFill];
+	[_scalePath fill];
+	
+	[[UIColor colorWithRed:0.0 green:1.0 blue:0.0 alpha:(_isRotating ? 1.0 : 0.6)] setFill];
+	[_rotatePath fill];
+
+	[[UIColor colorWithRed:0.0 green:0.0 blue:1.0 alpha:(_isTranslating ? 1.0 : 0.6)] setFill];
+	[_translatePath fill];
+	
+}
+
+
+
 - (void)setApperanceIsSelected:(BOOL)selected isCharacter:(BOOL)character isRecording:(BOOL)recording
 {
-	UIColor* newBackground = [UIColor blackColor];
-	
-	if( selected && !character && !recording )
-	{
-		// Inital selection, yellow color
-		newBackground = [UIColor colorWithRed:0.950 green:1.000 blue:0.045 alpha:0.5];
-		
-	}
-	else if(!selected && !character && !recording)
-	{
-		// A zombie manipulator...
-		newBackground = [UIColor blackColor];
-	}
-	else if( !selected && character && !recording )
-	{
-		// A character that isn't selected, grey background color
-		newBackground = [UIColor colorWithRed:0.494 green:0.495 blue:0.470 alpha:0.2];
-	}
-	else if ( selected && character && !recording )
-	{
-		// A character that is selected but not recording, orange color
-		newBackground = [UIColor colorWithRed:1.000 green:0.734 blue:0.116 alpha:0.5];
-
-	}
-	else if ( selected && character && recording )
-	{
-		// A character that is selected and in recording mode, red!
-		newBackground = [UIColor colorWithRed:1.000 green:0.000 blue:0.000 alpha:0.5];
-
-	}
-	else
-	{
-		NSLog(@"selected? %d\tcharacter? %d\trecording? %d", selected, character, recording);
-		[PSHelpers NYIWithmessage:@"This combination has not been considered..."];
-	}
-	self.backgroundColor = newBackground;
 }
 
-
--(void)setFrame:(CGRect)frame
-{
-	/*	
-		We are using the self.transform property to display the multi-touch 
-		gestures that are scaling, rotating and translating this manipulator.
-		To combine these three values and make the math easier, we are
-		representing them as a CGAffineTransform, which is assigned to the
-		manipulator's self.transform property.
-	 
-		A UIView's transform is always relative to the center-point of the view.
-		(A rotation, for example, will happen about the center of the view)
-		We want the PSDrawingGroups to share this definition of center-point,
-		even as we translate the manipulator around.
-		This is easiest if we do ALL translations of this manipulator by adjusting
-		the self.transform property instead of the normal self.frame or self.center
-		properties.
-		To make this happen transparently, we're overriding the self.frame setter
-		to center the view's frame on 0,0, then translate it using self.transform.
-		
-		This will also zero out any Scales and Rotates and return to identity.
-	 
-		If none of this makes any sense, read the UIView documenation on frame, 
-		bounds, center, and transform:
-		http://developer.apple.com/library/ios/#documentation/uikit/reference/uiview_class/uiview/uiview.html
-	 */
-	
-	// Add some padding to the frame if necessary
-	float MIN_FRAME_DIMENSION = 75.0; //Bigger than the recommended minimum touch target
-	if(frame.size.width < MIN_FRAME_DIMENSION)
-	{
-		float deltaWidth = MIN_FRAME_DIMENSION - frame.size.width;
-		frame.size.width += deltaWidth;
-		frame.origin.x -= deltaWidth/2.0;
-	}
-	if(frame.size.height < MIN_FRAME_DIMENSION) //Recommended minimum touch target
-	{
-		float deltaHeight = MIN_FRAME_DIMENSION - frame.size.height;
-		frame.size.height += deltaHeight;
-		frame.origin.y -= deltaHeight/2.0;
-	}
-	
-	
-	CGRect frameAboutZero = CGRectMake(-frame.size.width/2.0, -frame.size.height/2.0,
-									   frame.size.width, frame.size.height);
-	CGPoint centerPoint = CGPointMake(frame.origin.x + frame.size.width/2.0,
-									  frame.origin.y + frame.size.height/2.0);
-	[super setFrame:frameAboutZero];	
-	self.transform = CGAffineTransformMakeTranslation(centerPoint.x, centerPoint.y);
-}
 
 
 - (CGPoint)upperRightPoint
@@ -138,108 +85,156 @@
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-	if(self.delegate)
-		[self.delegate manipulatorDidStartInteraction:self];
+//	if(self.delegate)
+//		[self.delegate manipulatorDidStartInteraction:self];
+
+	
+	UITouch* t = [touches anyObject];
+	CGPoint p = [t locationInView:self];
+	p.x -= self.frame.size.width/2.0;
+	p.y -= self.frame.size.height/2.0;
+	
+	if ([_scalePath containsPoint:p])
+		 _isScaling = YES;
+	else if([_rotatePath containsPoint:p])
+		  _isRotating = YES;
+	else if ([_translatePath containsPoint:p])
+		_isTranslating = YES;
+	
+	[self setNeedsDisplay];
+
 }
 
--(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
+/*-(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {		
-	CGAffineTransform incrementalT = [self incrementalTransformWithTouches:event.allTouches];
-	self.transform = CGAffineTransformConcat(self.transform, incrementalT);
-	
 	if(self.delegate)
 		[self.delegate manipulator:self
 					   didUpdateBy:incrementalT
 					   toTransform:self.transform];
 
 }
-
+*/
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-	if (self.delegate)
-		[self.delegate manipulatorDidStopInteraction:self];
+//	if (self.delegate)
+//		[self.delegate manipulatorDidStopInteraction:self];
+	
+	_isRotating = NO;
+	_isTranslating = NO;
+	_isScaling = NO;
+	[self setNeedsDisplay];
 }
-
+/*
 -(void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
 {
 	if (self.delegate)
 		[self.delegate manipulatorDidStopInteraction:self];
-	//TODO: should this be a 'manipulatorDidCancelInteraction:'?
 }
-
-
-/*
-	Turns a set of touches from touchesMoved: into an affine transform representing
-	the S,R,T change being made.
-	Heavily borrowed from:
-	https://github.com/erica/iphone-3.0-cookbook-/tree/master/C08-Gestures/14-Resize%20And%20Rotate
-	(which is "heavily borrowed" from Apple sample code).
-	Concatenating this with the view's current transform (self.transform) will
-	properly update the the location of the view to respond to multi-touch
 */
-- (CGAffineTransform)incrementalTransformWithTouches:(NSSet *)touches 
+
+
+- (UIBezierPath*)buildTranslatePath
 {
-	NSInteger numTouches = [touches count];
-	if (numTouches == 0)
-	{
-		// If there are no touches, simply return identify transform.
-		return CGAffineTransformIdentity;
-	}
-	else if (numTouches == 1)
-	{
-		// A single touch is a simple translation
-		UITouch *touch = [touches anyObject];
-		CGPoint beginPoint = [touch previousLocationInView:self.superview];
-		CGPoint currentPoint = [touch locationInView:self.superview];
-		return CGAffineTransformMakeTranslation(currentPoint.x - beginPoint.x,
-												currentPoint.y - beginPoint.y);
-	}
-	else
-	{
-		//With two or more touches, just grab the first two
-		
-		UITouch *touch1 = [[touches allObjects] objectAtIndex:0];
-		UITouch *touch2 = [[touches allObjects] objectAtIndex:1];
+	CGFloat T_WIDTH_2 = 45.0;
+	CGFloat T_ARROW_2 = 20.0;
+	CGFloat T_ARROW_START_2 = 50.0;
+	CGFloat T_ARROWHEAD_2 = 25.0;
 	
-		CGPoint beginPoint1 = [touch1 previousLocationInView:self.superview];
-		CGPoint currentPoint1 = [touch1 locationInView:self.superview];
-		CGPoint beginPoint2 = [touch2 previousLocationInView:self.superview];
-		CGPoint currentPoint2 = [touch2 locationInView:self.superview];
+	UIBezierPath* p = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(-T_WIDTH_2,
+																		-T_WIDTH_2,
+																		T_WIDTH_2*2.0,
+																		T_WIDTH_2*2.0)];
+	[p appendPath: [UIBezierPath bezierPathWithRect:CGRectMake(-T_ARROW_2,
+															   -T_ARROW_START_2,
+															   T_ARROW_2*2,
+															   T_ARROW_START_2*2)]];
+	[p appendPath: [UIBezierPath bezierPathWithRect:CGRectMake(-T_ARROW_START_2,
+															   -T_ARROW_2,
+															   T_ARROW_START_2*2,
+															   T_ARROW_2*2)]];
+	
+	[p moveToPoint:CGPointMake(T_ARROW_START_2 + T_ARROWHEAD_2,0.0)];
+	[p addLineToPoint:CGPointMake(T_ARROW_START_2, T_ARROWHEAD_2)];
+	[p addLineToPoint:CGPointMake(T_ARROW_START_2, -T_ARROWHEAD_2)];
+	[p addLineToPoint:CGPointMake(T_ARROW_START_2 + T_ARROWHEAD_2,0.0)];
+	
+	[p moveToPoint:CGPointMake(-T_ARROW_START_2 - T_ARROWHEAD_2,0.0)];
+	[p addLineToPoint:CGPointMake(-T_ARROW_START_2, -T_ARROWHEAD_2)];
+	[p addLineToPoint:CGPointMake(-T_ARROW_START_2, T_ARROWHEAD_2)];
+	[p addLineToPoint:CGPointMake(-T_ARROW_START_2 - T_ARROWHEAD_2,0.0)];
+	
+	[p moveToPoint:CGPointMake(0.0, T_ARROW_START_2 + T_ARROWHEAD_2)];
+	[p addLineToPoint:CGPointMake(T_ARROWHEAD_2, T_ARROW_START_2)];
+	[p addLineToPoint:CGPointMake( -T_ARROWHEAD_2, T_ARROW_START_2)];
+	[p addLineToPoint:CGPointMake(0.0, T_ARROW_START_2 + T_ARROWHEAD_2)];
+	
+	[p moveToPoint:CGPointMake(0.0, -T_ARROW_START_2 - T_ARROWHEAD_2)];
+	[p addLineToPoint:CGPointMake(-T_ARROWHEAD_2, -T_ARROW_START_2)];
+	[p addLineToPoint:CGPointMake(T_ARROWHEAD_2, -T_ARROW_START_2)];
+	[p addLineToPoint:CGPointMake(0.0, -T_ARROW_START_2 - T_ARROWHEAD_2)];
 
-		double layerX = self.center.x;
-		double layerY = self.center.y;
-
-		double x1 = beginPoint1.x - layerX;
-		double y1 = beginPoint1.y - layerY;
-		double x2 = beginPoint2.x - layerX;
-		double y2 = beginPoint2.y - layerY;
-		double x3 = currentPoint1.x - layerX;
-		double y3 = currentPoint1.y - layerY;
-		double x4 = currentPoint2.x - layerX;
-		double y4 = currentPoint2.y - layerY;
-
-		// Solve the system:
-		//   [a b t1, -b a t2, 0 0 1] * [x1, y1, 1] = [x3, y3, 1]
-		//   [a b t1, -b a t2, 0 0 1] * [x2, y2, 1] = [x4, y4, 1]
-
-		double D = (y1-y2)*(y1-y2) + (x1-x2)*(x1-x2);
-		if (D < 0.1)
-		{
-			//Treat the degenerate case like a translation
-			return CGAffineTransformMakeTranslation(x3-x1, y3-y1);
-		}
-
-		double a = (y1-y2)*(y3-y4) + (x1-x2)*(x3-x4);
-		double b = (y1-y2)*(x3-x4) - (x1-x2)*(y3-y4);
-		double tx = (y1*x2 - x1*y2)*(y4-y3) - (x1*x2 + y1*y2)*(x3+x4) + 
-					x3*(y2*y2 + x2*x2) + x4*(y1*y1 + x1*x1);
-		double ty = (x1*x2 + y1*y2)*(-y4-y3) + (y1*x2 - x1*y2)*(x3-x4) + 
-					y3*(y2*y2 + x2*x2) + y4*(y1*y1 + x1*x1);
-		
-		return CGAffineTransformMake(a/D, -b/D, b/D, a/D, tx/D, ty/D);
-	}
+	p.usesEvenOddFillRule = NO;
+	return p;
 }
 
+- (UIBezierPath*)buildRotatePath
+{
+	CGFloat R_INNER_RAD = 70.0;
+	CGFloat R_OUTER_RAD = 110.0;
+	CGFloat R_ARROW_PAD = 15.0;
 
+	UIBezierPath* p = [UIBezierPath bezierPath];
+	[p addArcWithCenter:CGPointZero
+						   radius:R_INNER_RAD
+					   startAngle:M_PI
+						 endAngle:M_PI + M_PI_4
+						clockwise:NO];
+	[p addArcWithCenter:CGPointZero
+						   radius:R_OUTER_RAD
+					   startAngle:M_PI + M_PI_4
+						 endAngle:M_PI
+						clockwise:YES];
+	
+	[p moveToPoint:CGPointMake(- (R_INNER_RAD - R_ARROW_PAD) / M_SQRT2,
+										 - (R_INNER_RAD - R_ARROW_PAD) / M_SQRT2 )];
+	[p addLineToPoint:CGPointMake(- (R_OUTER_RAD + R_ARROW_PAD) / M_SQRT2,
+											- (R_OUTER_RAD + R_ARROW_PAD) / M_SQRT2 )];
+	[p addLineToPoint:CGPointMake(- (R_OUTER_RAD + R_ARROW_PAD) / M_SQRT2,
+											- (R_INNER_RAD - R_ARROW_PAD) / M_SQRT2 )];
+	[p addLineToPoint:CGPointMake(- (R_INNER_RAD - R_ARROW_PAD) / M_SQRT2,
+											- (R_INNER_RAD - R_ARROW_PAD) / M_SQRT2 )];
+	
+	return p;
+}
+
+- (UIBezierPath*)buildScalePath
+{
+	CGFloat S_INNER = 125.0;
+	CGFloat S_LENGTH = 60.0;
+	CGFloat S_WIDTH_2 = 20.0;
+	CGFloat S_ARROWHEAD_2 = 45.0;
+
+	UIBezierPath* p = [UIBezierPath bezierPath];
+	UIBezierPath* scaleArrow = [UIBezierPath bezierPathWithRect:CGRectMake(-S_WIDTH_2,
+																		   S_INNER,
+																		   S_WIDTH_2*2.0,
+																		   S_LENGTH)];
+
+	[scaleArrow moveToPoint:CGPointMake(-S_ARROWHEAD_2, S_INNER + S_LENGTH)];
+	[scaleArrow addLineToPoint:CGPointMake(0, S_INNER + S_LENGTH + S_ARROWHEAD_2)];
+	[scaleArrow addLineToPoint:CGPointMake(S_ARROWHEAD_2, S_INNER + S_LENGTH)];
+	[scaleArrow addLineToPoint:CGPointMake(-S_ARROWHEAD_2, S_INNER + S_LENGTH)];
+	
+	[scaleArrow applyTransform:CGAffineTransformMakeRotation(M_PI_4)];
+	[p appendPath:scaleArrow];
+	[scaleArrow applyTransform:CGAffineTransformMakeRotation(M_PI_2)];
+	[p appendPath:scaleArrow];
+	[scaleArrow applyTransform:CGAffineTransformMakeRotation(M_PI_2)];
+	[p appendPath:scaleArrow];
+	[scaleArrow applyTransform:CGAffineTransformMakeRotation(M_PI_2)];
+	[p appendPath:scaleArrow];
+	return p;
+}
 
 @end
+
