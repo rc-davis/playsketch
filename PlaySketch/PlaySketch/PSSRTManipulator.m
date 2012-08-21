@@ -16,6 +16,10 @@
 #import <GLKit/GLKit.h> // for the math
 #import <QuartzCore/QuartzCore.h>
 
+#define EXPANDED_WIDTH_2 163.0
+#define SHRUNK_WIDTH_2 40.0
+
+
 @interface PSSRTManipulator ()
 {
 	UIBezierPath* _translatePath;
@@ -24,6 +28,8 @@
 	BOOL _isRotating;
 	BOOL _isTranslating;
 	BOOL _isScaling;
+	BOOL _selected;
+	
 }
 - (UIBezierPath*)buildTranslatePath;
 - (UIBezierPath*)buildRotatePath;
@@ -37,11 +43,10 @@
 
 - (id)initAtLocation:(CGPoint)center
 {
-	float FRAME_WIDTH_2 = 163; // furthest point out
-	CGRect frame = CGRectMake(center.x - FRAME_WIDTH_2,
-							  center.y - FRAME_WIDTH_2,
-							  2*FRAME_WIDTH_2,
-							  2*FRAME_WIDTH_2);
+	CGRect frame = CGRectMake(center.x - EXPANDED_WIDTH_2,
+							  center.y - EXPANDED_WIDTH_2,
+							  2*EXPANDED_WIDTH_2,
+							  2*EXPANDED_WIDTH_2);
 	
 	if (self = [super initWithFrame:frame])
 	{
@@ -61,6 +66,9 @@
 {
 	CGContextRef context = UIGraphicsGetCurrentContext();
 	CGContextTranslateCTM(context, self.frame.size.width/2.0, self.frame.size.height/2.0);
+	
+	if(!_selected)
+		CGContextScaleCTM(context, SHRUNK_WIDTH_2/EXPANDED_WIDTH_2, SHRUNK_WIDTH_2/EXPANDED_WIDTH_2);
 
 	[[UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:(_isScaling ? 1.0 : 0.6)] setFill];
 	[_scalePath fill];
@@ -77,6 +85,24 @@
 
 - (void)setApperanceIsSelected:(BOOL)selected isCharacter:(BOOL)character isRecording:(BOOL)recording
 {
+	_selected = selected;
+	
+	CGPoint center = self.center;
+	if(!selected)
+		self.frame = CGRectMake(0, 0, 2*SHRUNK_WIDTH_2, 2*SHRUNK_WIDTH_2);
+	else
+		self.frame = CGRectMake(0, 0, 2*EXPANDED_WIDTH_2, 2*EXPANDED_WIDTH_2);
+	self.center = center;
+	
+	
+	if(!selected)
+		self.backgroundColor = [UIColor colorWithWhite:0.3 alpha:0.3];
+	else
+		self.backgroundColor = [UIColor clearColor];
+	
+	
+	[self setNeedsDisplay];
+	
 }
 
 
