@@ -236,9 +236,9 @@
 }
 
 
-- (CGAffineTransform)currentAffineTransform
+- (SRTPosition)currentCachedPosition
 {
-	return SRTPositionToTransform(currentSRTPosition);
+	return currentSRTPosition;
 }
 
 

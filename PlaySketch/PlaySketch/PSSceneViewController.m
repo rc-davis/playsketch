@@ -279,12 +279,15 @@
 
 - (PSSRTManipulator*)createManipulatorForGroup:(PSDrawingGroup*)group
 {
+	CGPoint groupCenter = CGPointMake(group.currentCachedPosition.location.x,
+									  group.currentCachedPosition.location.y);
+
 	// Create the manipulator & set its location
-	PSSRTManipulator* man = [[PSSRTManipulator alloc] initWithFrame:[group boundingRect]];
+	PSSRTManipulator* man = [[PSSRTManipulator alloc] initAtLocation:groupCenter];
 	[self.renderingController.view insertSubview:man belowSubview:self.selectionOverlayButtons];
 	man.delegate = self;
 	man.group = group;
-	man.transform = [group currentAffineTransform];
+
 	[man setApperanceIsSelected:(group == self.selectedGroup)
 					   isCharacter:[group.explicitCharacter boolValue]
 					   isRecording:NO];
@@ -314,7 +317,9 @@
 - (void)refreshManipulatorLocations
 {
 	for (PSSRTManipulator* m in self.manipulators)
-			m.transform = [m.group currentAffineTransform];
+		m.center = 	CGPointMake(m.group.currentCachedPosition.location.x,
+								m.group.currentCachedPosition.location.y);
+
 	
 	if(self.selectedGroup)
 	{
@@ -578,7 +583,7 @@
 		self.isRecording = YES;
 		
 		//Remember this location and clear everything after it
-		SRTPosition currentPos = SRTPositionFromTransform(manipulator.transform);
+		SRTPosition currentPos = [manipulator.group currentCachedPosition];
 		currentPos.timeStamp = self.timelineSlider.value;
 		currentPos.isKeyframe = YES;
 		[manipulator.group addPosition:currentPos withInterpolation:NO];
@@ -596,13 +601,17 @@
 	
 }
 
--(void)manipulator:(id)sender didUpdateBy:(CGAffineTransform)incrementalTransform toTransform:(CGAffineTransform)fullTransform
+-(void)manipulator:(id)sender didTranslateByX:(float)dX andY:(float)dY
 {
 	PSSRTManipulator* manipulator = sender;
 
-	//turn the current full transform into an S,R,T Position
-	SRTPosition position = SRTPositionFromTransform(fullTransform);
+	// Get the group's position
+	SRTPosition position = [manipulator.group currentCachedPosition];
 
+	// Update it with these changes
+	position.location.x += dX;
+	position.location.y += dY;
+	
 	//Store the position at the current time
 	position.timeStamp = self.timelineSlider.value;
 	position.isKeyframe = !self.isRecording;
@@ -625,7 +634,7 @@
 		self.isRecording = NO;
 		
 		// Put a marker at this location and stop playing
-		SRTPosition currentPos = SRTPositionFromTransform(manipulator.transform);
+		SRTPosition currentPos = [manipulator.group currentCachedPosition];
 		currentPos.timeStamp = self.timelineSlider.value;
 		currentPos.isKeyframe = YES;
 		[manipulator.group addPosition:currentPos withInterpolation:NO];

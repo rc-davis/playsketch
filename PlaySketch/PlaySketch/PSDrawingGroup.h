@@ -45,7 +45,7 @@
 			  position:(SRTPosition*)pPosition
 				  rate:(SRTRate*)pRate
 		   helperIndex:(int*)pIndex;
-- (CGAffineTransform)currentAffineTransform;
+- (SRTPosition)currentCachedPosition;
 
 - (void)addChildrenObject:(PSDrawingGroup *)value;
 - (void)removeChildrenObject:(PSDrawingGroup *)value;

@@ -18,14 +18,15 @@
 
 @protocol PSSRTManipulatoDelegate
 -(void)manipulatorDidStartInteraction:(id)sender;
--(void)manipulator:(id)sender didUpdateBy:(CGAffineTransform)incrementalTransform toTransform:(CGAffineTransform)fullTransform;
+- (void)manipulator:(id)sender didTranslateByX:(float)dX andY:(float)dY;
 -(void)manipulatorDidStopInteraction:(id)sender;
 @end
+
 
 @interface PSSRTManipulator : UIView
 @property(nonatomic,weak) id<PSSRTManipulatoDelegate> delegate;
 @property(nonatomic,weak) PSDrawingGroup* group;
-- (id)initWithFrame:(CGRect)frame;
+- (id)initAtLocation:(CGPoint)center;
 - (CGPoint)upperRightPoint;
 - (void)setApperanceIsSelected:(BOOL)selected isCharacter:(BOOL)character isRecording:(BOOL)recording;
 

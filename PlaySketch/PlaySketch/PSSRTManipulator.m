@@ -35,8 +35,14 @@
 @synthesize delegate = _delegate;
 @synthesize group = _group;
 
--(id)initWithFrame:(CGRect)frame
+- (id)initAtLocation:(CGPoint)center
 {
+	float FRAME_WIDTH_2 = 163; // furthest point out
+	CGRect frame = CGRectMake(center.x - FRAME_WIDTH_2,
+							  center.y - FRAME_WIDTH_2,
+							  2*FRAME_WIDTH_2,
+							  2*FRAME_WIDTH_2);
+	
 	if (self = [super initWithFrame:frame])
 	{
 		self.backgroundColor = [UIColor clearColor];
@@ -50,7 +56,6 @@
 	
 	return self;
 }
-
 
 - (void)drawRect:(CGRect)rect
 {
@@ -85,9 +90,8 @@
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-//	if(self.delegate)
-//		[self.delegate manipulatorDidStartInteraction:self];
-
+	if(self.delegate)
+		[self.delegate manipulatorDidStartInteraction:self];
 	
 	UITouch* t = [touches anyObject];
 	CGPoint p = [t locationInView:self];
@@ -105,32 +109,52 @@
 
 }
 
-/*-(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
-{		
+-(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
+{	
+	UITouch* t = [touches anyObject];
+	CGPoint p = [t locationInView:self];
+	CGPoint pPrevious = [t previousLocationInView:self];
+
+	// Figure out how we've changed!
+	
+	float dX,dY,dRot,dScale = 0;
+	
+	if (_isTranslating)
+	{
+		dX = (p.x - pPrevious.x);
+		dY = (p.y - pPrevious.y);
+		self.center = CGPointMake(self.center.x + dX, self.center.y + dY);
+	}
+	
+	if (_isScaling)
+	{
+		//TODO: SCALE AND ROTATE CALCULATIONS (update our drawn location!
+	}
+	
+	//TODO: update delegate to take rotation and scale
+	
 	if(self.delegate)
-		[self.delegate manipulator:self
-					   didUpdateBy:incrementalT
-					   toTransform:self.transform];
+		[self.delegate manipulator:self didTranslateByX:dX andY:dY];
 
 }
-*/
+
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-//	if (self.delegate)
-//		[self.delegate manipulatorDidStopInteraction:self];
+	if (self.delegate)
+		[self.delegate manipulatorDidStopInteraction:self];
 	
 	_isRotating = NO;
 	_isTranslating = NO;
 	_isScaling = NO;
 	[self setNeedsDisplay];
 }
-/*
+
+
 -(void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
 {
 	if (self.delegate)
 		[self.delegate manipulatorDidStopInteraction:self];
 }
-*/
 
 
 - (UIBezierPath*)buildTranslatePath
