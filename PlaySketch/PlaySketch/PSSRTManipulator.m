@@ -176,7 +176,8 @@
 
 	// Figure out how we've changed!
 	
-	float dX,dY = 0;
+	float dX = 0;
+	float dY = 0;
 	if (_isTranslating)
 	{
 		dX = (p.x - pPrevious.x);

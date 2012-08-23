@@ -38,7 +38,7 @@
 
 - (id)initWithView:(GLKView*)view toPath:(NSString*)path
 {
-	if(self == [super init])
+	if(self = [super init])
 	{
 		self.view = view;
 
