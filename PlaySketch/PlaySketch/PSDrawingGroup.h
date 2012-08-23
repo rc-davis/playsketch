@@ -25,6 +25,9 @@
 	SRTRate currentSRTRate;
 	int currentPositionIndex;
 	GLKMatrix4 currentModelViewMatrix;
+	BOOL _pausedTranslation;
+	BOOL _pausedScale;
+	BOOL _pausedRotation;
 }
 
 @property (nonatomic, retain) NSString * name;

@@ -443,7 +443,6 @@ enum
 
 - (void)updateWithTimeInterval:(NSTimeInterval)timeSinceLastUpdate toTime:(NSTimeInterval)currentTime
 {
-
 	// Check if it is time for us to advance
 	BOOL shouldAdvance = ( currentPositionIndex + 1 < self.positionCount ) &&
 						 ( self.positions[currentPositionIndex + 1].timeStamp <= currentTime );
@@ -461,17 +460,26 @@ enum
 		{
 			SRTPosition currentPos = self.positions[currentPositionIndex];
 			SRTPosition nextPos = self.positions[currentPositionIndex + 1];
-			currentSRTPosition = SRTPositionInterpolate(currentTime, currentPos, nextPos);
+			SRTPosition newCurrentPosition = SRTPositionInterpolate(currentTime, currentPos, nextPos);
+			if(_pausedTranslation)newCurrentPosition.location = currentSRTPosition.location;
+			if(_pausedRotation)newCurrentPosition.rotation = currentSRTPosition.rotation;
+			if(_pausedScale)newCurrentPosition.scale = currentSRTPosition.scale;
+			currentSRTPosition = newCurrentPosition;
 			currentSRTRate = SRTRateInterpolate(currentPos, nextPos);
 		}
 	} 
 	else
 	{
 		// Animate with the current matrix
-		currentSRTPosition.location.x += timeSinceLastUpdate * currentSRTRate.locationRate.x;
-		currentSRTPosition.location.y += timeSinceLastUpdate * currentSRTRate.locationRate.y;
-		currentSRTPosition.rotation += timeSinceLastUpdate * currentSRTRate.rotationRate;
-		currentSRTPosition.scale += timeSinceLastUpdate * currentSRTRate.scaleRate;
+		if(!_pausedTranslation)
+		{
+			currentSRTPosition.location.x += timeSinceLastUpdate * currentSRTRate.locationRate.x;
+			currentSRTPosition.location.y += timeSinceLastUpdate * currentSRTRate.locationRate.y;
+		}
+		if(!_pausedRotation)
+			currentSRTPosition.rotation += timeSinceLastUpdate * currentSRTRate.rotationRate;
+		if(!_pausedScale)
+			currentSRTPosition.scale += timeSinceLastUpdate * currentSRTRate.scaleRate;
 	}
 	
 	// Set current group matrix

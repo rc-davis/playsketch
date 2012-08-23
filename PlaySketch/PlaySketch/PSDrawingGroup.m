@@ -157,6 +157,18 @@
 }
 
 
+- (void)pauseUpdatesOfTranslation:(BOOL)translation rotation:(BOOL)rotation scale:(BOOL)scale
+{
+	_pausedTranslation = translation;
+	_pausedRotation = rotation;
+	_pausedScale = scale;
+}
+
+- (void)unpauseAll
+{
+	[self pauseUpdatesOfTranslation:NO rotation:NO scale:NO];
+}
+
 - (SRTPosition*)positions
 {
 	if (_mutablePositionsAsData != nil)
@@ -253,6 +265,7 @@
 	currentSRTRate = SRTRateZero();
 	currentPositionIndex = 0;
 	currentModelViewMatrix = GLKMatrix4Identity;
+	[self unpauseAll];
 }
 
 
@@ -267,7 +280,7 @@
 	currentSRTRate = SRTRateZero();
 	currentPositionIndex = 0;
 	currentModelViewMatrix = GLKMatrix4Identity;
-
+	[self unpauseAll];
 }
 
 
@@ -279,6 +292,7 @@
 {
 	[super awakeFromSnapshotEvents:flags];
 	[PSHelpers NYIWithmessage:@"drawinggroup awakeFromSnapshotEvents:"];
+	[self unpauseAll];
 }
 
 
