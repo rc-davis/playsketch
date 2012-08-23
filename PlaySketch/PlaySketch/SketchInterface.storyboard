@@ -264,6 +264,7 @@
                                 <rect key="frame" x="175" y="701" width="831" height="23"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <connections>
+                                    <action selector="snapTimeline:" destination="UPZ-Bt-XHw" eventType="touchUpInside" id="yfK-C4-f7g"/>
                                     <action selector="timelineScrubbed:" destination="UPZ-Bt-XHw" eventType="valueChanged" id="Mrr-ae-Q7V"/>
                                 </connections>
                             </slider>
@@ -451,6 +452,7 @@
                 <relationship kind="action" name="playPressed:"/>
                 <relationship kind="action" name="setColor:"/>
                 <relationship kind="action" name="showDetailsForSelection:"/>
+                <relationship kind="action" name="snapTimeline:"/>
                 <relationship kind="action" name="startSelecting:"/>
                 <relationship kind="action" name="timelineScrubbed:"/>
                 <relationship kind="action" name="toggleRecording:"/>

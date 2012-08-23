@@ -41,6 +41,7 @@
 - (IBAction)toggleRecording:(id)sender;
 - (IBAction)showDetailsForSelection:(id)sender;
 - (IBAction)exportAsVideo:(id)sender;
+- (IBAction)snapTimeline:(id)sender;
 - (void)setPlaying:(BOOL)playing;
 
 @end

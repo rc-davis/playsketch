@@ -15,6 +15,8 @@
 #import <CoreData/CoreData.h>
 #import "PSPrimitiveDataStructs.h"
 
+#define POSITION_FPS 8.0
+
 @class PSDrawingGroup, PSDrawingLine;
 
 @interface PSDrawingGroup : NSManagedObject

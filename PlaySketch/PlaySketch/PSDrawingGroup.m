@@ -35,12 +35,14 @@
 
 - (void)addPosition:(SRTPosition)position withInterpolation:(BOOL)shouldInterpolate
 {
-	const float POSITION_FPS = 10.0;
-	// Position data points can't be stored closer together than this
-	// They'll still be interpolated on playback
+	const int FPS_MULTIPLE = 4;
+	// We want to cap the rate that we are storing datapoints at.
 	// Keeping the flow of data low will make life a lot easier on playback
-	// To do this: quantize the position's time!
-	position.timeStamp = floorf(position.timeStamp * POSITION_FPS)/POSITION_FPS;
+	// On playback, they will still be interpolated to smooth them out
+	// We want to cap it at a multiple of the POSITION_FPS, so that the keyframes
+	// in the timeline will not be affected by this step
+	position.timeStamp = roundf(position.timeStamp * (FPS_MULTIPLE*POSITION_FPS))
+						/(FPS_MULTIPLE*POSITION_FPS);
 	
 
 	// For interpolation, save a copy of what the position was at this time before we change it

@@ -243,6 +243,19 @@
 
 }
 
+
+- (IBAction)snapTimeline:(id)sender
+{
+	// Round it to the nearest frame and update the UI
+	float beforeSnapping = self.timelineSlider.value;
+	float afterSnapping = roundf(beforeSnapping * POSITION_FPS) / (float)POSITION_FPS;
+	if(afterSnapping != beforeSnapping)
+	{
+		[self.timelineSlider setValue:afterSnapping animated:YES];
+		[self timelineScrubbed:nil];
+	}
+}
+
 - (void)setPlaying:(BOOL)playing
 {
 	if(!playing && self.timelineSlider.playing)
@@ -658,9 +671,6 @@
 	
 	[manipulator.group setCurrentCachedPosition:position];
 	
-	//Refresh the display of the object
-//	[manipulator.group jumpToTime:self.timelineSlider.value];
-	
 	//Keep our buttons properly aligned
 	[self.selectionOverlayButtons setLocation:[manipulator upperRightPoint]];
 	
@@ -678,6 +688,9 @@
 	{
 		self.isRecording = NO;
 		
+		// Before we add our last keyframe, snap the timeline so our keyframe
+		// will be easy to scrub to later
+		[self snapTimeline:nil];
 		
 		// Erase all the data after this point
 		[manipulator.group flattenTranslation:isTranslating
@@ -689,6 +702,7 @@
 		// Put a marker at this location and stop playing
 		SRTPosition currentPos = [manipulator.group currentCachedPosition];
 		currentPos.timeStamp = self.timelineSlider.value;
+		NSLog(@"stopping at time: %lf", self.timelineSlider.value);
 		currentPos.keyframeType = SRTKeyframeMake(isScaling, isRotating, isTranslating);
 		[manipulator.group addPosition:currentPos withInterpolation:NO];
 
