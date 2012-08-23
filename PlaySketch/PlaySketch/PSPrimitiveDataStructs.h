@@ -17,6 +17,8 @@
 #import <GLKit/GLKMath.h>
 #import "PSHelpers.h"
 
+typedef int SRTKeyframeType;
+
 typedef struct
 {
 	float timeStamp; // The time to be at this position
@@ -24,7 +26,7 @@ typedef struct
 	float scale; // About origin
 	float rotation; // About origin
 	GLKVector2 origin; // point in own coordinates that location is measured to
-	BOOL isKeyframe; // whether should be used to determine scope for interpolation
+	SRTKeyframeType keyframeType; // whether should be used to determine scope for interpolation
 } SRTPosition;
 
 
@@ -40,7 +42,7 @@ typedef struct
 
 static inline SRTPosition SRTPositionMake(int timeStamp, float x, float y,
 										  float scale, float rotation, 
-										  float originX, float originY, BOOL isKeyframe)
+										  float originX, float originY, SRTKeyframeType keyframeType)
 {
 	SRTPosition p;
 	p.timeStamp = timeStamp;
@@ -50,7 +52,7 @@ static inline SRTPosition SRTPositionMake(int timeStamp, float x, float y,
 	p.rotation = rotation;
 	p.origin.x = originX;
 	p.origin.y = originY;
-	p.isKeyframe = isKeyframe;
+	p.keyframeType = keyframeType;
 	return p;
 }
 
@@ -75,6 +77,75 @@ static inline SRTPosition SRTPositionZero()
 	return SRTPositionMake(0, 0, 0, 1, 0, 0, 0, NO);
 }
 
+static inline SRTKeyframeType SRTKeyframeTypeNone()
+{
+	return 0;
+}
+
+static inline SRTKeyframeType SRTKeyframeAdd(SRTKeyframeType keyframe, BOOL scale, BOOL rotate, BOOL translate)
+{
+	if(scale) keyframe = keyframe | 1;
+	if(rotate) keyframe = keyframe | 2;
+	if(translate) keyframe = keyframe | 4;
+	return keyframe;
+}
+
+static inline SRTKeyframeType SRTKeyframeMake(BOOL scale, BOOL rotate, BOOL translate)
+{
+	return SRTKeyframeAdd(SRTKeyframeTypeNone(), scale, rotate, translate);
+}
+
+static inline BOOL SRTKeyframeIsAny(SRTKeyframeType keyframe)
+{
+	return keyframe != 0;
+}
+
+static inline BOOL SRTKeyframeIsScale(SRTKeyframeType keyframe)
+{
+	return (keyframe & 1 ) != 0;
+}
+
+static inline BOOL SRTKeyframeIsRotation(SRTKeyframeType keyframe)
+{
+	return (keyframe & 2 ) != 0;
+}
+
+static inline BOOL SRTKeyframeIsTranslate(SRTKeyframeType keyframe)
+{
+	return (keyframe & 4 ) != 0;
+}
+
+static inline BOOL SRTKeyframeIsOnlyScale(SRTKeyframeType keyframe)
+{
+	return keyframe == 1;
+}
+
+static inline BOOL SRTKeyframeIsOnlyRotation(SRTKeyframeType keyframe)
+{
+	return keyframe == 2;
+}
+
+static inline BOOL SRTKeyframeIsOnlyTranslate(SRTKeyframeType keyframe)
+{
+	return keyframe == 4;
+}
+
+static inline SRTKeyframeType SRTKeyframeRemove(SRTKeyframeType keyframe, BOOL scale, BOOL rotate, BOOL translate)
+{
+	return SRTKeyframeMake(!scale && SRTKeyframeIsScale(keyframe),
+							   !rotate && SRTKeyframeIsRotation(keyframe),
+							   !translate && SRTKeyframeIsTranslate(keyframe));
+}
+
+
+static inline SRTKeyframeType SRTKeyframeAdd2(SRTKeyframeType keyframe1, SRTKeyframeType keyframe2)
+{
+	return SRTKeyframeAdd(keyframe1,
+						  SRTKeyframeIsScale(keyframe2),
+						  SRTKeyframeIsRotation(keyframe2),
+						  SRTKeyframeIsTranslate(keyframe2));
+}
+
 static inline SRTPosition SRTPositionInterpolate(float time, SRTPosition p1, SRTPosition p2)
 {
 	[PSHelpers assert:(p1.timeStamp != p2.timeStamp) withMessage:@"Should be different times"];
@@ -93,7 +164,7 @@ static inline SRTPosition SRTPositionInterpolate(float time, SRTPosition p1, SRT
 	pos.rotation = (1 - pcnt) * p1.rotation + pcnt * p2.rotation;
 	pos.origin.x = (1 - pcnt) * p1.origin.y + pcnt * p2.origin.y;
 	pos.origin.y = (1 - pcnt) * p1.origin.y + pcnt * p2.origin.y;
-	pos.isKeyframe = NO;
+	pos.keyframeType = SRTKeyframeTypeNone();
 	return pos;
 }
 

@@ -589,7 +589,7 @@
 		//Remember this location and clear everything after it
 		SRTPosition currentPos = [manipulator.group currentCachedPosition];
 		currentPos.timeStamp = self.timelineSlider.value;
-		currentPos.isKeyframe = YES;
+		currentPos.keyframeType = SRTKeyframeMake(isScaling, isRotating, isTranslating);
 		[manipulator.group addPosition:currentPos withInterpolation:NO];
 		
 		//Pause the group
@@ -647,7 +647,8 @@
 	
 	//Store the position at the current time
 	position.timeStamp = self.timelineSlider.value;
-	position.isKeyframe = !self.isRecording;
+	position.keyframeType = self.isRecording ? SRTKeyframeTypeNone() :
+												SRTKeyframeMake(isScaling, isRotating, isTranslating);
 	[manipulator.group addPosition:position withInterpolation:!self.isRecording];
 	
 	[manipulator.group setCurrentCachedPosition:position];
@@ -683,7 +684,7 @@
 		// Put a marker at this location and stop playing
 		SRTPosition currentPos = [manipulator.group currentCachedPosition];
 		currentPos.timeStamp = self.timelineSlider.value;
-		currentPos.isKeyframe = YES;
+		currentPos.keyframeType = SRTKeyframeMake(isScaling, isRotating, isTranslating);
 		[manipulator.group addPosition:currentPos withInterpolation:NO];
 
 		[self playPressed:nil]; //TODO: should abstract this out of an IBAction

@@ -101,7 +101,7 @@
 			[newPath addLineToPoint:transformedPoint];
 		
 		// Add a keyframe
-		if(positions[i].isKeyframe)
+		if(SRTKeyframeIsAny(positions[i].keyframeType))
 		{
 			float PADDING = 10.0;
 			CGRect fixedRect = CGRectMake(transformedPoint.x - PADDING,

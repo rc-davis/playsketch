@@ -82,7 +82,8 @@
 
 	// If this time is already a keyframe, tag the new position as a keyframe too
 	if(overwriting)
-		position.isKeyframe = (position.isKeyframe) || currentPositions[newIndex].isKeyframe;
+		position.keyframeType = SRTKeyframeAdd2(position.keyframeType,
+												currentPositions[newIndex].keyframeType);
 	
 	//Write the new one
 	currentPositions[newIndex] = position;
@@ -103,8 +104,10 @@
 		if(newIndex > 0)
 		{
 			// Find the previous index to interpolate from
+			// This involves looking for the first keyframe that contains all of the keyframes in position
 			int previousKeyframeIndex = newIndex - 1;
-			while ( previousKeyframeIndex > 0 && !currentPositions[previousKeyframeIndex].isKeyframe)
+			while ( previousKeyframeIndex > 0 &&
+				   !SRTKeyframeIsAny(currentPositions[previousKeyframeIndex].keyframeType))
 				previousKeyframeIndex --;
 			
 			SRTPosition previousKeyframe = currentPositions[previousKeyframeIndex];
@@ -123,7 +126,8 @@
 		{
 			// Find the next index to interpolate from
 			int nextKeyframeIndex = newIndex + 1;
-			while ( nextKeyframeIndex < currentPositionCount - 1 && !currentPositions[nextKeyframeIndex].isKeyframe)
+			while ( nextKeyframeIndex < currentPositionCount - 1 &&
+				   !SRTKeyframeIsAny(currentPositions[nextKeyframeIndex].keyframeType))
 				nextKeyframeIndex ++;
 			
 			SRTPosition nextKeyframe = currentPositions[nextKeyframeIndex];
@@ -163,12 +167,16 @@
 	while (copyFrom > 0 && copyFrom < currentPositionCount && currentPositions[i].timeStamp <= timeEnd)
 	{
 		SRTPosition erasedPos = currentPositions[copyFrom];
+		
+		// Unset the keyframes for the channels we are flattening
+		erasedPos.keyframeType = SRTKeyframeRemove(erasedPos.keyframeType,scale, rotation, translation);
+		
 		if(translation) erasedPos.location = positionBefore.location;
 		if(rotation) erasedPos.rotation = positionBefore.rotation;
 		if(scale) erasedPos.scale = positionBefore.scale;
 		
 		// Keep this frame only if it is different from the previous one
-		if(copyTo == 0 || erasedPos.isKeyframe
+		if(copyTo == 0 || SRTKeyframeIsAny( erasedPos.keyframeType )
 		   || !SRTPositionsEqual(currentPositions[copyTo - 1], erasedPos, YES))
 			currentPositions[copyTo++] = erasedPos;
 		
