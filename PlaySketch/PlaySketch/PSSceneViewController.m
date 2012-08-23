@@ -575,6 +575,7 @@
 						   willRotate:(BOOL)isRotating
 							willScale:(BOOL)isScaling
 {
+	
 	PSSRTManipulator* manipulator = sender;
 	self.selectedGroup = manipulator.group;
 	[manipulator setApperanceIsSelected:YES
@@ -590,9 +591,20 @@
 		currentPos.timeStamp = self.timelineSlider.value;
 		currentPos.isKeyframe = YES;
 		[manipulator.group addPosition:currentPos withInterpolation:NO];
-		[manipulator.group clearPositionsAfterTime:self.timelineSlider.value];
 		
+		//Pause the group
 		[self playPressed:nil]; //TODO: should abstract this out of an IBAction
+
+		[manipulator.group pauseUpdatesOfTranslation:isTranslating
+											rotation:(isRotating||isTranslating)
+											   scale:(isScaling||isTranslating)];
+		
+		[manipulator.group flattenTranslation:isTranslating
+								   rotation:(isRotating||isTranslating)
+									  scale:(isScaling||isTranslating)
+								  betweenTime:self.timelineSlider.value
+									  andTime:1e99];
+
 		self.selectionOverlayButtons.recordPulsing = YES;
 	}
 	
@@ -615,6 +627,14 @@
 	  timeDuration:(float)duration
 {
 	PSSRTManipulator* manipulator = sender;
+	
+	// Clear out the frames we are overwriting if this is a recording!
+	if( self.isRecording)
+		[manipulator.group flattenTranslation:isTranslating
+								   rotation:isRotating || isTranslating
+									  scale:isScaling || isTranslating
+								  betweenTime:self.timelineSlider.value - duration
+									  andTime:self.timelineSlider.value];
 
 	// Get the group's position
 	SRTPosition position = [manipulator.group currentCachedPosition];
@@ -630,8 +650,10 @@
 	position.isKeyframe = !self.isRecording;
 	[manipulator.group addPosition:position withInterpolation:!self.isRecording];
 	
+	[manipulator.group setCurrentCachedPosition:position];
+	
 	//Refresh the display of the object
-	[manipulator.group jumpToTime:self.timelineSlider.value];
+//	[manipulator.group jumpToTime:self.timelineSlider.value];
 	
 	//Keep our buttons properly aligned
 	[self.selectionOverlayButtons setLocation:[manipulator upperRightPoint]];
@@ -650,6 +672,14 @@
 	{
 		self.isRecording = NO;
 		
+		
+		// Erase all the data after this point
+		[manipulator.group flattenTranslation:isTranslating
+									 rotation:isRotating || isTranslating
+										scale:isScaling || isTranslating
+								  betweenTime:self.timelineSlider.value - duration
+									  andTime:1e100];
+		
 		// Put a marker at this location and stop playing
 		SRTPosition currentPos = [manipulator.group currentCachedPosition];
 		currentPos.timeStamp = self.timelineSlider.value;
@@ -658,6 +688,9 @@
 
 		[self playPressed:nil]; //TODO: should abstract this out of an IBAction
 		self.selectionOverlayButtons.recordPulsing = NO;
+		
+		// Unpause the group
+		[manipulator.group unpauseAll];
 	}
 	
 	// We would rather be doing this real-time instead of at the end of the interaction

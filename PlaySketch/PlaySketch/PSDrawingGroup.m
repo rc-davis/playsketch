@@ -141,19 +141,50 @@
 }
 
 
-- (void)clearPositionsAfterTime:(float)time
+// Find the value for S,R,T from the last position <= timeStart
+// Copy it into every position between timeStart to (inclusive) timeEnd
+// Remove any timestamps that have been made redundant in the process
+- (void)flattenTranslation:(BOOL)translation rotation:(BOOL)rotation scale:(BOOL)scale betweenTime:(float)timeStart andTime:(float)timeEnd
 {
 	// Get a handle to some mutable data
 	int currentPositionCount = self.positionCount;
 	SRTPosition* currentPositions = [self mutablePositionBytes];
-
-	int i = 0;
-	while (i < currentPositionCount && currentPositions[i].timeStamp <= time)
-		i++;
-
-	// Truncate our array
-	_mutablePositionsAsData.length = i * sizeof(SRTPosition);
 	
+	// Advance to the start time and remember the last position before the time range
+	int i = 0;
+	SRTPosition positionBefore = SRTPositionZero();
+	while (i < currentPositionCount && currentPositions[i].timeStamp <= timeStart)
+		positionBefore = currentPositions[i++];
+	
+	// Move through the time span, patch up the elements and discard duplicates
+	int copyFrom = i;
+	int copyTo = i;
+	
+	while (copyFrom > 0 && copyFrom < currentPositionCount && currentPositions[i].timeStamp <= timeEnd)
+	{
+		SRTPosition erasedPos = currentPositions[copyFrom];
+		if(translation) erasedPos.location = positionBefore.location;
+		if(rotation) erasedPos.rotation = positionBefore.rotation;
+		if(scale) erasedPos.scale = positionBefore.scale;
+		
+		// Keep this frame only if it is different from the previous one
+		if(copyTo == 0 || erasedPos.isKeyframe
+		   || !SRTPositionsEqual(currentPositions[copyTo - 1], erasedPos, YES))
+			currentPositions[copyTo++] = erasedPos;
+		
+		copyFrom++;
+	}
+	
+	// Copy over the remainder of our array and truncate
+	if(copyFrom != copyTo)
+	{
+		memmove(_mutablePositionsAsData.mutableBytes + sizeof(SRTPosition)*copyTo,
+				_mutablePositionsAsData.bytes + sizeof(SRTPosition)*copyFrom,
+				sizeof(SRTPosition)*(currentPositionCount - copyFrom));
+		currentPositionCount -= (copyFrom - copyTo);
+		_mutablePositionsAsData.length =currentPositionCount * sizeof(SRTPosition);
+	}
+
 }
 
 
@@ -253,6 +284,11 @@
 	return currentSRTPosition;
 }
 
+- (void)setCurrentCachedPosition:(SRTPosition)position
+{
+	currentSRTPosition = position;
+	//TODO, this is so ugly
+}
 
 /*
  This is called the first time our object is inserted into a store

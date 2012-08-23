@@ -41,7 +41,9 @@
 @interface PSDrawingGroup (CoreDataGeneratedAccessors)
 
 - (void)addPosition:(SRTPosition)position withInterpolation:(BOOL)shouldInterpolate;
-- (void)clearPositionsAfterTime:(float)time;
+- (void)flattenTranslation:(BOOL)translation rotation:(BOOL)rotation scale:(BOOL)scale betweenTime:(float)timeStart andTime:(float)timeEnd;
+- (void)pauseUpdatesOfTranslation:(BOOL)translation rotation:(BOOL)rotation scale:(BOOL)scale;
+- (void)unpauseAll;
 - (SRTPosition*)positions;
 - (int)positionCount;
 - (void)getStateAtTime:(float)time
@@ -49,6 +51,7 @@
 				  rate:(SRTRate*)pRate
 		   helperIndex:(int*)pIndex;
 - (SRTPosition)currentCachedPosition;
+- (void)setCurrentCachedPosition:(SRTPosition)position;
 
 - (void)addChildrenObject:(PSDrawingGroup *)value;
 - (void)removeChildrenObject:(PSDrawingGroup *)value;
