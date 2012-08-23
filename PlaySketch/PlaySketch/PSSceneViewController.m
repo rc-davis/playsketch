@@ -194,6 +194,17 @@
 }
 
 
+- (IBAction)deleteCurrentSelection:(id)sender
+{
+	[PSHelpers assert:(self.selectedGroup != nil) withMessage:@"need a selection to delete"];
+	PSDrawingGroup* toDelete = self.selectedGroup;
+	self.selectedGroup = nil;
+	[PSDataModel deleteDrawingGroup:toDelete];
+	[self removeManipulatorForGroup:toDelete];
+	[self.motionPathView removeLineForGroup:toDelete];
+}
+
+
 - (IBAction)playPressed:(id)sender
 {
 	[self setPlaying:!self.timelineSlider.playing];

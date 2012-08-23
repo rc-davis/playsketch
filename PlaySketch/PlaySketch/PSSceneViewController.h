@@ -36,6 +36,7 @@
 - (IBAction)setColor:(id)sender;
 - (IBAction)startSelecting:(id)sender;
 - (IBAction)createCharacterWithCurrentSelection:(id)sender;
+- (IBAction)deleteCurrentSelection:(id)sender;
 - (IBAction)playPressed:(id)sender;
 - (IBAction)timelineScrubbed:(id)sender;
 - (IBAction)toggleRecording:(id)sender;

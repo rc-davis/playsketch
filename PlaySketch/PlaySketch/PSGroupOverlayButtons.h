@@ -18,6 +18,7 @@
 @property(nonatomic,retain)IBOutlet UIButton* createGroupButton;
 @property(nonatomic,retain)IBOutlet UIButton* recordingButton;
 @property(nonatomic,retain)IBOutlet UIButton* showDetailsButton;
+@property(nonatomic,retain)IBOutlet UIButton* deleteGroupButton;
 @property(nonatomic) BOOL recordPulsing;
 
 - (void)configureForGroup:(PSDrawingGroup*)group;

@@ -28,11 +28,13 @@
 	self.createGroupButton.hidden = isExplicit;
 	self.recordingButton.hidden = !isExplicit;
 	self.showDetailsButton.hidden = !isExplicit;
+	self.deleteGroupButton.hidden = !isExplicit;
 	
 	//Lay them out dynamically
 	NSArray* allButtons = [NSArray arrayWithObjects:self.createGroupButton,
 													self.recordingButton,
 													self.showDetailsButton,
+													self.deleteGroupButton,
 													nil];
 	CGFloat yOffset = 0;
 	for (UIButton* b in allButtons)

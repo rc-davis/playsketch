@@ -18,6 +18,7 @@
 		467BF45D15DB963D002321A7 /* PSVideoExportControllerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 467BF45C15DB963D002321A7 /* PSVideoExportControllerViewController.m */; };
 		467E4E4215B4235700F70C1E /* PSSelectionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 467E4E4115B4235700F70C1E /* PSSelectionHelper.m */; };
 		468E2A2D15C61C0600AA20D2 /* PSGroupOverlayButtons.m in Sources */ = {isa = PBXBuildFile; fileRef = 468E2A2C15C61C0600AA20D2 /* PSGroupOverlayButtons.m */; };
+		4692B9DA15E6529C00157F5F /* Delete.png in Resources */ = {isa = PBXBuildFile; fileRef = 4692B9D915E6529C00157F5F /* Delete.png */; };
 		46973BE815C103170092D236 /* PSTimelineSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = 46973BE715C103170092D236 /* PSTimelineSlider.m */; };
 		469E009A15C2437500EE7EC9 /* lasso.png in Resources */ = {isa = PBXBuildFile; fileRef = 469E009915C2437500EE7EC9 /* lasso.png */; };
 		46BAC13415B52741007C288E /* PSSRTManipulator.m in Sources */ = {isa = PBXBuildFile; fileRef = 46BAC13315B52741007C288E /* PSSRTManipulator.m */; };
@@ -82,6 +83,7 @@
 		467E4E4115B4235700F70C1E /* PSSelectionHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSSelectionHelper.m; sourceTree = "<group>"; };
 		468E2A2B15C61C0600AA20D2 /* PSGroupOverlayButtons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PSGroupOverlayButtons.h; path = PlaySketch/PSGroupOverlayButtons.h; sourceTree = "<group>"; };
 		468E2A2C15C61C0600AA20D2 /* PSGroupOverlayButtons.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PSGroupOverlayButtons.m; path = PlaySketch/PSGroupOverlayButtons.m; sourceTree = "<group>"; };
+		4692B9D915E6529C00157F5F /* Delete.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Delete.png; sourceTree = "<group>"; };
 		46973BE615C103170092D236 /* PSTimelineSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PSTimelineSlider.h; path = PlaySketch/PSTimelineSlider.h; sourceTree = "<group>"; };
 		46973BE715C103170092D236 /* PSTimelineSlider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PSTimelineSlider.m; path = PlaySketch/PSTimelineSlider.m; sourceTree = "<group>"; };
 		469E009915C2437500EE7EC9 /* lasso.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = lasso.png; sourceTree = "<group>"; };
@@ -196,6 +198,7 @@
 			children = (
 				46186F6E15D78D3200A1E1A2 /* character.png */,
 				469E009915C2437500EE7EC9 /* lasso.png */,
+				4692B9D915E6529C00157F5F /* Delete.png */,
 				4608D2A515D8B731005CEA6D /* details.png */,
 				46186F7215D78F6600A1E1A2 /* record_down.png */,
 				46186F7515D792B900A1E1A2 /* record_up.png */,
@@ -421,6 +424,7 @@
 				46186F7415D78F6600A1E1A2 /* record_down.png in Resources */,
 				46186F7615D792B900A1E1A2 /* record_up.png in Resources */,
 				4608D2A615D8B731005CEA6D /* details.png in Resources */,
+				4692B9DA15E6529C00157F5F /* Delete.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
