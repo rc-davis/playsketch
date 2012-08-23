@@ -196,32 +196,7 @@
 
 - (IBAction)playPressed:(id)sender
 {
-	if(self.timelineSlider.playing)
-	{
-		// PAUSE!
-		[self.renderingController stopPlaying];
-		self.timelineSlider.playing = NO;
-		[self refreshManipulatorLocations];
-		for (PSSRTManipulator* m in self.manipulators)
-			m.hidden = NO;
-		self.motionPathView.hidden = NO;
-	}
-	else
-	{
-		if (! self.isRecording) self.selectedGroup = nil;
-		
-		// PLAY!
-		float time = self.timelineSlider.value;
-		[self.renderingController playFromTime:time];
-		self.timelineSlider.value = time;
-		self.timelineSlider.playing = YES;
-		for (PSSRTManipulator* m in self.manipulators)
-			if ( ! (self.isRecording && m.group == self.selectedGroup) )
-				m.hidden = YES;
-
-		if(!self.isRecording)
-			self.motionPathView.hidden = YES;
-	}
+	[self setPlaying:!self.timelineSlider.playing];
 }
 
 
@@ -267,6 +242,35 @@
 	[self presentModalViewController:vc animated:YES];
 
 }
+
+- (void)setPlaying:(BOOL)playing
+{
+	if(!playing && self.timelineSlider.playing)
+	{
+		// PAUSE
+		[self.renderingController stopPlaying];
+		self.timelineSlider.playing = NO;
+		[self refreshManipulatorLocations];
+		for (PSSRTManipulator* m in self.manipulators)
+			m.hidden = NO;
+		self.motionPathView.hidden = NO;
+	}
+	else if(playing && !self.timelineSlider.playing)
+	{
+		// PLAY!
+		if (! self.isRecording) self.selectedGroup = nil;
+		float time = self.timelineSlider.value;
+		[self.renderingController playFromTime:time];
+		self.timelineSlider.value = time;
+		self.timelineSlider.playing = YES;
+		for (PSSRTManipulator* m in self.manipulators)
+			if ( ! (self.isRecording && m.group == self.selectedGroup) )
+				m.hidden = YES;
+		if(!self.isRecording)
+			self.motionPathView.hidden = YES;
+	}
+}
+
 
 /*
  ----------------------------------------------------------------------------
@@ -591,10 +595,11 @@
 		currentPos.timeStamp = self.timelineSlider.value;
 		currentPos.keyframeType = SRTKeyframeMake(isScaling, isRotating, isTranslating);
 		[manipulator.group addPosition:currentPos withInterpolation:NO];
-		
-		//Pause the group
-		[self playPressed:nil]; //TODO: should abstract this out of an IBAction
 
+		// Start playing the timeline
+		[self setPlaying:YES];
+		
+		// Pause the group
 		[manipulator.group pauseUpdatesOfTranslation:isTranslating
 											rotation:(isRotating||isTranslating)
 											   scale:(isScaling||isTranslating)];
@@ -687,11 +692,14 @@
 		currentPos.keyframeType = SRTKeyframeMake(isScaling, isRotating, isTranslating);
 		[manipulator.group addPosition:currentPos withInterpolation:NO];
 
-		[self playPressed:nil]; //TODO: should abstract this out of an IBAction
 		self.selectionOverlayButtons.recordPulsing = NO;
 		
 		// Unpause the group
 		[manipulator.group unpauseAll];
+
+		// Stop playing
+		[self setPlaying:NO];
+
 	}
 	
 	// We would rather be doing this real-time instead of at the end of the interaction
