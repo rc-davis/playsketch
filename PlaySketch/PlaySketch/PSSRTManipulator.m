@@ -71,15 +71,32 @@
 	if(!_selected)
 		CGContextScaleCTM(context, SHRUNK_WIDTH_2/EXPANDED_WIDTH_2, SHRUNK_WIDTH_2/EXPANDED_WIDTH_2);
 
-	[[UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:(_isScaling ? 1.0 : 0.6)] setFill];
-	[_scalePath fill];
-	
-	[[UIColor colorWithRed:0.0 green:1.0 blue:0.0 alpha:(_isRotating ? 1.0 : 0.6)] setFill];
-	[_rotatePath fill];
+	if(_isScaling)
+	{
+		[[UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:0.2] setFill];
+		[_scalePath fill];
+	}
+	else if( _isRotating)
+	{
+		[[UIColor colorWithRed:0.0 green:1.0 blue:0.0 alpha:0.2] setFill];
+		[_rotatePath fill];
+	}
+	else if( _isTranslating)
+	{
+		[[UIColor colorWithRed:0.0 green:0.0 blue:1.0 alpha:0.2] setFill];
+		[_translatePath fill];
+	}
+	else
+	{
+		[[UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:0.5] setFill];
+		[_scalePath fill];
+		
+		[[UIColor colorWithRed:0.0 green:1.0 blue:0.0 alpha:0.5] setFill];
+		[_rotatePath fill];
 
-	[[UIColor colorWithRed:0.0 green:0.0 blue:1.0 alpha:(_isTranslating ? 1.0 : 0.6)] setFill];
-	[_translatePath fill];
-	
+		[[UIColor colorWithRed:0.0 green:0.0 blue:1.0 alpha:0.5] setFill];
+		[_translatePath fill];
+	}
 }
 
 
