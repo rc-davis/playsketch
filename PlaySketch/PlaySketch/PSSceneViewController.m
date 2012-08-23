@@ -571,6 +571,9 @@
  */
 
 -(void)manipulatorDidStartInteraction:(id)sender
+						willTranslate:(BOOL)isTranslating
+						   willRotate:(BOOL)isRotating
+							willScale:(BOOL)isScaling
 {
 	PSSRTManipulator* manipulator = sender;
 	self.selectedGroup = manipulator.group;
@@ -601,7 +604,15 @@
 	
 }
 
--(void)manipulator:(id)sender didTranslateByX:(float)dX andY:(float)dY rotation:(float)dRotation scale:(float)dScale
+-(void)manipulator:(id)sender
+   didTranslateByX:(float)dX
+			andY:(float)dY
+		  rotation:(float)dRotation
+			 scale:(float)dScale
+	 isTranslating:(BOOL)isTranslating
+		isRotating:(BOOL)isRotating
+		 isScaling:(BOOL)isScaling
+	  timeDuration:(float)duration
 {
 	PSSRTManipulator* manipulator = sender;
 
@@ -628,6 +639,10 @@
 }
 
 -(void)manipulatorDidStopInteraction:(id)sender
+					  wasTranslating:(BOOL)isTranslating
+						 wasRotating:(BOOL)isRotating
+						  wasScaling:(BOOL)isScaling
+						withDuration:(float)duration
 {
 	PSSRTManipulator* manipulator = sender;
 	

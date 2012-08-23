@@ -29,6 +29,7 @@
 	BOOL _isTranslating;
 	BOOL _isScaling;
 	BOOL _selected;
+	NSTimeInterval _lastTimeStamp;
 	
 }
 - (UIBezierPath*)buildTranslatePath;
@@ -116,11 +117,9 @@
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-	if(self.delegate)
-		[self.delegate manipulatorDidStartInteraction:self];
-	
 	UITouch* t = [touches anyObject];
 	CGPoint p = [t locationInView:self];
+	_lastTimeStamp = t.timestamp;
 	p.x -= self.frame.size.width/2.0;
 	p.y -= self.frame.size.height/2.0;
 	
@@ -130,16 +129,26 @@
 		  _isRotating = YES;
 	else if ([_translatePath containsPoint:p])
 		_isTranslating = YES;
+
+	if(self.delegate)
+		[self.delegate manipulatorDidStartInteraction:self
+										willTranslate:_isTranslating
+										   willRotate:_isRotating
+											willScale:_isScaling];
 	
 	[self setNeedsDisplay];
 
 }
 
 -(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
-{	
+{
 	UITouch* t = [touches anyObject];
 	CGPoint p = [t locationInView:self];
 	CGPoint pPrevious = [t previousLocationInView:self];
+
+	NSTimeInterval timeDuration = t.timestamp - _lastTimeStamp;
+	_lastTimeStamp = t.timestamp;
+
 	
 	// Fix up to treat the center as (0,0)
 	p.x -= self.frame.size.width/2.0;
@@ -185,26 +194,55 @@
 	
 	// Inform the delegate
 	if(self.delegate)
-		[self.delegate manipulator:self didTranslateByX:dX andY:dY rotation:dRotation scale:dScale];
+		[self.delegate manipulator:self
+				   didTranslateByX:dX
+							  andY:dY
+						  rotation:dRotation
+							 scale:dScale
+					 isTranslating:_isTranslating
+						isRotating:_isRotating
+						 isScaling:_isScaling
+					  timeDuration:timeDuration];
+
 
 }
 
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
+	UITouch* t = [touches anyObject];
+
 	if (self.delegate)
-		[self.delegate manipulatorDidStopInteraction:self];
+		[self.delegate manipulatorDidStopInteraction:self
+									  wasTranslating:_isTranslating
+										 wasRotating:_isRotating
+										  wasScaling:_isScaling
+										withDuration:t.timestamp - _lastTimeStamp];
 	
 	_isRotating = NO;
 	_isTranslating = NO;
 	_isScaling = NO;
+	_lastTimeStamp = 0;
+	
 	[self setNeedsDisplay];
 }
 
 
 -(void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
 {
+	UITouch* t = [touches anyObject];
+	
 	if (self.delegate)
-		[self.delegate manipulatorDidStopInteraction:self];
+		[self.delegate manipulatorDidStopInteraction:self
+									  wasTranslating:_isTranslating
+										 wasRotating:_isRotating
+										  wasScaling:_isScaling
+										withDuration:t.timestamp - _lastTimeStamp];
+	_isRotating = NO;
+	_isTranslating = NO;
+	_isScaling = NO;
+	_lastTimeStamp = 0;
+	
+	[self setNeedsDisplay];
 }
 
 
