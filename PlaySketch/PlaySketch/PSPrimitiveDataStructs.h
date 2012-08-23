@@ -168,4 +168,17 @@ static inline CGAffineTransform SRTPositionToTransform(SRTPosition p)
 	return t;
 }
 
+
+static inline BOOL SRTPositionsEqual(SRTPosition p1, SRTPosition p2, BOOL ignoreTimestamp)
+{
+	BOOL timestampMatches = ignoreTimestamp || (p1.timeStamp == p2.timeStamp);
+	return timestampMatches &&
+			p1.location.x == p2.location.x &&
+			p1.location.y == p2.location.y &&
+			p1.rotation == p2.rotation &&
+			p1.scale == p2.scale &&
+			p1.origin.x == p2.origin.x &&
+			p1.origin.y == p2.origin.y;
+}
+
 #endif
