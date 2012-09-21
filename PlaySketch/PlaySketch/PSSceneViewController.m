@@ -46,7 +46,6 @@
 @implementation PSSceneViewController
 @synthesize renderingController = _renderingController;
 @synthesize drawingTouchView = _drawingTouchView;
-@synthesize createCharacterButton = _createCharacterButton;
 @synthesize playButton = _playButton;
 @synthesize initialColorButton = _initialColorButton;
 @synthesize timelineSlider = _timelineSlider;
@@ -91,7 +90,6 @@
 	// Initialize to be drawing with an initial color
 	[self setColor:self.initialColorButton];
 
-	self.createCharacterButton.enabled = NO;
 	[self.selectionOverlayButtons hide:NO];
 	
 	// initialize our objects to the right time
@@ -176,22 +174,6 @@
 {
 	self.isSelecting = YES;
 	[self highlightButton:sender];
-}
-
-
-/* TODO: not used anymore delete?*/
-- (IBAction)createCharacterWithCurrentSelection:(id)sender
-{
-	[PSHelpers assert:(self.selectedGroup != nil) withMessage:@"need a selection to make character"];
-	
-	// Keep the selection group by not flattening it when it is unselected
-	self.selectedGroup.explicitCharacter = [NSNumber numberWithBool:YES];
-	[PSDataModel save];
-	
-	[self.selectionOverlayButtons configureForGroup:self.selectedGroup];
-	[[self manipulatorForGroup:self.selectedGroup] setApperanceIsSelected:YES
-															  isCharacter:YES
-															  isRecording:NO];
 }
 
 
@@ -499,7 +481,6 @@
 	if(self.selectionHelper)
 	{
 		self.selectionHelper = nil;
-		self.createCharacterButton.enabled = NO;
 	}
 	
 	self.selectedGroup = nil;
@@ -563,7 +544,6 @@
 	TODO: how do we tell if we have a selection?
 	if(self.selectionHelper.selectedLines.count > 0)
 		{
-			self.createCharacterButton.enabled = YES;
 			
 			// create a new group for the lines
 			PSDrawingGroup* newGroup = [PSDataModel newChildOfGroup:self.rootGroup
