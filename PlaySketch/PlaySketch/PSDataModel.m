@@ -68,11 +68,12 @@
 }
 
 
-+(PSDrawingLine*)newLineInGroup:(PSDrawingGroup*)group
++(PSDrawingLine*)newLineInGroup:(PSDrawingGroup*)group withWeight:(int)weight
 {
 	PSDrawingLine* newLine = (PSDrawingLine*)[NSEntityDescription 
 											  insertNewObjectForEntityForName:@"PSDrawingLine" inManagedObjectContext:[PSDataModel context]];
 	newLine.group = group;
+	newLine.penWeight = weight;
 	return newLine;
 }
 
@@ -224,7 +225,7 @@
 	for (int i = 0; i < lineCount; i ++)
 	{
 		CGPoint start = CGPointMake(rand()%(int)viewSize.width, rand()%(int)viewSize.height);
-		PSDrawingLine* line = [PSDataModel newLineInGroup:rootGroup];
+		PSDrawingLine* line = [PSDataModel newLineInGroup:rootGroup withWeight:4];
 		for(int j = 0; j < POINT_COUNT; j++)
 		{
 			CGPoint next = CGPointMake(start.x + rand()%4, start.y + rand()%4 );

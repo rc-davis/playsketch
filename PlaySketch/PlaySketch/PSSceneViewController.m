@@ -31,6 +31,7 @@
 @property(nonatomic)BOOL isRecording;
 @property(nonatomic,retain) PSSelectionHelper* selectionHelper;
 @property(nonatomic) UInt64 currentColor; // the drawing color as an int
+@property(nonatomic) int penWeight;
 @property(nonatomic,retain) UIButton* highlightedButton;
 - (void)refreshManipulatorLocation;
 - (void)highlightButton:(UIButton*)b;
@@ -53,6 +54,7 @@
 @synthesize isRecording = _isRecording;
 @synthesize selectionHelper = _selectionHelper;
 @synthesize currentColor = _currentColor;
+@synthesize penWeight = _penWeight;
 @synthesize manipulator = _manipulator;
 @synthesize highlightedButton = _highlightedButton;
 
@@ -91,6 +93,7 @@
 	
 	// Initialize to be drawing with an initial color
 	[self setColor:self.initialColorButton];
+	self.penWeight = 10;
 
 	[self.selectionOverlayButtons hide:NO];
 	
@@ -352,7 +355,7 @@
 		// Every line gets put into a new group of its own, directly under self.rootGroup
 		
 		PSDrawingGroup* newLineGroup = [PSDataModel newDrawingGroupWithParent:self.rootGroup];
-		PSDrawingLine* line = [PSDataModel newLineInGroup:newLineGroup];
+		PSDrawingLine* line = [PSDataModel newLineInGroup:newLineGroup withWeight:self.penWeight];
 		line.color = [NSNumber numberWithUnsignedLongLong:self.currentColor];
 		return line;
 	}
@@ -360,7 +363,7 @@
 	{
 		// Create a selection line to draw with
 		// TODO: this shouldn't be part of the model since it screws up the undo/redo
-		PSDrawingLine* selectionLine = [PSDataModel newLineInGroup:nil];
+		PSDrawingLine* selectionLine = [PSDataModel newLineInGroup:nil withWeight:2];
 		selectionLine.color = [NSNumber numberWithUnsignedLongLong:[PSHelpers colorToInt64:[UIColor redColor]]];
 		
 		// Start a new selection set helper

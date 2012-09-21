@@ -15,8 +15,6 @@
 #import "PSDrawingGroup.h"
 #import "PSHelpers.h"
 
-#define OFFSET_DISTANCE 4.0
-
 
 @interface PSDrawingLine ()
 {
@@ -30,6 +28,7 @@
 @dynamic color;
 @dynamic group;
 @synthesize selectionHitCounts = _selectionHitCounts;
+@synthesize penWeight = _penWeight;
 
 
 -(CGPoint*)points
@@ -85,8 +84,8 @@
 		CGSize normal = CGSizeMake(to.y - from.y, - (to.x - from.x));
 		double length = hypot(normal.width, normal.height);
 		if (length < 1) return;
-		CGSize normalScaled = CGSizeMake(normal.width / length * OFFSET_DISTANCE,
-										 normal.height / length * OFFSET_DISTANCE);
+		CGSize normalScaled = CGSizeMake(normal.width / length * self.penWeight,
+										 normal.height / length * self.penWeight);
 		
 
 		//Calculate the four offset points
@@ -109,7 +108,7 @@
 		double speedPx = hypot(to.x - from.x, to.y - from.y);
 		float speedPcnt = MIN(1.0, speedPx/50.0);
 		
-		OFFSET_DISTANCE = OFFSET_DISTANCE * ( 0.25 + 0.75*(1 - speedPcnt) );
+		self.penWeight = self.penWeight * ( 0.25 + 0.75*(1 - speedPcnt) );
 		*/
 	}
 }
@@ -127,25 +126,25 @@
 
 - (void)addCircleAt:(CGPoint)p
 {
-	[self addPoint:CGPointMake(p.x - OFFSET_DISTANCE, p.y)];
+	[self addPoint:CGPointMake(p.x - self.penWeight, p.y)];
 	[self addPoint:p];
-	[self addPoint:CGPointMake(p.x - OFFSET_DISTANCE/M_SQRT2, p.y - OFFSET_DISTANCE/M_SQRT2)];
+	[self addPoint:CGPointMake(p.x - self.penWeight/M_SQRT2, p.y - self.penWeight/M_SQRT2)];
 	
-	[self addPoint:CGPointMake(p.x, p.y - OFFSET_DISTANCE)];
+	[self addPoint:CGPointMake(p.x, p.y - self.penWeight)];
 	[self addPoint:p];
-	[self addPoint:CGPointMake(p.x + OFFSET_DISTANCE/M_SQRT2, p.y - OFFSET_DISTANCE/M_SQRT2)];
+	[self addPoint:CGPointMake(p.x + self.penWeight/M_SQRT2, p.y - self.penWeight/M_SQRT2)];
 	
 	
-	[self addPoint:CGPointMake(p.x + OFFSET_DISTANCE, p.y)];
+	[self addPoint:CGPointMake(p.x + self.penWeight, p.y)];
 	[self addPoint:p];
-	[self addPoint:CGPointMake(p.x + OFFSET_DISTANCE/M_SQRT2, p.y + OFFSET_DISTANCE/M_SQRT2)];
+	[self addPoint:CGPointMake(p.x + self.penWeight/M_SQRT2, p.y + self.penWeight/M_SQRT2)];
 	
 	
-	[self addPoint:CGPointMake(p.x, p.y + OFFSET_DISTANCE)];
+	[self addPoint:CGPointMake(p.x, p.y + self.penWeight)];
 	[self addPoint:p];
-	[self addPoint:CGPointMake(p.x - OFFSET_DISTANCE/M_SQRT2, p.y + OFFSET_DISTANCE/M_SQRT2)];
+	[self addPoint:CGPointMake(p.x - self.penWeight/M_SQRT2, p.y + self.penWeight/M_SQRT2)];
 	
-	[self addPoint:CGPointMake(p.x - OFFSET_DISTANCE, p.y)];
+	[self addPoint:CGPointMake(p.x - self.penWeight, p.y)];
 	[self addPoint:p];
 	[self addPoint:p];
 }
