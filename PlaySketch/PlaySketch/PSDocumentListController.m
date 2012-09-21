@@ -16,29 +16,31 @@
 #import "PSSceneViewController.h"
 #import <QuartzCore/QuartzCore.h>
 
+/*
 #define DOC_BUTTON_STEP_SIZE 650.0 // The pixel-distance between two buttons
 #define ALLOWABLE_SELECTION_OFFSET 200 // The distance away from the center of a button that is still considered selected 
-
+*/
 
 @interface PSDocumentListController ()
 @property(nonatomic,retain)NSArray* documentButtons;
-@property(nonatomic,retain)UIButton* createDocumentButton;
-@property(nonatomic,retain)NSArray* documentRoots;
+@property(nonatomic,retain)NSArray* documents;
+//@property(nonatomic,retain)UIButton* createDocumentButton;
 
--(void)generateDocumentButtons;
--(void)clearDocumentButtons;
--(PSDrawingDocument*)selectedDocument:(CGFloat*)outPercentFromCentered;
--(void)refreshSelectionAppearance;
-+(void)styleButton:(UIButton*)button;
+
+//-(void)generateDocumentButtons;
+//-(void)clearDocumentButtons;
+//-(PSDrawingDocument*)selectedDocument:(CGFloat*)outPercentFromCentered;
+//-(void)refreshSelectionAppearance;
+//+(void)styleButton:(UIButton*)button;
 @end
 
 @implementation PSDocumentListController
 @synthesize scrollView = _scrollView;
-@synthesize documentRoots = _documentRoots;
+@synthesize documents = _documents;
 @synthesize documentButtons = _documentButtons;
-@synthesize createDocumentButton = _newDocumentButton;
-@synthesize deleteButton = _deleteButton;
-@synthesize documentNameButton = _documentNameButton;
+//@synthesize createDocumentButton = _newDocumentButton;
+//@synthesize deleteButton = _deleteButton;
+//@synthesize documentNameButton = _documentNameButton;
 
 
 /*
@@ -51,7 +53,7 @@
     [super viewDidLoad];
 	
 	//create our "new document" Button
-	{
+/*	{
 		CGRect defaultFrame = CGRectMake(281, 100, 462, 300);
 		self.createDocumentButton = [[UIButton alloc] initWithFrame:defaultFrame];
 		[self.createDocumentButton setTitle:@"Create New Animation" forState:UIControlStateNormal];
@@ -59,9 +61,15 @@
 		[self.createDocumentButton addTarget:self action:@selector(newDocument:) forControlEvents:UIControlEventTouchUpInside];
 		[self.scrollView addSubview:self.createDocumentButton];
 	}
-	
+*/	
 	self.scrollView.delegate = self; //So we can respond to the scroll events
 	//self.scrollView.decelerationRate = UIScrollViewDecelerationRateFast;
+	
+	
+	//Load up the existing ones!
+	
+	
+	//TODO: scroll to where we last were!
 }
 
 
@@ -73,16 +81,17 @@
 - (void)viewDidUnload
 {
 	[super viewDidUnload];
-	[self clearDocumentButtons];
+/*	[self clearDocumentButtons];
 	[self.createDocumentButton removeFromSuperview];
 	self.createDocumentButton = nil;
+*/
 }
 
 
 -(void) viewWillAppear:(BOOL)animated
 {
-	[self generateDocumentButtons];
-	[self refreshSelectionAppearance];
+//	[self generateDocumentButtons];
+//	[self refreshSelectionAppearance];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -93,8 +102,9 @@
 
 
 
--(void)generateDocumentButtons
-{
+//-(void)generateDocumentButtons
+//{
+	/*
 	if(self.documentButtons != nil)
 		[self clearDocumentButtons];
 	
@@ -147,11 +157,13 @@
 	[UIView commitAnimations];
 	
 	self.documentButtons = buttons;
-}
+*/
+//}
 
 
--(void)clearDocumentButtons
-{
+//-(void)clearDocumentButtons
+//{
+	/*
 	for(UIButton* button in self.documentButtons)
 	{
 		[button removeFromSuperview];
@@ -159,8 +171,9 @@
 	self.documentButtons = nil;
 	self.documentRoots = nil;
 	self.scrollView.contentSize = self.scrollView.frame.size;
+	*/
 	
-}
+//}
 
 
 /*
@@ -169,6 +182,7 @@
 	outPercentFromCentered is an optional argument to return how close we are to centered.
 	1.0 means perfectly centred, 0.0 means off by ALLOWABLE_SELECTION_OFFSET
 */
+/*
 -(PSDrawingDocument*)selectedDocument:(CGFloat*)outPercentFromCentered
 {
 	// Get the document that is nearest the center of the scrollview
@@ -189,18 +203,28 @@
 	else
 		return nil;
 }
-
+*/
 
 -(IBAction)newDocument:(id)sender
 {
-	NSString* newDocName = [NSString stringWithFormat:@"Untitled Animation %d", 
+	NSString* newDocName = [NSString stringWithFormat:@"Untitled Animation %d",
 							[PSDataModel allDrawingDocuments].count + 1];
 	PSDrawingDocument* newDocument = [PSDataModel newDrawingDocumentWithName:newDocName];
+	
+	
+	//Scroll to the last item
+	
+	//Make it visible
+	
+	/*
+
+
 //	[PSDataModel DEBUG_generateTestShapesIntoGroup:newDocument.rootGroup];
 //	[PSDataModel DEBUG_generateRandomLittleLinesIntoGroup:newDocument.rootGroup lineCount:100];
 	[self performSegueWithIdentifier:@"GoToSceneViewController" sender:newDocument];
+	 */
 }
-
+/*
 
 -(IBAction)deleteDocument:(id)sender
 {
@@ -222,6 +246,7 @@
 		
 	}
 }
+ */
 
 
 /*
@@ -229,6 +254,7 @@
 	Do this by looking up the document that corresponds to the button clicked,
 	then triggering the "GoToSceneViewController segue in the storyboard
 */
+/*
 -(void)viewDocument:(id)senderButton
 {
 	// Find the index of the document that corresponds to this button
@@ -243,11 +269,12 @@
 		[self refreshSelectionAppearance];
 	}
 }
-
+*/
 
 /*
 	Called by the button on the document name, to start renaming the selected document
 */
+/*
 -(IBAction)startRenameDocument:(id)sender
 {
 	UIAlertView *alertView = [[UIAlertView alloc] 
@@ -259,13 +286,14 @@
 	alertView.alertViewStyle = UIAlertViewStylePlainTextInput;
 	[alertView show];
 }
-
+*/
 
 /*
 	UIAlertView delegate method
 	This is called when an alertview is dismissed by the user.
 	The only alertview that is being used here is for renaming a document
 */
+/*
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
 {
 	if ( buttonIndex > 0 )
@@ -281,12 +309,13 @@
 		}
 	}
 }
-
+*/
 
 /*
 	This is called automatically each time we segue away from this view
 	We can tell which segue triggered this call by looking at [segue identifier]
 */
+/*
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
 
@@ -301,7 +330,7 @@
 		vc.rootGroup = ((PSDrawingDocument*)sender).rootGroup;
     }
 }
-
+*/
 
 
 /*
@@ -312,20 +341,22 @@
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
 {
 	// Find the button that is nearest to the offset the scrollview is planning on stopping at
-	int requestedIndex = round((*targetContentOffset).x/DOC_BUTTON_STEP_SIZE);
+//	int requestedIndex = round((*targetContentOffset).x/DOC_BUTTON_STEP_SIZE);
 	
 	// Validate/sanity-check it
-	requestedIndex = MAX(requestedIndex, 0);
-	requestedIndex = MIN(requestedIndex, self.documentButtons.count);
+//	requestedIndex = MAX(requestedIndex, 0);
+//	requestedIndex = MIN(requestedIndex, self.documentButtons.count);
 	
 	//Update the targetContentOffset we've been given to adjust it
-	(*targetContentOffset).x = requestedIndex * DOC_BUTTON_STEP_SIZE;
+//	(*targetContentOffset).x = requestedIndex * DOC_BUTTON_STEP_SIZE;
+	NSLog(@"done dragging");
 }
 
 
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-	[self refreshSelectionAppearance];
+//	[self refreshSelectionAppearance];
+	NSLog(@"scroll did scroll");
 }
 
 
@@ -333,6 +364,7 @@
 	Update the label and delete button to fade unless the document is directly
 	above them
  */
+/*
 -(void)refreshSelectionAppearance
 {
 	CGFloat percentFromCentered;
@@ -356,7 +388,8 @@
 		self.deleteButton.enabled = NO;
 	}	
 }
-
+*/
+/*
 +(void)styleButton:(UIButton*)button
 {
 	[button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
@@ -367,5 +400,5 @@
 	button.layer.shadowOpacity = 0.8;
 	button.layer.shouldRasterize = YES;
 }
-
+*/
 @end

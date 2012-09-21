@@ -16,10 +16,10 @@
 @interface PSDocumentListController : UIViewController <UIScrollViewDelegate>
 
 @property(nonatomic,retain)IBOutlet UIScrollView* scrollView;
-@property(nonatomic,retain)IBOutlet UIButton* deleteButton;
-@property(nonatomic,retain)IBOutlet UIButton* documentNameButton;
+//@property(nonatomic,retain)IBOutlet UIButton* deleteButton;
+//@property(nonatomic,retain)IBOutlet UIButton* documentNameButton;
 
 -(IBAction)newDocument:(id)sender;
--(IBAction)deleteDocument:(id)sender;
--(IBAction)startRenameDocument:(id)sender;
+//-(IBAction)deleteDocument:(id)sender;
+//-(IBAction)startRenameDocument:(id)sender;
 @end
