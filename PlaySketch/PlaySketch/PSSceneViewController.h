@@ -35,7 +35,7 @@
 - (IBAction)dismissSceneView:(id)sender;
 - (IBAction)setColor:(id)sender;
 - (IBAction)startSelecting:(id)sender;
-- (IBAction)createCharacterWithCurrentSelection:(id)sender;
+- (IBAction)createCharacterWithCurrentSelection:(id)sender; /* TODO: DELETE? */
 - (IBAction)deleteCurrentSelection:(id)sender;
 - (IBAction)playPressed:(id)sender;
 - (IBAction)timelineScrubbed:(id)sender;

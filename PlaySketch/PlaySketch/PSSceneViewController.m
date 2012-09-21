@@ -179,6 +179,7 @@
 }
 
 
+/* TODO: not used anymore delete?*/
 - (IBAction)createCharacterWithCurrentSelection:(id)sender
 {
 	[PSHelpers assert:(self.selectedGroup != nil) withMessage:@"need a selection to make character"];
