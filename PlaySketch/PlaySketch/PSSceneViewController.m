@@ -93,7 +93,7 @@
 	
 	// Initialize to be drawing with an initial color
 	[self setColor:self.initialColorButton];
-	self.penWeight = 10;
+	self.penWeight = -1;
 
 	[self.selectionOverlayButtons hide:NO];
 	

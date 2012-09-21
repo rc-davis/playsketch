@@ -15,6 +15,7 @@
 #import "PSDrawingGroup.h"
 #import "PSHelpers.h"
 
+#define MAX_FOUNTAIN_WEIGHT 5.0
 
 @interface PSDrawingLine ()
 {
@@ -70,7 +71,15 @@
 	// Deal with the case where we have no 'from' point
 	if(pointCount < 2)
 	{
-		[self addCircleAt:to];
+		if(self.penWeight > 0)
+		{
+			[self addCircleAt:to];
+		}
+		else
+		{
+			[self addPoint:to];
+			[self addPoint:to];
+		}
 	}
 	else
 	{
@@ -79,43 +88,52 @@
 		CGPoint from = CGPointMake((fromTopLast.x + fromBottomLast.x)/2.0,
 								   (fromTopLast.y + fromBottomLast.y)/2.0);
 		
+
+		// If the weight is -1, treat it like a fountain pen and vary the width
+		float weightLast = self.penWeight;
+		float weightNext = self.penWeight;
+		if (self.penWeight < 0)
+		{
+			double speedPx = hypot(to.x - from.x, to.y - from.y);
+			float speedPcnt = MIN(1.0, speedPx/50.0);
+			weightNext = MAX_FOUNTAIN_WEIGHT * ( 0.25 + 0.75*(1 - speedPcnt) );
+
+			CGPoint lastPoint1 = self.points[self.pointCount - 1];
+			CGPoint lastPoint2 = self.points[self.pointCount - 2];
+			weightLast = hypotf(lastPoint1.x - lastPoint2.x, lastPoint1.y - lastPoint2.y)/2.0;
+		}
 		
 		//Calculate the normal
 		CGSize normal = CGSizeMake(to.y - from.y, - (to.x - from.x));
 		double length = hypot(normal.width, normal.height);
 		if (length < 1) return;
-		CGSize normalScaled = CGSizeMake(normal.width / length * self.penWeight,
-										 normal.height / length * self.penWeight);
+		CGSize normalLast = CGSizeMake(normal.width / length * weightLast,
+										 normal.height / length * weightLast);
+		CGSize normalNext = CGSizeMake(normal.width / length * weightNext,
+									   normal.height / length * weightNext);
 		
 
 		//Calculate the four offset points
-		CGPoint fromTop = CGPointMake(from.x + normalScaled.width,
-									  from.y + normalScaled.height);
-		CGPoint fromBottom = CGPointMake(from.x - normalScaled.width,
-										 from.y - normalScaled.height);
-		CGPoint toTop = CGPointMake(to.x + normalScaled.width,
-									to.y + normalScaled.height);
-		CGPoint toBottom = CGPointMake(to.x - normalScaled.width,
-									   to.y - normalScaled.height);
+		CGPoint fromTop = CGPointMake(from.x + normalLast.width,
+									  from.y + normalLast.height);
+		CGPoint fromBottom = CGPointMake(from.x - normalLast.width,
+										 from.y - normalLast.height);
+		CGPoint toTop = CGPointMake(to.x + normalNext.width,
+									to.y + normalNext.height);
+		CGPoint toBottom = CGPointMake(to.x - normalNext.width,
+									   to.y - normalNext.height);
 		
 		[self addPoint:fromBottom];
 		[self addPoint:fromTop];
 		[self addPoint:toBottom];
 		[self addPoint:toTop];
 		
-		//Try out something like this:use the 'speed' to determine the offsetdistance!
-		/*
-		double speedPx = hypot(to.x - from.x, to.y - from.y);
-		float speedPcnt = MIN(1.0, speedPx/50.0);
-		
-		self.penWeight = self.penWeight * ( 0.25 + 0.75*(1 - speedPcnt) );
-		*/
 	}
 }
 
 - (void)finishLine
 {
-	if(self.pointCount > 2)
+	if(self.pointCount > 2 && self.penWeight > 0)
 	{
 		CGPoint p1 = self.points[self.pointCount - 1];
 		CGPoint p2 = self.points[self.pointCount - 2];
