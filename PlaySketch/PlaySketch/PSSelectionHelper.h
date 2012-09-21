@@ -21,6 +21,7 @@
 -(id)initWithGroup:(PSDrawingGroup*)rootGroup andSelectionLine:(PSDrawingLine*)line;
 -(void)addLineFrom:(CGPoint)from to:(CGPoint)to;
 -(void)addLineFromDict:(NSDictionary*)pointsDict;
+-(BOOL)anySelected;
 
 
 @end

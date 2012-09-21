@@ -182,4 +182,17 @@
 		[self prepareForSelection:c];
 }
 
+-(BOOL)anySelected
+{
+	return [self anySelectedUnderGroup:self.rootGroup];
+}
+
+-(BOOL)anySelectedUnderGroup:(PSDrawingGroup*)g
+{
+	for (PSDrawingGroup* c in g.children)
+		if(c.isSelected || [self anySelectedUnderGroup:c]) return YES;
+
+	return NO;
+}
+
 @end

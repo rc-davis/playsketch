@@ -28,17 +28,17 @@
 @property(nonatomic,retain) IBOutlet PSTimelineSlider* timelineSlider;
 @property(nonatomic,retain) IBOutlet PSGroupOverlayButtons* selectionOverlayButtons;
 @property(nonatomic,retain) IBOutlet PSMotionPathView* motionPathView;
+@property(nonatomic,retain) IBOutlet PSSRTManipulator* manipulator;
 @property(nonatomic,retain) PSDrawingDocument* currentDocument;
 @property(nonatomic,retain) PSDrawingGroup* rootGroup;
+
 
 - (IBAction)dismissSceneView:(id)sender;
 - (IBAction)setColor:(id)sender;
 - (IBAction)startSelecting:(id)sender;
-- (IBAction)deleteCurrentSelection:(id)sender;
 - (IBAction)playPressed:(id)sender;
 - (IBAction)timelineScrubbed:(id)sender;
 - (IBAction)toggleRecording:(id)sender;
-- (IBAction)showDetailsForSelection:(id)sender;
 - (IBAction)exportAsVideo:(id)sender;
 - (IBAction)snapTimeline:(id)sender;
 - (void)setPlaying:(BOOL)playing;

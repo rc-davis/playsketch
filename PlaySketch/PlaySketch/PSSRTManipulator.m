@@ -28,7 +28,6 @@
 	BOOL _isRotating;
 	BOOL _isTranslating;
 	BOOL _isScaling;
-	BOOL _selected;
 	NSTimeInterval _lastTimeStamp;
 	
 }
@@ -40,7 +39,6 @@
 
 @implementation PSSRTManipulator
 @synthesize delegate = _delegate;
-@synthesize group = _group;
 
 - (id)initAtLocation:(CGPoint)center
 {
@@ -68,9 +66,6 @@
 	CGContextRef context = UIGraphicsGetCurrentContext();
 	CGContextTranslateCTM(context, self.frame.size.width/2.0, self.frame.size.height/2.0);
 	
-	if(!_selected)
-		CGContextScaleCTM(context, SHRUNK_WIDTH_2/EXPANDED_WIDTH_2, SHRUNK_WIDTH_2/EXPANDED_WIDTH_2);
-
 	if(_isScaling)
 	{
 		[[UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:0.2] setFill];
@@ -97,30 +92,6 @@
 		[[UIColor colorWithRed:0.0 green:0.0 blue:1.0 alpha:0.5] setFill];
 		[_translatePath fill];
 	}
-}
-
-
-
-- (void)setApperanceIsSelected:(BOOL)selected isCharacter:(BOOL)character isRecording:(BOOL)recording
-{
-	_selected = selected;
-	
-	CGPoint center = self.center;
-	if(!selected)
-		self.frame = CGRectMake(0, 0, 2*SHRUNK_WIDTH_2, 2*SHRUNK_WIDTH_2);
-	else
-		self.frame = CGRectMake(0, 0, 2*EXPANDED_WIDTH_2, 2*EXPANDED_WIDTH_2);
-	self.center = center;
-	
-	
-	if(!selected)
-		self.backgroundColor = [UIColor colorWithWhite:0.3 alpha:0.3];
-	else
-		self.backgroundColor = [UIColor clearColor];
-	
-	
-	[self setNeedsDisplay];
-	
 }
 
 
