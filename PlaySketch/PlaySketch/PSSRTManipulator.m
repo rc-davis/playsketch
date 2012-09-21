@@ -16,7 +16,7 @@
 #import <GLKit/GLKit.h> // for the math
 #import <QuartzCore/QuartzCore.h>
 
-#define EXPANDED_WIDTH_2 163.0
+#define EXPANDED_WIDTH_2 110.0
 #define SHRUNK_WIDTH_2 40.0
 
 
@@ -266,10 +266,10 @@
 
 - (UIBezierPath*)buildTranslatePath
 {
-	CGFloat T_WIDTH_2 = 45.0;
-	CGFloat T_ARROW_2 = 20.0;
-	CGFloat T_ARROW_START_2 = 50.0;
-	CGFloat T_ARROWHEAD_2 = 25.0;
+	CGFloat T_WIDTH_2 = EXPANDED_WIDTH_2 * 0.28;
+	CGFloat T_ARROW_2 = EXPANDED_WIDTH_2 * 0.12;
+	CGFloat T_ARROW_START_2 = EXPANDED_WIDTH_2 * 0.31;
+	CGFloat T_ARROWHEAD_2 = EXPANDED_WIDTH_2 * 0.15;
 	
 	UIBezierPath* p = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(-T_WIDTH_2,
 																		-T_WIDTH_2,
@@ -310,9 +310,9 @@
 
 - (UIBezierPath*)buildRotatePath
 {
-	CGFloat R_INNER_RAD = 70.0;
-	CGFloat R_OUTER_RAD = 110.0;
-	CGFloat R_ARROW_PAD = 15.0;
+	CGFloat R_INNER_RAD = EXPANDED_WIDTH_2 * 0.43;
+	CGFloat R_OUTER_RAD = EXPANDED_WIDTH_2 * 0.67;
+	CGFloat R_ARROW_PAD = EXPANDED_WIDTH_2 * 0.09;
 
 	UIBezierPath* p = [UIBezierPath bezierPath];
 	[p addArcWithCenter:CGPointZero
@@ -340,10 +340,10 @@
 
 - (UIBezierPath*)buildScalePath
 {
-	CGFloat S_INNER = 125.0;
-	CGFloat S_LENGTH = 60.0;
-	CGFloat S_WIDTH_2 = 20.0;
-	CGFloat S_ARROWHEAD_2 = 45.0;
+	CGFloat S_INNER = EXPANDED_WIDTH_2 * 0.76;
+	CGFloat S_LENGTH = EXPANDED_WIDTH_2 * 0.37;
+	CGFloat S_WIDTH_2 = EXPANDED_WIDTH_2 * 0.12;
+	CGFloat S_ARROWHEAD_2 = EXPANDED_WIDTH_2 * 0.28;
 
 	UIBezierPath* p = [UIBezierPath bezierPath];
 	UIBezierPath* scaleArrow = [UIBezierPath bezierPathWithRect:CGRectMake(-S_WIDTH_2,
