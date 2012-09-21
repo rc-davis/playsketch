@@ -30,6 +30,7 @@
 @dynamic drawingLines;
 @dynamic positionsAsData;
 @dynamic parent;
+@synthesize isSelected;
 
 
 

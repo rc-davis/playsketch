@@ -23,11 +23,13 @@
 @property (nonatomic, retain) PSDrawingGroup *group;
 @property (nonatomic, readonly) CGPoint* points;
 @property (nonatomic, readonly) int pointCount;
+@property (atomic) int* selectionHitCounts;
 
 - (void)addPoint:(CGPoint)p;
 - (void)addLineTo:(CGPoint)to;
 - (void)applyTransform:(CGAffineTransform)transform;
 
 - (CGRect)boundingRect;
+- (void)prepareForSelection;
 
 @end

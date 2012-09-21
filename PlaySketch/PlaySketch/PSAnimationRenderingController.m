@@ -160,7 +160,8 @@ enum
 	// Now we can recurse on our root and will only have to push vertices and matrices
 	[self.currentDocument.rootGroup renderGroupWithMatrix:correctionMatrix uniforms:_uniforms overrideColor:NO];
 
-	
+/*
+	TODO: DELETE
 	// Draw our selected lines again, with a different color to show them highlighted
 	// It may seem crazy to draw selected lines twice per frame, but it isn't that
 	// bad and saves us having to do expensive comparisons against the selected set
@@ -171,7 +172,7 @@ enum
 	for (PSDrawingLine* line in self.selectionHelper.selectedLines)
 		[line renderWithUniforms:_uniforms overrideColor:YES];
 	[self.selectedGroup renderGroupWithMatrix:_projectionMatrix uniforms:_uniforms overrideColor:YES];
-
+*/
 
 	
 	//Draw our selection line on top of everything
@@ -431,12 +432,12 @@ enum
 		//Usually this is done automatically when you access properties on the object
 		//TODO: take this out of the draw loop into somewhere else...
 		//		or at least just make an accessor for points
-		[drawingItem renderWithUniforms:uniforms overrideColor:overrideColor];
+		[drawingItem renderWithUniforms:uniforms overrideColor:overrideColor || self.isSelected];
 	}
 	
 	//Recurse on child groups
 	for (PSDrawingGroup* child in self.children)
-		[child renderGroupWithMatrix:ownModelMatrix uniforms:uniforms overrideColor:overrideColor];
+		[child renderGroupWithMatrix:ownModelMatrix uniforms:uniforms overrideColor:overrideColor || self.isSelected];
 
 }
 
@@ -517,13 +518,16 @@ enum
 
 	
 	// Set the brush color
-	if (!overrideColor)
+	UInt64 colorAsInt = [self.color unsignedLongLongValue];
+	float r,g,b,a;
+	[PSHelpers  int64ToColor:colorAsInt toR:&r g:&g b:&b a:&a];
+	if(overrideColor)
 	{
-		UInt64 colorAsInt = [self.color unsignedLongLongValue];
-		float r,g,b,a;
-		[PSHelpers  int64ToColor:colorAsInt toR:&r g:&g b:&b a:&a];
-		glUniform4f(uniforms[UNIFORMS_BRUSH_COLOR], r, g, b, a);		
+		r = 1.0;
+		g = 0.0;
+		b = 0.5;
 	}
+	glUniform4f(uniforms[UNIFORMS_BRUSH_COLOR], r, g, b, a);
 	
 	// do actual drawing!
 	glEnable(GL_TEXTURE_2D);

@@ -16,59 +16,35 @@
 
 
 @interface PSSelectionHelper ()
-@property(nonatomic,retain) NSSet* allLines;
 @property(nonatomic)CGPoint firstPoint;
-@property(nonatomic)int* lineHitCounts; // Ugly but fast way to maintain count of line crossings
 @property(nonatomic)BOOL haveFirstPoint;
+@property(nonatomic)PSDrawingGroup* rootGroup;
+- (void) prepareForSelection:(PSDrawingGroup*)g;
 @end
 
 
 @implementation PSSelectionHelper
 @synthesize selectionLoupeLine = _selectionLoupeLine;
-@synthesize allLines = _allLines;
-@synthesize selectedLines = _selectedLines;
 @synthesize firstPoint = _firstPoint;
-@synthesize lineHitCounts = _lineHitCounts;
 @synthesize haveFirstPoint = _haveFirstPoint;
+@synthesize rootGroup = _rootGroup;
 
--(id)initWithGroup:(PSDrawingGroup*)rootGroup andLine:(PSDrawingLine*)line
+-(id)initWithGroup:(PSDrawingGroup*)rootGroup andSelectionLine:(PSDrawingLine*)line
 {
 	if(self = [super init])
 	{
 		self.selectionLoupeLine = line;
-		
-		self.selectedLines = [NSMutableSet set];
 		self.haveFirstPoint = NO;
-	
-		self.allLines = rootGroup.drawingLines;
-		
-		//Allocate space for lineHitCounts (ugly)
-		int totalLineCount = 0;
-		for (PSDrawingLine* line in self.allLines)
-			totalLineCount += line.pointCount;
-		self.lineHitCounts = (int*)malloc( sizeof(int) * totalLineCount );
-		memset(self.lineHitCounts, 0, sizeof(int) * totalLineCount);
-		
+		self.rootGroup = rootGroup;
 
-		/* 
-			NOTE: We are just looking at the drawings directly associated with 
-			this child. By design, we don't want hits from nested groups.
-			If this design change, here this is where we will want to:
-			a) recurse and build a single list of lines
-			b)  bring all of the lines into the same coordinate space and cache it for addLine:
-		*/
-
+		// Reset the selection information for all of these objects
+		// Each group maintains a BOOL of whether it is selected
+		// Each line contains a list with an int for each point for selection crossing count
+		[self prepareForSelection:rootGroup];
 	}
-	
+
 	return self;
 }
-
--(void)dealloc
-{
-	free(self.lineHitCounts);
-
-}
-
 
 -(void)addLineFrom:(CGPoint)from to:(CGPoint)to
 {
@@ -80,88 +56,143 @@
 	}
 	
 	// Perturb our number by a sub-pixel to avoid infinities
-	if ( to.x == from.x ) to.x += 0.25;
-	if ( to.x == _firstPoint.x ) to.x += 0.25;
+	BOOL degenerateForward = ( to.x == from.x );
+	BOOL degenerateReverse = ( to.x == _firstPoint.x );
 
 	// Calculate m,b for y = mx+b between the two points
-	CGFloat mForward = ( to.y - from.y ) / ( to.x - from.x );
+	CGFloat mForward = (!degenerateForward) ? ( to.y - from.y ) / ( to.x - from.x ) : 1e99;
 	CGFloat bForward = from.y - mForward * from.x;
 	CGFloat minXForward = MIN(from.x, to.x);
 	CGFloat maxXForward = MAX(from.x, to.x);
 
 	// Calculate m,b for the line back to the first point (closing the loop)
-	CGFloat mReverse = ( to.y - _firstPoint.y ) / ( to.x - _firstPoint.x );
+	CGFloat mReverse = (!degenerateReverse) ? ( to.y - _firstPoint.y ) / ( to.x - _firstPoint.x ) : 1e99;
 	CGFloat bReverse = _firstPoint.y - mReverse * _firstPoint.x;
 	CGFloat minXReverse = MIN(_firstPoint.x, to.x);
 	CGFloat maxXReverse = MAX(_firstPoint.x, to.x);
+		
 	
-	// Make a copy of the current set of selected lines for us to add and remove from
-	// Doing it this way is slower than directly changing self.selectedLines, but 
-	// it can be done in the background since it doesn't disturb the current set 
-	// which may be getting drawn to the screen
-	NSMutableSet* newSelectedLines = [self.selectedLines mutableCopy];
+	// Recurse on the root group looking for crossings
+	[self updateSelectionOnGroup:self.rootGroup
+					 forwardMinX:minXForward
+					 forwardMaxX:maxXForward
+						forwardB:bForward
+						forwardM:mForward
+					 reverseMinX:minXReverse
+					 reverseMaxX:maxXReverse
+						reverseB:bReverse
+						reverseM:mReverse];
 	
-	// Iterate through the lines and update crossing count for each point in each line
-	int cumulativeLineCount = 0; // for indexing into lineHitCount
-	for (PSDrawingLine* line in self.allLines)
+}
+
+- (void) updateSelectionOnGroup:(PSDrawingGroup*)group
+					forwardMinX:(CGFloat)minXForward
+					forwardMaxX:(CGFloat)maxXForward
+					   forwardB:(CGFloat)bForward
+					   forwardM:(CGFloat)mForward
+					reverseMinX:(CGFloat)minXReverse
+					reverseMaxX:(CGFloat)maxXReverse
+					   reverseB:(CGFloat)bReverse
+					   reverseM:(CGFloat)mReverse
+{
+	// Step 1: Find out if any of the lines that belong to THIS group are hit
+	BOOL anyLineSelected = NO;
+	for (PSDrawingLine* line in group.drawingLines)
 	{
 		BOOL lineIsHit = NO;
-		
-		
 		for(int i = 0; i < [line pointCount]; i++)
 		{
 			CGPoint p = [line points][i];
 			
 			// Test if we hit the new line
-			BOOL hitsForward =	p.x >= minXForward && 
-								p.x < maxXForward && 
-								(mForward * p.x + bForward) > p.y;
+			BOOL hitsForward =	p.x >= minXForward &&
+			p.x < maxXForward &&
+			(mForward * p.x + bForward) > p.y;
 			
 			// Test if we hit the reverse line
 			BOOL hitsReverse =	p.x >= minXReverse &&
-								p.x < maxXReverse &&
-								(mReverse * p.x + bReverse) > p.y;
-
+			p.x < maxXReverse &&
+			(mReverse * p.x + bReverse) > p.y;
+			
 			
 			if ( hitsForward )
-				_lineHitCounts[cumulativeLineCount]++;
-
+				line.selectionHitCounts[i] += 1;
+			
+			//if (hitsForward || hitsReverse)
+			//	NSLog(@"here");
+			
 			int inferredCount = hitsReverse ? 1 : 0;
-
 			
 			// It hits if our sum of crossings is odd
-			lineIsHit = lineIsHit || 
-						(_lineHitCounts[cumulativeLineCount] + inferredCount) %2 == 1;
-
-			cumulativeLineCount ++;
-		}								
-
-		//Add or remove it from our new set of lines
-		if ( lineIsHit )
-		{
-			[newSelectedLines addObject:line];
+			lineIsHit = lineIsHit ||
+			(line.selectionHitCounts[i] + inferredCount) %2 == 1;
+			
+			
 		}
-		else if ( [newSelectedLines containsObject:line] )
-		{
-			[newSelectedLines removeObject:line];
-		}
-	}	
+		
+		anyLineSelected = anyLineSelected || lineIsHit;
+	}
 
-	self.selectedLines = newSelectedLines;
+	// Step 2: Recurse and select if ALL of the child groups are hit
+	BOOL allChildrenSelected = YES;
+	for (PSDrawingGroup* g in group.children)
+	{
+		// TODO: We'll need to push the group's current matrix before recursing
+		// to accomodate when the animation has moved the lines to a different position.
+		
+		[self updateSelectionOnGroup:g
+						 forwardMinX:minXForward
+						 forwardMaxX:maxXForward
+							forwardB:bForward
+							forwardM:mForward
+						 reverseMinX:minXReverse
+						 reverseMaxX:maxXReverse
+							reverseB:bReverse
+							reverseM:mReverse];
 
+		allChildrenSelected = allChildrenSelected && g.isSelected;
+	}
+
+	group.isSelected = anyLineSelected || (allChildrenSelected && group.children.count > 0);
 }
-
-
 
 /* 
  pointsDict contains keys "from" and "to", which are CGPoints encoded with NSValue
- It is helpful to wrap them this way so we can call this on a background thread
+ It is helpful to wrap them this way so we can call this on a background thread.
+ (Data can only be passed from the foreground to the background thread on the heap,
+ so it needs to be an object)
  */
 -(void)addLineFromDict:(NSDictionary*)pointsDict
 {
 	CGPoint from = [[pointsDict objectForKey:@"from"] CGPointValue];
 	CGPoint to = [[pointsDict objectForKey:@"to"] CGPointValue];
 	[self addLineFrom:from to:to];
+}
+
+
+- (void) prepareForSelection:(PSDrawingGroup*)g
+{
+	/*
+	 reset all of the selection metadata we're tracking in the objects
+	*/
+	g.isSelected = NO;
+	for (PSDrawingLine* l in g.drawingLines)
+		[l prepareForSelection];
+	for (PSDrawingGroup* c in g.children)
+		[self prepareForSelection:c];
+}
+
+-(BOOL)anySelected
+{
+	return [self anySelectedUnderGroup:self.rootGroup];
+}
+
+-(BOOL)anySelectedUnderGroup:(PSDrawingGroup*)g
+{
+	for (PSDrawingGroup* c in g.children)
+		if(c.isSelected || [self anySelectedUnderGroup:c]) return YES;
+
+	return NO;
 }
 
 @end

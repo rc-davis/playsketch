@@ -28,6 +28,7 @@
 @dynamic pointsAsData;
 @dynamic color;
 @dynamic group;
+@synthesize selectionHitCounts = _selectionHitCounts;
 
 
 -(CGPoint*)points
@@ -157,5 +158,11 @@
 	return CGRectMake(min.x, min.y, max.x - min.x, max.y - min.y);
 }
 
+- (void)prepareForSelection
+{
+	if(self.selectionHitCounts)
+		free(self.selectionHitCounts);
+	self.selectionHitCounts = (int*)calloc(self.pointCount, sizeof(int));
+}
 
 @end
