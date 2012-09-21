@@ -587,7 +587,7 @@
 				GCC_PREFIX_HEADER = "PlaySketch/PlaySketch-Prefix.pch";
 				INFOPLIST_FILE = "PlaySketch/PlaySketch-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "FD1DB85D-883A-45D9-9293-5D483E4DDE7D";
+				PROVISIONING_PROFILE = "AEA162A0-A47C-4656-8D5C-FEDEA52419A3";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -596,11 +596,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer: Ryder Ziola (QKH6WJ23CX)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Ryder Ziola (QKH6WJ23CX)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PlaySketch/PlaySketch-Prefix.pch";
 				INFOPLIST_FILE = "PlaySketch/PlaySketch-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "FD1DB85D-883A-45D9-9293-5D483E4DDE7D";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "AEA162A0-A47C-4656-8D5C-FEDEA52419A3";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
