@@ -16,14 +16,19 @@
 #import "PSSceneViewController.h"
 #import <QuartzCore/QuartzCore.h>
 
+#define DOC_IMAGE_FRAME (CGRectMake(0, 0, 480.0, 270.0))
+#define DOC_IMAGE_STEP 600.0
+#define DOC_END_PADDING (1024.0 - DOC_IMAGE_STEP/2.0)
+#define DOC_IMAGE_SNAP_XVALUE (1024.0 - (DOC_IMAGE_FRAME).size.width/2.0 - 20.0)
+
 /*
-#define DOC_BUTTON_STEP_SIZE 650.0 // The pixel-distance between two buttons
-#define ALLOWABLE_SELECTION_OFFSET 200 // The distance away from the center of a button that is still considered selected 
+#define DOC_IMAGE_STEP_SIZE 650.0 // The pixel-distance between two buttons
+#define ALLOWABLE_SELECTION_OFFSET 200 // The distance away from the center of a button that is still considered selected
 */
 
 @interface PSDocumentListController ()
-@property(nonatomic,retain)NSArray* documentButtons;
-@property(nonatomic,retain)NSArray* documents;
+@property(nonatomic,retain)NSMutableArray* documentImages;
+@property(nonatomic,retain)NSMutableArray* documents;
 //@property(nonatomic,retain)UIButton* createDocumentButton;
 
 
@@ -32,12 +37,14 @@
 //-(PSDrawingDocument*)selectedDocument:(CGFloat*)outPercentFromCentered;
 //-(void)refreshSelectionAppearance;
 //+(void)styleButton:(UIButton*)button;
+- (void)createImageForDocumentAtIndex:(int)i;
+- (void)scrollToIndex:(int)i animated:(BOOL)animated;
+- (void)scrollToNearest:(BOOL)animated;
 @end
 
 @implementation PSDocumentListController
 @synthesize scrollView = _scrollView;
 @synthesize documents = _documents;
-@synthesize documentButtons = _documentButtons;
 //@synthesize createDocumentButton = _newDocumentButton;
 //@synthesize deleteButton = _deleteButton;
 //@synthesize documentNameButton = _documentNameButton;
@@ -63,15 +70,66 @@
 	}
 */	
 	self.scrollView.delegate = self; //So we can respond to the scroll events
-	//self.scrollView.decelerationRate = UIScrollViewDecelerationRateFast;
+	NSLog(@"%lf, %lf", UIScrollViewDecelerationRateFast, UIScrollViewDecelerationRateNormal);
+	self.scrollView.decelerationRate = UIScrollViewDecelerationRateFast;
 	
 	
-	//Load up the existing ones!
-	
+	//Load up the existing documents
+	self.documents = [NSMutableArray arrayWithArray:[PSDataModel allDrawingDocuments]];
+	self.documentImages = [NSMutableArray arrayWithCapacity:self.documents.count];
+	for (int i = 0; i < self.documents.count; i++)
+		[self createImageForDocumentAtIndex:i];
 	
 	//TODO: scroll to where we last were!
+	[self scrollToIndex:0 animated:NO];
 }
 
+
+- (void)createImageForDocumentAtIndex:(int)i
+{
+	PSDrawingDocument* doc = self.documents[i];
+	UIImageView* b = [[UIImageView alloc] initWithFrame:DOC_IMAGE_FRAME];
+	[self.scrollView addSubview:b];
+	
+	b.backgroundColor = [UIColor redColor];
+	b.center = CGPointMake( DOC_END_PADDING + DOC_IMAGE_STEP * (i + 0.5),
+						   self.scrollView.frame.size.height/2.0 );
+
+	//Give it an image for background
+	NSData* imageData = doc.previewImage;
+	if(imageData)
+		b.image = [UIImage imageWithData:imageData];
+	else
+		b.backgroundColor = [UIColor colorWithRed:1.000 green:0.977 blue:0.842 alpha:1.000];
+
+	//Make sure everything is in view
+	CGSize newContentSize = self.scrollView.contentSize;
+	newContentSize.width = self.documents.count*DOC_IMAGE_STEP + 2 * DOC_END_PADDING;
+	self.scrollView.contentSize = newContentSize;
+}
+
+- (void)scrollToIndex:(int)i animated:(BOOL)animated
+{
+	CGPoint newOffset = self.scrollView.contentOffset;
+	newOffset.x = DOC_END_PADDING + DOC_IMAGE_STEP * (i + 0.5) - DOC_IMAGE_SNAP_XVALUE;
+	if(animated)[UIView beginAnimations:@"scroll" context:nil];
+	self.scrollView.contentOffset = newOffset;
+	if(animated)[UIView commitAnimations];
+}
+
+- (void)scrollToNearest:(BOOL)animated
+{
+	// Snap back to where we belong!
+	// First calculate the index of the document nearest where we are
+	CGFloat currentXValueOffset = self.scrollView.contentOffset.x + DOC_IMAGE_SNAP_XVALUE;
+	CGFloat floatIndex = (currentXValueOffset - DOC_END_PADDING) / DOC_IMAGE_STEP - 0.5;
+	int requestedIndex = round(floatIndex);
+	requestedIndex = MAX(0, requestedIndex);
+	requestedIndex = MIN(requestedIndex, self.documents.count - 1);
+	
+	// Then scroll there!
+	[self scrollToIndex:requestedIndex animated:animated];
+}
 
 /*
 	This is called right after the view has left the screen. 
@@ -138,12 +196,6 @@
 		[docButton addTarget:self action:@selector(viewDocument:) forControlEvents:UIControlEventTouchUpInside];
 
 		//Put the background image in the button
-		NSData* imageData = docRoot.previewImage;
-		if(imageData)
-		{
-			UIImage* image = [UIImage imageWithData:imageData];
-			[docButton setImage:image forState:UIControlStateNormal];
-		}
 		
 		
 		[buttons addObject:docButton];		
@@ -338,25 +390,25 @@
 	Implementing these let this controller respond to changes in the scrollview,
 	to keep us centred on a button
 */
-- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
+//- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
-	// Find the button that is nearest to the offset the scrollview is planning on stopping at
-//	int requestedIndex = round((*targetContentOffset).x/DOC_BUTTON_STEP_SIZE);
-	
-	// Validate/sanity-check it
-//	requestedIndex = MAX(requestedIndex, 0);
-//	requestedIndex = MIN(requestedIndex, self.documentButtons.count);
-	
-	//Update the targetContentOffset we've been given to adjust it
-//	(*targetContentOffset).x = requestedIndex * DOC_BUTTON_STEP_SIZE;
-	NSLog(@"done dragging");
+	[self scrollToNearest:YES];
+}
+
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
+{
+	if(decelerate == YES) return;
+
+	[self scrollToNearest:YES];
 }
 
 
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
 //	[self refreshSelectionAppearance];
-	NSLog(@"scroll did scroll");
+//	NSLog(@"scroll did scroll");
 }
 
 
@@ -393,7 +445,6 @@
 +(void)styleButton:(UIButton*)button
 {
 	[button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-	button.backgroundColor = [UIColor colorWithRed:1.000 green:0.977 blue:0.842 alpha:1.000];
 	button.layer.shadowColor = [UIColor blackColor].CGColor;
 	button.layer.shadowOffset = CGSizeMake(0, 10);
 	button.layer.shadowRadius = 10.0;
@@ -401,4 +452,5 @@
 	button.layer.shouldRasterize = YES;
 }
 */
+
 @end
