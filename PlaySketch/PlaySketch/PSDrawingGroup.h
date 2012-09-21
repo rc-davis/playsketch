@@ -38,6 +38,7 @@
 @property (nonatomic, retain) NSSet *drawingLines;
 @property (nonatomic, retain) NSData *positionsAsData;
 @property (nonatomic, retain) PSDrawingGroup *parent;
+@property (atomic) BOOL isSelected;
 @end
 
 @interface PSDrawingGroup (CoreDataGeneratedAccessors)

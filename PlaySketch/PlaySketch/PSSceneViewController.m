@@ -507,19 +507,24 @@
 	
 	if (! self.isSelecting )
 	{
-		PSDrawingLine* line = [PSDataModel newLineInGroup:self.rootGroup];
+		// Creating a new line!
+		// Every line gets put into a new group of its own, directly under self.rootGroup
+		
+		PSDrawingGroup* newLineGroup = [PSDataModel newDrawingGroupWithParent:self.rootGroup];
+		PSDrawingLine* line = [PSDataModel newLineInGroup:newLineGroup];
 		line.color = [NSNumber numberWithUnsignedLongLong:self.currentColor];
 		return line;
 	}
 	else
 	{
-		// Create a line to draw
+		// Create a selection line to draw with
+		// TODO: this shouldn't be part of the model since it screws up the undo/redo
 		PSDrawingLine* selectionLine = [PSDataModel newLineInGroup:nil];
 		selectionLine.color = [NSNumber numberWithUnsignedLongLong:[PSHelpers colorToInt64:[UIColor redColor]]];
 		
 		// Start a new selection set helper
 		self.selectionHelper = [[PSSelectionHelper alloc] initWithGroup:self.rootGroup
-																	 andLine:selectionLine];		
+																	 andSelectionLine:selectionLine];		
 		return selectionLine;
 	}
 		
@@ -554,7 +559,9 @@
 		self.selectionHelper.selectionLoupeLine = nil;
 		
 		//Show the manipulator if it was worthwhile
-		if(self.selectionHelper.selectedLines.count > 0)
+/*
+	TODO: how do we tell if we have a selection?
+	if(self.selectionHelper.selectedLines.count > 0)
 		{
 			self.createCharacterButton.enabled = YES;
 			
@@ -577,6 +584,8 @@
 			self.selectionHelper = nil;
 			
 		}
+ */
+
 	}
 	else
 	{
