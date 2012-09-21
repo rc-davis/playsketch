@@ -27,6 +27,7 @@
 
 - (void)addPoint:(CGPoint)p;
 - (void)addLineTo:(CGPoint)to;
+- (void)finishLine;
 - (void)applyTransform:(CGAffineTransform)transform;
 
 - (CGRect)boundingRect;

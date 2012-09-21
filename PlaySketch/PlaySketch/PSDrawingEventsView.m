@@ -32,7 +32,10 @@
 {
 	//Fetch a line from our delegate to put our touch points into
 	if(self.drawingDelegate)
+	{
 		self.currentLine = [self.drawingDelegate newLineToDrawTo:self];
+		[self.currentLine addLineTo:[[touches anyObject] locationInView:self]];
+	}
 	
 }		
 
@@ -58,8 +61,11 @@
 	if(self.currentLine)
 	{
 		if (self.drawingDelegate)
+		{
 			[self.drawingDelegate finishedDrawingLine:self.currentLine inDrawingView:self];
-		self.currentLine = nil;	
+			[self.currentLine finishLine];
+		}
+		self.currentLine = nil;
 	}
 
 }
@@ -70,7 +76,10 @@
 	if(self.currentLine)
 	{
 		if (self.drawingDelegate)
-			[self.drawingDelegate cancelledDrawingLine:self.currentLine inDrawingView:self];
+		{
+			[self.drawingDelegate finishedDrawingLine:self.currentLine inDrawingView:self];
+			[self.currentLine finishLine];
+		}
 		self.currentLine = nil;	
 	}
 

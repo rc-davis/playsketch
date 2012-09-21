@@ -22,6 +22,7 @@
 {
 	NSMutableData* _mutablePoints;
 }
+- (void)addCircleAt:(CGPoint)p;
 @end
 
 @implementation PSDrawingLine
@@ -70,9 +71,7 @@
 	// Deal with the case where we have no 'from' point
 	if(pointCount < 2)
 	{
-		//Add the first point twice so we don't provide a weird normal to the second point
-		[self addPoint:to];
-		[self addPoint:to];
+		[self addCircleAt:to];
 	}
 	else
 	{
@@ -113,6 +112,42 @@
 		OFFSET_DISTANCE = OFFSET_DISTANCE * ( 0.25 + 0.75*(1 - speedPcnt) );
 		*/
 	}
+}
+
+- (void)finishLine
+{
+	if(self.pointCount > 2)
+	{
+		CGPoint p1 = self.points[self.pointCount - 1];
+		CGPoint p2 = self.points[self.pointCount - 2];
+		[self addCircleAt:CGPointMake( (p1.x + p2.x)/2.0, (p1.y + p2.y)/2.0)];
+		NSLog(@"adding a last point");
+	}
+}
+
+- (void)addCircleAt:(CGPoint)p
+{
+	[self addPoint:CGPointMake(p.x - OFFSET_DISTANCE, p.y)];
+	[self addPoint:p];
+	[self addPoint:CGPointMake(p.x - OFFSET_DISTANCE/M_SQRT2, p.y - OFFSET_DISTANCE/M_SQRT2)];
+	
+	[self addPoint:CGPointMake(p.x, p.y - OFFSET_DISTANCE)];
+	[self addPoint:p];
+	[self addPoint:CGPointMake(p.x + OFFSET_DISTANCE/M_SQRT2, p.y - OFFSET_DISTANCE/M_SQRT2)];
+	
+	
+	[self addPoint:CGPointMake(p.x + OFFSET_DISTANCE, p.y)];
+	[self addPoint:p];
+	[self addPoint:CGPointMake(p.x + OFFSET_DISTANCE/M_SQRT2, p.y + OFFSET_DISTANCE/M_SQRT2)];
+	
+	
+	[self addPoint:CGPointMake(p.x, p.y + OFFSET_DISTANCE)];
+	[self addPoint:p];
+	[self addPoint:CGPointMake(p.x - OFFSET_DISTANCE/M_SQRT2, p.y + OFFSET_DISTANCE/M_SQRT2)];
+	
+	[self addPoint:CGPointMake(p.x - OFFSET_DISTANCE, p.y)];
+	[self addPoint:p];
+	[self addPoint:p];
 }
 
 - (void)willSave
