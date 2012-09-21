@@ -442,6 +442,8 @@
 	
 	PSSRTManipulator* manipulator = sender;
 /*
+	TODO: bring back recording!
+ 
 	if(self.isReadyToRecord)
 	{
 		self.isRecording = YES;
@@ -491,33 +493,40 @@
 	
 	// Clear out the frames we are overwriting if this is a recording!
 /*
-	TODO: Update the selected groups!
- 
+	TODO: fix up recording
 	if( self.isRecording)
 		[manipulator.group flattenTranslation:isTranslating
 								   rotation:isRotating || isTranslating
 									  scale:isScaling || isTranslating
 								  betweenTime:self.timelineSlider.value - duration
 									  andTime:self.timelineSlider.value];
+*/
 
+	for (PSDrawingGroup* g in self.rootGroup.children)
+	{
+		//TODO: recurse more than one level deep!
+		
+		if (g.isSelected)
+		{
+			// Get the group's position
+			SRTPosition position = [g currentCachedPosition];
+			
+			// Update it with these changes
+			position.location.x += dX;
+			position.location.y += dY;
+			position.rotation += dRotation;
+			position.scale *= dScale;
+			
+			//Store the position at the current time
+			position.timeStamp = self.timelineSlider.value;
+			position.keyframeType = self.isRecording ? SRTKeyframeTypeNone() :
+			SRTKeyframeMake(isScaling, isRotating, isTranslating);
+			[g addPosition:position withInterpolation:!self.isRecording];
+			
+			[g setCurrentCachedPosition:position];
+		}
+	}
 	
-	// Get the group's position
-	SRTPosition position = [manipulator.group currentCachedPosition];
-
-	// Update it with these changes
-	position.location.x += dX;
-	position.location.y += dY;
-	position.rotation += dRotation;
-	position.scale *= dScale;
-	
-	//Store the position at the current time
-	position.timeStamp = self.timelineSlider.value;
-	position.keyframeType = self.isRecording ? SRTKeyframeTypeNone() :
-												SRTKeyframeMake(isScaling, isRotating, isTranslating);
-	[manipulator.group addPosition:position withInterpolation:!self.isRecording];
-	
-	[manipulator.group setCurrentCachedPosition:position];
-*/	
 	//Keep our buttons properly aligned
 	[self.selectionOverlayButtons setLocation:[manipulator upperRightPoint]];
 
