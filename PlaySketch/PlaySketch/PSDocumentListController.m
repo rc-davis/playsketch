@@ -307,7 +307,11 @@
 	{
 		PSDrawingDocument* docToDelete = self.documents[currentI];
 		UIImageView* docImage = self.documentImages[currentI];
+		[PSDataModel deleteDrawingDocument:docToDelete];
+		[self.documentImages removeObjectAtIndex:currentI];
+		[self.documents removeObjectAtIndex:currentI];
 
+		
 		// First: Show the current document disappearing
 		[UIView animateWithDuration:ANIMATION_DURATION
 						 animations:^{ docImage.alpha = 0.0; }];
@@ -319,7 +323,7 @@
 							  delay:ANIMATION_DURATION/2.0
 							options:0
 						 animations:^{
-							 for(int i = currentI+1; i < self.documentImages.count; i++)
+							 for(int i = currentI; i < self.documentImages.count; i++)
 							 {
 								 UIImageView* img = self.documentImages[i];
 								 CGRect newRect = img.frame;
@@ -330,9 +334,6 @@
 						 }
 						 
 						 completion:^(BOOL finished){
-							 [PSDataModel deleteDrawingDocument:docToDelete];
-							 [self.documentImages removeObjectAtIndex:currentI];
-							 [self.documents removeObjectAtIndex:currentI];
 							 [self scrollToIndex:MIN(currentI, self.documentImages.count - 1) animated:YES];
 						 }];
 	}
