@@ -38,6 +38,7 @@
                     <tabBarItem key="tabBarItem" title="Item" id="yxR-sg-9G6"/>
                     <navigationItem key="navigationItem" id="DeK-2G-bAG"/>
                     <connections>
+                        <outlet property="createDocButton" destination="X1N-dl-BXB" id="Pzk-mQ-32E"/>
                         <outlet property="scrollView" destination="nIf-Qf-Vxo" id="iQj-2a-URD"/>
                         <segue destination="UPZ-Bt-XHw" kind="modal" identifier="GoToSceneViewController" modalTransitionStyle="flipHorizontal" id="BaM-5P-1me"/>
                     </connections>
@@ -419,6 +420,7 @@
             <source key="sourceIdentifier" type="project" relativePath="./Classes/PSDocumentListController.h"/>
             <relationships>
                 <relationship kind="action" name="newDocument:"/>
+                <relationship kind="outlet" name="createDocButton" candidateClass="UIButton"/>
                 <relationship kind="outlet" name="scrollView" candidateClass="UIScrollView"/>
             </relationships>
         </class>

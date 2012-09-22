@@ -20,6 +20,7 @@
 #define DOC_IMAGE_STEP 600.0
 #define DOC_END_PADDING (1024.0 - DOC_IMAGE_STEP/2.0)
 #define DOC_IMAGE_SNAP_XVALUE (1024.0 - (DOC_IMAGE_FRAME).size.width/2.0 - 20.0)
+#define ANIMATION_DURATION 0.5
 
 /*
 #define DOC_IMAGE_STEP_SIZE 650.0 // The pixel-distance between two buttons
@@ -90,6 +91,7 @@
 	PSDrawingDocument* doc = self.documents[i];
 	UIImageView* b = [[UIImageView alloc] initWithFrame:DOC_IMAGE_FRAME];
 	[self.scrollView addSubview:b];
+	[self.documentImages addObject:b];
 	
 	b.backgroundColor = [UIColor redColor];
 	b.center = CGPointMake( DOC_END_PADDING + DOC_IMAGE_STEP * (i + 0.5),
@@ -112,9 +114,12 @@
 {
 	CGPoint newOffset = self.scrollView.contentOffset;
 	newOffset.x = DOC_END_PADDING + DOC_IMAGE_STEP * (i + 0.5) - DOC_IMAGE_SNAP_XVALUE;
-	if(animated)[UIView beginAnimations:@"scroll" context:nil];
-	self.scrollView.contentOffset = newOffset;
-	if(animated)[UIView commitAnimations];
+	if(animated)
+		[UIView animateWithDuration:ANIMATION_DURATION
+						 animations:^{self.scrollView.contentOffset = newOffset;}];
+	else
+		self.scrollView.contentOffset = newOffset;
+		
 }
 
 - (void)scrollToNearest:(BOOL)animated
@@ -262,11 +267,29 @@
 	NSString* newDocName = [NSString stringWithFormat:@"Untitled Animation %d",
 							[PSDataModel allDrawingDocuments].count + 1];
 	PSDrawingDocument* newDocument = [PSDataModel newDrawingDocumentWithName:newDocName];
-	
-	
+
 	//Scroll to the last item
+	[self scrollToIndex:self.documents.count animated:YES];
 	
-	//Make it visible
+	// Add it to the list and create a button
+	[self.documents addObject:newDocument];
+	[self createImageForDocumentAtIndex:self.documents.count - 1];
+	
+	//Animate the appearance of the button
+	UIImageView* newImage = self.documentImages[self.documentImages.count - 1];
+	CGRect destinationFrame = newImage.frame;
+	CGRect startFrame = [self.scrollView convertRect:self.createDocButton.frame
+											fromView:self.createDocButton.superview];
+	newImage.frame = startFrame;
+	newImage.alpha = 0.0;
+	[UIView animateWithDuration:ANIMATION_DURATION
+						  delay:ANIMATION_DURATION
+						options:0
+					 animations:^{	newImage.frame = destinationFrame;
+									newImage.alpha = 1.0;}
+					 completion:nil];
+
+	
 	
 	/*
 
@@ -407,8 +430,8 @@
 
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-//	[self refreshSelectionAppearance];
-//	NSLog(@"scroll did scroll");
+	//SELECTION BUTTONS
+	
 }
 
 
