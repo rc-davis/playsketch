@@ -34,6 +34,7 @@
 		46C9AD1615B29D1E00EF3A92 /* PSDataModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 46C9AD1515B29D1E00EF3A92 /* PSDataModel.m */; };
 		46C9AD1815B2ABD400EF3A92 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46C9AD1715B2ABD300EF3A92 /* QuartzCore.framework */; };
 		46C9AD1B15B2B67800EF3A92 /* PSDrawingDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 46C9AD1A15B2B67800EF3A92 /* PSDrawingDocument.m */; };
+		46DB9589160E199700CCC5C2 /* main_gradient.png in Resources */ = {isa = PBXBuildFile; fileRef = 46DB9588160E199700CCC5C2 /* main_gradient.png */; };
 		46F1735215DB7AEE00F787AC /* PSGLKitVideoExporter.m in Sources */ = {isa = PBXBuildFile; fileRef = 46F1735115DB7AEE00F787AC /* PSGLKitVideoExporter.m */; };
 		46F1735515DB7C8E00F787AC /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46F1735415DB7C8E00F787AC /* AVFoundation.framework */; };
 		46F1735715DB836A00F787AC /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46F1735615DB836A00F787AC /* CoreVideo.framework */; };
@@ -110,6 +111,7 @@
 		46C9AD1715B2ABD300EF3A92 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		46C9AD1915B2B67700EF3A92 /* PSDrawingDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PSDrawingDocument.h; path = PlaySketch/PSDrawingDocument.h; sourceTree = "<group>"; };
 		46C9AD1A15B2B67800EF3A92 /* PSDrawingDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PSDrawingDocument.m; path = PlaySketch/PSDrawingDocument.m; sourceTree = "<group>"; };
+		46DB9588160E199700CCC5C2 /* main_gradient.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = main_gradient.png; sourceTree = "<group>"; };
 		46F1735015DB7AEE00F787AC /* PSGLKitVideoExporter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSGLKitVideoExporter.h; sourceTree = "<group>"; };
 		46F1735115DB7AEE00F787AC /* PSGLKitVideoExporter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSGLKitVideoExporter.m; sourceTree = "<group>"; };
 		46F1735415DB7C8E00F787AC /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
@@ -202,6 +204,7 @@
 				4608D2A515D8B731005CEA6D /* details.png */,
 				46186F7215D78F6600A1E1A2 /* record_down.png */,
 				46186F7515D792B900A1E1A2 /* record_up.png */,
+				46DB9588160E199700CCC5C2 /* main_gradient.png */,
 			);
 			name = Images;
 			sourceTree = "<group>";
@@ -425,6 +428,7 @@
 				46186F7615D792B900A1E1A2 /* record_up.png in Resources */,
 				4608D2A615D8B731005CEA6D /* details.png in Resources */,
 				4692B9DA15E6529C00157F5F /* Delete.png in Resources */,
+				46DB9589160E199700CCC5C2 /* main_gradient.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
