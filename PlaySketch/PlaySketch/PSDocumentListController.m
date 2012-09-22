@@ -42,6 +42,7 @@
 - (void)createImageForDocumentAtIndex:(int)i;
 - (void)scrollToIndex:(int)i animated:(BOOL)animated;
 - (void)scrollToNearest:(BOOL)animated;
+- (float)currentIndex;
 @end
 
 @implementation PSDocumentListController
@@ -91,10 +92,17 @@
 
 - (void)createImageForDocumentAtIndex:(int)i
 {
+	//Clean up a previous one if it exists
+	if(self.documentImages.count > i)
+	{
+		[self.documentImages[i] removeFromSuperview];;
+		[self.documentImages removeObjectAtIndex:i];
+	}
+	
 	PSDrawingDocument* doc = self.documents[i];
 	UIImageView* b = [[UIImageView alloc] initWithFrame:DOC_IMAGE_FRAME];
 	[self.scrollView addSubview:b];
-	[self.documentImages addObject:b];
+	[self.documentImages insertObject:b atIndex:i];
 	
 	b.backgroundColor = [UIColor redColor];
 	b.center = CGPointMake( DOC_END_PADDING + DOC_IMAGE_STEP * (i + 0.5),
@@ -129,14 +137,19 @@
 {
 	// Snap back to where we belong!
 	// First calculate the index of the document nearest where we are
-	CGFloat currentXValueOffset = self.scrollView.contentOffset.x + DOC_IMAGE_SNAP_XVALUE;
-	CGFloat floatIndex = (currentXValueOffset - DOC_END_PADDING) / DOC_IMAGE_STEP - 0.5;
+	float floatIndex = [self currentIndex];
 	int requestedIndex = round(floatIndex);
 	requestedIndex = MAX(0, requestedIndex);
 	requestedIndex = MIN(requestedIndex, self.documents.count - 1);
 	
 	// Then scroll there!
 	[self scrollToIndex:requestedIndex animated:animated];
+}
+
+- (float)currentIndex
+{
+	CGFloat currentXValueOffset = self.scrollView.contentOffset.x + DOC_IMAGE_SNAP_XVALUE;
+	return (currentXValueOffset - DOC_END_PADDING) / DOC_IMAGE_STEP - 0.5;
 }
 
 /*
@@ -156,8 +169,13 @@
 
 -(void) viewWillAppear:(BOOL)animated
 {
-//	[self generateDocumentButtons];
-//	[self refreshSelectionAppearance];
+	// Refresh the selected image before we become visible:
+	// This is in case it was edited while our view wasn't visible
+	int currentI = round([self currentIndex]);
+	if(currentI >= 0 && currentI < self.documents.count)
+	{
+		[self createImageForDocumentAtIndex:currentI];
+	}
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -221,50 +239,6 @@
 //}
 
 
-//-(void)clearDocumentButtons
-//{
-	/*
-	for(UIButton* button in self.documentButtons)
-	{
-		[button removeFromSuperview];
-	}
-	self.documentButtons = nil;
-	self.documentRoots = nil;
-	self.scrollView.contentSize = self.scrollView.frame.size;
-	*/
-	
-//}
-
-
-/*
-	We will consider the document nearest to being centered in the view to be "selected", 
-	but only if it falls within ALLOWABLE_SELECTION_OFFSET of being perfectly centered.
-	outPercentFromCentered is an optional argument to return how close we are to centered.
-	1.0 means perfectly centred, 0.0 means off by ALLOWABLE_SELECTION_OFFSET
-*/
-/*
--(PSDrawingDocument*)selectedDocument:(CGFloat*)outPercentFromCentered
-{
-	// Get the document that is nearest the center of the scrollview
-	int currentIndex = round(self.scrollView.contentOffset.x/DOC_BUTTON_STEP_SIZE);
-	currentIndex = MAX(currentIndex, 0);
-	currentIndex = MIN(currentIndex, self.documentButtons.count - 1);
-	
-	//Calculate the percentFromCenetered
-	CGFloat idealOffsetX = currentIndex * DOC_BUTTON_STEP_SIZE;
-	CGFloat percentFromCentered = 1 - fabs(idealOffsetX - self.scrollView.contentOffset.x)/
-									ALLOWABLE_SELECTION_OFFSET;
-	if ( outPercentFromCentered )
-		*outPercentFromCentered = MAX( 0, percentFromCentered );
-	
-	// Return the document if we are close enough
-	if ( currentIndex < self.documentRoots.count && percentFromCentered > 0 )
-		return [self.documentRoots objectAtIndex:currentIndex];
-	else
-		return nil;
-}
-*/
-
 -(IBAction)newDocument:(id)sender
 {
 	NSString* newDocName = [NSString stringWithFormat:@"Untitled Animation %d",
@@ -291,17 +265,25 @@
 					 animations:^{	newImage.frame = destinationFrame;
 									newImage.alpha = 1.0;}
 					 completion:nil];
-
-	
-	
-	/*
-
-
-//	[PSDataModel DEBUG_generateTestShapesIntoGroup:newDocument.rootGroup];
-//	[PSDataModel DEBUG_generateRandomLittleLinesIntoGroup:newDocument.rootGroup lineCount:100];
-	[self performSegueWithIdentifier:@"GoToSceneViewController" sender:newDocument];
-	 */
 }
+
+/*
+ Show the document that corresponds to our current offset
+ Trigger the "GoToSceneViewController segue in the storyboard, passing the
+ document as the sender
+ */
+- (IBAction)openCurrentDocument:(id)sender
+{
+	int currentI = round([self currentIndex]);
+	if(currentI >= 0 && currentI < self.documents.count)
+	{
+		// Call the segue from the storyboard
+		PSDrawingDocument* document = self.documents[currentI];
+		[self performSegueWithIdentifier:@"GoToSceneViewController" sender:document];
+	}
+}
+
+
 /*
 
 -(IBAction)deleteDocument:(id)sender
@@ -326,28 +308,6 @@
 }
  */
 
-
-/*
-	Show the document that corresponds to senderButton
-	Do this by looking up the document that corresponds to the button clicked,
-	then triggering the "GoToSceneViewController segue in the storyboard
-*/
-/*
--(void)viewDocument:(id)senderButton
-{
-	// Find the index of the document that corresponds to this button
-	int index = [self.documentButtons indexOfObject:senderButton];
-	
-	if ( index >= 0 && index < self.documentRoots.count)
-	{
-		// Call the segue from the storyboard
-		PSDrawingDocument* document = [self.documentRoots objectAtIndex:index];
-		[self performSegueWithIdentifier:@"GoToSceneViewController" sender:document];
-
-		[self refreshSelectionAppearance];
-	}
-}
-*/
 
 /*
 	Called by the button on the document name, to start renaming the selected document
@@ -393,7 +353,6 @@
 	This is called automatically each time we segue away from this view
 	We can tell which segue triggered this call by looking at [segue identifier]
 */
-/*
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
 
@@ -408,8 +367,6 @@
 		vc.rootGroup = ((PSDrawingDocument*)sender).rootGroup;
     }
 }
-*/
-
 
 /*
 	Scrollview delegate methods
@@ -433,8 +390,7 @@
 
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-	CGFloat currentXValueOffset = self.scrollView.contentOffset.x + DOC_IMAGE_SNAP_XVALUE;
-	CGFloat floatIndex = (currentXValueOffset - DOC_END_PADDING) / DOC_IMAGE_STEP - 0.5;
+	CGFloat floatIndex = [self currentIndex];
 	CGFloat pcntOff = fabsf(floatIndex - round(floatIndex))*2.0; // 0 = hit, 1 = miss
 	int index = round(floatIndex);
 	NSLog(@"index: %d, %lf", index, pcntOff);

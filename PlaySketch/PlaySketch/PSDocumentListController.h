@@ -21,7 +21,8 @@
 //@property(nonatomic,retain)IBOutlet UIButton* deleteButton;
 //@property(nonatomic,retain)IBOutlet UIButton* documentNameButton;
 
--(IBAction)newDocument:(id)sender;
+- (IBAction)newDocument:(id)sender;
+- (IBAction)openCurrentDocument:(id)sender;
 //-(IBAction)deleteDocument:(id)sender;
 //-(IBAction)startRenameDocument:(id)sender;
 @end

@@ -47,6 +47,9 @@
                                         <state key="highlighted">
                                             <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         </state>
+                                        <connections>
+                                            <action selector="openCurrentDocument:" destination="cg4-D5-CV4" eventType="touchUpInside" id="lge-gs-8Pe"/>
+                                        </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="CZ8-Nt-yvh">
                                         <rect key="frame" x="0.0" y="51" width="220" height="44"/>
@@ -470,6 +473,7 @@
             <source key="sourceIdentifier" type="project" relativePath="./Classes/PSDocumentListController.h"/>
             <relationships>
                 <relationship kind="action" name="newDocument:"/>
+                <relationship kind="action" name="openCurrentDocument:"/>
                 <relationship kind="outlet" name="createDocButton" candidateClass="UIButton"/>
                 <relationship kind="outlet" name="docButtonsContainer" candidateClass="UIView"/>
                 <relationship kind="outlet" name="scrollView" candidateClass="UIScrollView"/>
