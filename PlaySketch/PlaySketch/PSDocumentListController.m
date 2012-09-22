@@ -21,6 +21,7 @@
 #define DOC_END_PADDING (1024.0 - DOC_IMAGE_STEP/2.0)
 #define DOC_IMAGE_SNAP_XVALUE (1024.0 - (DOC_IMAGE_FRAME).size.width/2.0 - 20.0)
 #define ANIMATION_DURATION 0.5
+#define BACKGROUND_COLOR ([UIColor colorWithRed:1.000 green:0.977 blue:0.842 alpha:1.000])
 
 /*
 #define DOC_IMAGE_STEP_SIZE 650.0 // The pixel-distance between two buttons
@@ -69,7 +70,9 @@
 		[self.createDocumentButton addTarget:self action:@selector(newDocument:) forControlEvents:UIControlEventTouchUpInside];
 		[self.scrollView addSubview:self.createDocumentButton];
 	}
-*/	
+*/
+	self.createDocButton.backgroundColor = BACKGROUND_COLOR;
+	
 	self.scrollView.delegate = self; //So we can respond to the scroll events
 	NSLog(@"%lf, %lf", UIScrollViewDecelerationRateFast, UIScrollViewDecelerationRateNormal);
 	self.scrollView.decelerationRate = UIScrollViewDecelerationRateFast;
@@ -102,7 +105,7 @@
 	if(imageData)
 		b.image = [UIImage imageWithData:imageData];
 	else
-		b.backgroundColor = [UIColor colorWithRed:1.000 green:0.977 blue:0.842 alpha:1.000];
+		b.backgroundColor = BACKGROUND_COLOR;
 
 	//Make sure everything is in view
 	CGSize newContentSize = self.scrollView.contentSize;
@@ -430,7 +433,15 @@
 
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-	//SELECTION BUTTONS
+	CGFloat currentXValueOffset = self.scrollView.contentOffset.x + DOC_IMAGE_SNAP_XVALUE;
+	CGFloat floatIndex = (currentXValueOffset - DOC_END_PADDING) / DOC_IMAGE_STEP - 0.5;
+	CGFloat pcntOff = fabsf(floatIndex - round(floatIndex))*2.0; // 0 = hit, 1 = miss
+	int index = round(floatIndex);
+	NSLog(@"index: %d, %lf", index, pcntOff);
+	if(index < 0 || index >= self.documents.count)
+		self.docButtonsContainer.alpha = 0.0;
+	else
+		self.docButtonsContainer.alpha = MAX(1.0 - pcntOff*2.0, 0); // compress the scale
 	
 }
 

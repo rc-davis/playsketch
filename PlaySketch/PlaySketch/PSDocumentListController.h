@@ -16,6 +16,7 @@
 @interface PSDocumentListController : UIViewController <UIScrollViewDelegate>
 
 @property(nonatomic,retain)IBOutlet UIScrollView* scrollView;
+@property(nonatomic,retain)IBOutlet UIView* docButtonsContainer;
 @property(nonatomic,retain)IBOutlet UIButton* createDocButton;
 //@property(nonatomic,retain)IBOutlet UIButton* deleteButton;
 //@property(nonatomic,retain)IBOutlet UIButton* documentNameButton;
