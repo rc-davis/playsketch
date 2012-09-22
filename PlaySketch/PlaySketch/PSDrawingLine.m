@@ -25,7 +25,7 @@
 {
 	NSMutableData* _mutablePoints;
 }
-- (void)addCircleAt:(CGPoint)p;
+- (void)addCircleAt:(CGPoint)p withSize:(CGFloat)size;
 @end
 
 @implementation PSDrawingLine
@@ -72,17 +72,14 @@
 -(void)addLineTo:(CGPoint)to
 {
 	int pointCount = self.pointCount;
+
 	// Deal with the case where we have no 'from' point
 	if(pointCount < 2)
 	{
 		if(self.penWeight > 0)
-		{
-			[self addCircleAt:to];
-		}
+			[self addCircleAt:to withSize:self.penWeight];
 		else
 		{
-			[self addPoint:to];
-			[self addPoint:to];
 			[self addPoint:to];
 			[self addPoint:to];
 		}
@@ -143,34 +140,41 @@
 	{
 		CGPoint p1 = self.points[self.pointCount - 1];
 		CGPoint p2 = self.points[self.pointCount - 2];
-		[self addCircleAt:CGPointMake( (p1.x + p2.x)/2.0, (p1.y + p2.y)/2.0)];
-		NSLog(@"adding a last point");
+		[self addCircleAt:CGPointMake( (p1.x + p2.x)/2.0, (p1.y + p2.y)/2.0)
+				 withSize:self.penWeight];
+	}
+	else if (self.pointCount <= 5 && self.penWeight < 0)
+	{
+		CGPoint p1 = self.points[self.pointCount - 1];
+		CGPoint p2 = self.points[self.pointCount - 2];
+		[self addCircleAt:CGPointMake( (p1.x + p2.x)/2.0, (p1.y + p2.y)/2.0)
+				 withSize:4.0];
 	}
 }
 
-- (void)addCircleAt:(CGPoint)p
+- (void)addCircleAt:(CGPoint)p withSize:(CGFloat)size
 {
 	[self addPoint:p];
 	
-	[self addPoint:CGPointMake(p.x - self.penWeight, p.y)];
+	[self addPoint:CGPointMake(p.x - size, p.y)];
 	[self addPoint:p];
-	[self addPoint:CGPointMake(p.x - self.penWeight/M_SQRT2, p.y - self.penWeight/M_SQRT2)];
+	[self addPoint:CGPointMake(p.x - size/M_SQRT2, p.y - size/M_SQRT2)];
 	
-	[self addPoint:CGPointMake(p.x, p.y - self.penWeight)];
+	[self addPoint:CGPointMake(p.x, p.y - size)];
 	[self addPoint:p];
-	[self addPoint:CGPointMake(p.x + self.penWeight/M_SQRT2, p.y - self.penWeight/M_SQRT2)];
+	[self addPoint:CGPointMake(p.x + size/M_SQRT2, p.y - size/M_SQRT2)];
 	
 	
-	[self addPoint:CGPointMake(p.x + self.penWeight, p.y)];
+	[self addPoint:CGPointMake(p.x + size, p.y)];
 	[self addPoint:p];
-	[self addPoint:CGPointMake(p.x + self.penWeight/M_SQRT2, p.y + self.penWeight/M_SQRT2)];
+	[self addPoint:CGPointMake(p.x + size/M_SQRT2, p.y + size/M_SQRT2)];
 	
 	
-	[self addPoint:CGPointMake(p.x, p.y + self.penWeight)];
+	[self addPoint:CGPointMake(p.x, p.y + size)];
 	[self addPoint:p];
-	[self addPoint:CGPointMake(p.x - self.penWeight/M_SQRT2, p.y + self.penWeight/M_SQRT2)];
+	[self addPoint:CGPointMake(p.x - size/M_SQRT2, p.y + size/M_SQRT2)];
 	
-	[self addPoint:CGPointMake(p.x - self.penWeight, p.y)];
+	[self addPoint:CGPointMake(p.x - size, p.y)];
 	[self addPoint:p];
 	[self addPoint:p];
 }
