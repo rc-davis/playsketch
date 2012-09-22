@@ -16,7 +16,9 @@
 #import "PSDataModel.h"
 #import "PSHelpers.h"
 
-#define MAX_FOUNTAIN_WEIGHT 5.0
+#define MAX_FOUNTAIN_WEIGHT 6.0
+#define MAX_FOUNTAIN_SPEED_PX  25.0
+#define INITIAL_FOUNTAIN_OFFSET 10.0
 #define ERASER_RADIUS 40.0
 
 @interface PSDrawingLine ()
@@ -81,6 +83,8 @@
 		{
 			[self addPoint:to];
 			[self addPoint:to];
+			[self addPoint:to];
+			[self addPoint:to];
 		}
 	}
 	else
@@ -97,7 +101,7 @@
 		if (self.penWeight < 0)
 		{
 			double speedPx = hypot(to.x - from.x, to.y - from.y);
-			float speedPcnt = MIN(1.0, speedPx/50.0);
+			float speedPcnt = MIN(1.0, speedPx/MAX_FOUNTAIN_SPEED_PX);
 			weightNext = MAX_FOUNTAIN_WEIGHT * ( 0.25 + 0.75*(1 - speedPcnt) );
 
 			CGPoint lastPoint1 = self.points[self.pointCount - 1];
