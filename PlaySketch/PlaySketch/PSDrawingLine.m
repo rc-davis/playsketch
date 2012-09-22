@@ -13,9 +13,11 @@
 
 #import "PSDrawingLine.h"
 #import "PSDrawingGroup.h"
+#import "PSDataModel.h"
 #import "PSHelpers.h"
 
 #define MAX_FOUNTAIN_WEIGHT 5.0
+#define ERASER_RADIUS 40.0
 
 @interface PSDrawingLine ()
 {
@@ -144,6 +146,8 @@
 
 - (void)addCircleAt:(CGPoint)p
 {
+	[self addPoint:p];
+	
 	[self addPoint:CGPointMake(p.x - self.penWeight, p.y)];
 	[self addPoint:p];
 	[self addPoint:CGPointMake(p.x - self.penWeight/M_SQRT2, p.y - self.penWeight/M_SQRT2)];
@@ -216,5 +220,75 @@
 		free(self.selectionHitCounts);
 	self.selectionHitCounts = (int*)calloc(self.pointCount, sizeof(int));
 }
+
+- (BOOL)eraseAtPoint:(CGPoint)p
+{
+	// Go through points and look for ones to erase
+	if (_mutablePoints == nil)
+		_mutablePoints = [NSMutableData dataWithData:self.pointsAsData];
+	
+	int pointCount = self.pointCount;
+	CGPoint* points = [_mutablePoints mutableBytes];
+
+	//look for data to discard at the start of the line
+	int firstKeep = 0;
+	while(firstKeep < pointCount && hypot(points[firstKeep].x - p.x, points[firstKeep].y - p.y) < ERASER_RADIUS)
+			firstKeep++;
+	
+	//look for data to discard at the end of the line
+	int lastKeep = pointCount - 1;
+	while(lastKeep >= 0 && hypot(points[lastKeep].x - p.x, points[lastKeep].y - p.y) < ERASER_RADIUS)
+			lastKeep--;
+
+	// Trim the points
+	if(lastKeep < firstKeep)
+	{
+		return YES;
+	}
+	else if(lastKeep < pointCount - 1 || firstKeep > 0)
+	{
+		NSMutableData* d = [NSMutableData dataWithBytes:&points[firstKeep]
+												 length:(lastKeep - firstKeep + 1)*sizeof(CGPoint)];
+		_mutablePoints = d;
+		points = [_mutablePoints mutableBytes];
+		pointCount = self.pointCount;
+	}
+
+	
+	//Look for a point in the middle to use to split the line!
+	int firstErase = 0;
+	while(firstErase < pointCount &&
+		  hypot(points[firstErase].x - p.x, points[firstErase].y - p.y) > ERASER_RADIUS)
+		firstErase++;
+
+	if (firstErase < pointCount)
+	{
+		// Make a new line with the remaining points
+		PSDrawingLine* newLine = [PSDataModel newLineInGroup:self.group withWeight:self.penWeight];
+		newLine.color = self.color;
+		[newLine setMutablePoints: [NSMutableData dataWithBytes:&points[firstErase]
+														 length:(self.pointCount - firstErase)*sizeof(CGPoint)]];
+
+		// Technically, we should recurse in case there is more than one section that overlaps the eraser
+		// But there's so many touchpoints coming in that we should just ignore it in favour of speed
+		//[newLine eraseAtPoint:p];
+		
+		//Remove those points from this line's data
+		NSMutableData* d = [NSMutableData dataWithBytes:points
+												 length:firstErase*sizeof(CGPoint)];
+		_mutablePoints = d;
+
+	}
+	
+	
+	return (self.pointCount < 10);
+}
+
+- (void)setMutablePoints:(NSMutableData*)newPoints
+{
+	_mutablePoints = newPoints;
+	
+}
+
 
 @end

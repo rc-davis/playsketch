@@ -27,6 +27,7 @@
 
 @interface PSSceneViewController ()
 @property(nonatomic)BOOL isSelecting; // If we are selecting instead of drawing
+@property(nonatomic)BOOL isErasing;
 @property(nonatomic)BOOL isReadyToRecord; // If manipulations should be treated as recording
 @property(nonatomic)BOOL isRecording;
 @property(nonatomic,retain) PSSelectionHelper* selectionHelper;
@@ -35,6 +36,7 @@
 @property(nonatomic) UInt64 currentColor; // the drawing color as an int
 @property(nonatomic) int penWeight;
 - (void)refreshManipulatorLocation;
+- (void)highlightButton:(UIButton*)b on:(BOOL)highlight;
 @end
 
 
@@ -81,7 +83,7 @@
 	// Start off in drawing mode
 	self.isReadyToRecord = NO;
 	self.isRecording = NO;
-	[self toggleSelecting:self.startDrawingButton];
+	[self startDrawing:nil];
 
 	
 	// Create the manipulator
@@ -213,21 +215,32 @@
 	
 }
 
-- (IBAction)toggleSelecting:(id)sender
+- (IBAction)startSelecting:(id)sender
 {
-	BOOL startSelecting = (sender == self.startSelectingButton);
-	self.isSelecting = startSelecting;
-
-	UIButton* toHighlight = (startSelecting) ? self.startSelectingButton : self.startDrawingButton;
-	UIButton* unHighlight = (!startSelecting) ? self.startSelectingButton : self.startDrawingButton;
-	toHighlight.layer.shadowRadius = 10.0;
-	toHighlight.layer.shadowColor = [UIColor whiteColor].CGColor;
-	toHighlight.layer.shadowOffset = CGSizeMake(0,0);
-	toHighlight.layer.shadowOpacity = 1.0;
-	unHighlight.layer.shadowRadius = 0.0;
-	unHighlight.layer.shadowOpacity = 0.0;
+	[self highlightButton:self.startSelectingButton on:YES];
+	[self highlightButton:self.startDrawingButton on:NO];
+	[self highlightButton:self.startErasingButton on:NO];
+	self.isSelecting = YES;
+	self.isErasing = NO;	
 }
 
+- (IBAction)startDrawing:(id)sender
+{
+	[self highlightButton:self.startSelectingButton on:NO];
+	[self highlightButton:self.startDrawingButton on:YES];
+	[self highlightButton:self.startErasingButton on:NO];
+	self.isSelecting = NO;
+	self.isErasing = NO;
+}
+
+- (IBAction)startErasing:(id)sender
+{
+	[self highlightButton:self.startSelectingButton on:NO];
+	[self highlightButton:self.startDrawingButton on:NO];
+	[self highlightButton:self.startErasingButton on:YES];
+	self.isSelecting = NO;
+	self.isErasing = YES;
+}
 
 - (void)setPlaying:(BOOL)playing
 {
@@ -269,6 +282,23 @@
 	//CGPointMake(m.group.currentCachedPosition.location.x, m.group.currentCachedPosition.location.y);
 	//-		[self.selectionOverlayButtons setLocation: newPoint];
 }
+
+- (void)highlightButton:(UIButton*)b on:(BOOL)highlight
+{
+	if(highlight)
+	{
+		b.layer.shadowRadius = 10.0;
+		b.layer.shadowColor = [UIColor whiteColor].CGColor;
+		b.layer.shadowOffset = CGSizeMake(0,0);
+		b.layer.shadowOpacity = 1.0;
+	}
+	else
+	{
+		b.layer.shadowRadius = 0.0;
+		b.layer.shadowOpacity = 0.0;
+	}
+}
+
 
 /*
  ----------------------------------------------------------------------------
@@ -343,7 +373,9 @@
 	//Clear out any old selection state
 	self.selectionHelper = nil;
 	
-	if (! self.isSelecting )
+	if (self.isErasing) return nil;
+	
+	if (! self.isSelecting)
 	{
 		// Creating a new line!
 		// Every line gets put into a new group of its own, directly under self.rootGroup
@@ -423,6 +455,15 @@
 	[PSHelpers NYIWithmessage:@"scene controller view: cancelledDrawingLine"];
 }
 
+-(void)movedAt:(CGPoint)p inDrawingView:(id)drawingView
+{
+	// We only care about this when we are erasing.
+	// For drawing and selecting, we let the drawingView build a line
+	if(self.isErasing)
+	{
+		[self.rootGroup eraseAtPoint:p];
+	}
+}
 
 /*
  ----------------------------------------------------------------------------
@@ -587,8 +628,7 @@
 {
 	self.currentColor = [PSHelpers colorToInt64:newColor];
 	self.startDrawingButton.backgroundColor = newColor;
-	if(self.isSelecting)
-		[self toggleSelecting:self.startDrawingButton];
+	[self startDrawing:nil];
 	if(self.penPopoverController && self.penPopoverController.popoverVisible)
 		[self.penPopoverController dismissPopoverAnimated:YES];
 }
@@ -596,10 +636,11 @@
 -(void)penWeightChanged:(int)newWeight
 {
 	self.penWeight = newWeight;
-	if(self.isSelecting)
-		[self toggleSelecting:self.startDrawingButton];
+	[self startDrawing:nil];
 	if(self.penPopoverController && self.penPopoverController.popoverVisible)
 		[self.penPopoverController dismissPopoverAnimated:YES];
 }
 
+
 @end
+

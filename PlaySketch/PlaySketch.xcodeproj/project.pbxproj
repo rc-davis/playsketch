@@ -20,6 +20,7 @@
 		4649EE90160D5FDB00FAE620 /* PSPenColorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4649EE8F160D5FDB00FAE620 /* PSPenColorViewController.m */; };
 		4649EE94160D819300FAE620 /* pen.png in Resources */ = {isa = PBXBuildFile; fileRef = 4649EE93160D819300FAE620 /* pen.png */; };
 		4649EE96160D88A600FAE620 /* more.png in Resources */ = {isa = PBXBuildFile; fileRef = 4649EE95160D88A600FAE620 /* more.png */; };
+		4649EE98160D935300FAE620 /* eraser.png in Resources */ = {isa = PBXBuildFile; fileRef = 4649EE97160D935300FAE620 /* eraser.png */; };
 		464A4F3D15DCAFD4008A59DF /* PSMotionPathView.m in Sources */ = {isa = PBXBuildFile; fileRef = 464A4F3C15DCAFD4008A59DF /* PSMotionPathView.m */; };
 		4673A46A15B6A9100053FDF0 /* PSHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 4673A46915B6A9100053FDF0 /* PSHelpers.m */; };
 		467BF45D15DB963D002321A7 /* PSVideoExportControllerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 467BF45C15DB963D002321A7 /* PSVideoExportControllerViewController.m */; };
@@ -88,6 +89,7 @@
 		4649EE8F160D5FDB00FAE620 /* PSPenColorViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PSPenColorViewController.m; path = PlaySketch/PSPenColorViewController.m; sourceTree = "<group>"; };
 		4649EE93160D819300FAE620 /* pen.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pen.png; sourceTree = "<group>"; };
 		4649EE95160D88A600FAE620 /* more.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = more.png; sourceTree = "<group>"; };
+		4649EE97160D935300FAE620 /* eraser.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = eraser.png; sourceTree = "<group>"; };
 		464A4F3B15DCAFD4008A59DF /* PSMotionPathView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PSMotionPathView.h; path = PlaySketch/PSMotionPathView.h; sourceTree = "<group>"; };
 		464A4F3C15DCAFD4008A59DF /* PSMotionPathView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PSMotionPathView.m; path = PlaySketch/PSMotionPathView.m; sourceTree = "<group>"; };
 		4673A46815B6A9100053FDF0 /* PSHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSHelpers.h; sourceTree = "<group>"; };
@@ -216,6 +218,7 @@
 				4649EE87160D5D9F00FAE620 /* pen_medium.png */,
 				4649EE88160D5D9F00FAE620 /* pen_thick.png */,
 				4649EE95160D88A600FAE620 /* more.png */,
+				4649EE97160D935300FAE620 /* eraser.png */,
 				4649EE93160D819300FAE620 /* pen.png */,
 				46186F6E15D78D3200A1E1A2 /* character.png */,
 				469E009915C2437500EE7EC9 /* lasso.png */,
@@ -454,6 +457,7 @@
 				4649EE8C160D5D9F00FAE620 /* pen_thick.png in Resources */,
 				4649EE94160D819300FAE620 /* pen.png in Resources */,
 				4649EE96160D88A600FAE620 /* more.png in Resources */,
+				4649EE98160D935300FAE620 /* eraser.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

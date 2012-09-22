@@ -32,6 +32,7 @@
 @property(nonatomic,retain) IBOutlet PSSRTManipulator* manipulator;
 @property(nonatomic,retain) IBOutlet UIButton* startSelectingButton;
 @property(nonatomic,retain) IBOutlet UIButton* startDrawingButton;
+@property(nonatomic,retain) IBOutlet UIButton* startErasingButton;
 @property(nonatomic,retain) PSDrawingDocument* currentDocument;
 @property(nonatomic,retain) PSDrawingGroup* rootGroup;
 
@@ -43,7 +44,9 @@
 - (IBAction)exportAsVideo:(id)sender;
 - (IBAction)snapTimeline:(id)sender;
 - (IBAction)showPenPopover:(id)sender;
-- (IBAction)toggleSelecting:(id)sender;
+- (IBAction)startSelecting:(id)sender;
+- (IBAction)startDrawing:(id)sender;
+- (IBAction)startErasing:(id)sender;
 - (void)setPlaying:(BOOL)playing;
 
 @end

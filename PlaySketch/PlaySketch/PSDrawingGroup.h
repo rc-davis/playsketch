@@ -71,5 +71,7 @@
 
 - (GLKMatrix4)getInverseMatrixToDocumentRoot;
 
+- (BOOL)eraseAtPoint:(CGPoint)p;
+
 
 @end

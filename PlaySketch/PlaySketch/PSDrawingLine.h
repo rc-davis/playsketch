@@ -32,5 +32,7 @@
 - (void)applyTransform:(CGAffineTransform)transform;
 - (CGRect)boundingRect;
 - (void)prepareForSelection;
+- (BOOL)eraseAtPoint:(CGPoint)p;
+- (void)setMutablePoints:(NSMutableData*)newPoints;
 
 @end

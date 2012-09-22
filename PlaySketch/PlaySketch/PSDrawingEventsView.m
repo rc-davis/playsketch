@@ -30,29 +30,37 @@
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
+	CGPoint p = [[touches anyObject] locationInView:self];
+	
 	//Fetch a line from our delegate to put our touch points into
 	if(self.drawingDelegate)
 	{
 		self.currentLine = [self.drawingDelegate newLineToDrawTo:self];
-		[self.currentLine addLineTo:[[touches anyObject] locationInView:self]];
+		[self.currentLine addLineTo:p];
 	}
 	
+	if(self.drawingDelegate)
+		[self.drawingDelegate movedAt:p inDrawingView:self];
 }		
 
 
 -(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
+	UITouch* touch = [touches anyObject];
+	CGPoint p = [touch locationInView:self];
+	CGPoint previous = [touch previousLocationInView:self];
+
 	if(self.currentLine)
 	{
-		UITouch* touch = [touches anyObject];
-		CGPoint p = [touch locationInView:self];
-		CGPoint previous = [touch previousLocationInView:self];
 
 		[self.currentLine addLineTo:p];
 		
 		if (self.drawingDelegate)
 			[self.drawingDelegate addedToLine:self.currentLine fromPoint:previous toPoint:p inDrawingView:self];
 	}
+	
+	if(self.drawingDelegate)
+		[self.drawingDelegate movedAt:p inDrawingView:self];
 }
 
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
