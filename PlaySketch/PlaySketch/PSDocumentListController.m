@@ -11,6 +11,7 @@
  
  */
 
+#import "PSAppDelegate.h"
 #import "PSDocumentListController.h"
 #import "PSDataModel.h"
 #import "PSSceneViewController.h"
@@ -22,6 +23,7 @@
 #define DOC_IMAGE_SNAP_XVALUE (1024.0 - (DOC_IMAGE_FRAME).size.width/2.0 - 20.0)
 #define ANIMATION_DURATION 0.5
 #define BACKGROUND_COLOR ([UIColor colorWithRed:1.000 green:0.977 blue:0.842 alpha:1.000])
+#define DETAIL_ANIM_FRAME (CGRectMake(20, 82, 984, 598))
 
 /*
 #define DOC_IMAGE_STEP_SIZE 650.0 // The pixel-distance between two buttons
@@ -279,9 +281,22 @@
 	int currentI = round([self currentIndex]);
 	if(currentI >= 0 && currentI < self.documents.count)
 	{
-		// Call the segue from the storyboard
 		PSDrawingDocument* document = self.documents[currentI];
-		[self performSegueWithIdentifier:@"GoToSceneViewController" sender:document];
+		UIImageView* img = self.documentImages[currentI];
+		CGRect startRect = [self.view convertRect:img.frame fromView:self.scrollView];
+		[self.view addSubview:img];
+		img.frame = startRect;
+		
+		// Zoom the image!
+		[UIView animateWithDuration:ANIMATION_DURATION
+						 animations:^{ img.frame = DETAIL_ANIM_FRAME; }];
+
+		// Call the segue to the storyboard after a delay
+		dispatch_time_t waitTime = dispatch_time(DISPATCH_TIME_NOW, ANIMATION_DURATION * NSEC_PER_SEC);
+		dispatch_after(waitTime, dispatch_get_main_queue(), ^(void){
+			[self performSegueWithIdentifier:@"GoToSceneViewController" sender:document];
+		});
+		
 	}
 }
 
@@ -380,7 +395,8 @@
 		PSSceneViewController *vc = [segue destinationViewController];
 		vc.currentDocument = (PSDrawingDocument*)sender;
 		vc.rootGroup = ((PSDrawingDocument*)sender).rootGroup;
-    }
+
+	}
 }
 
 /*
