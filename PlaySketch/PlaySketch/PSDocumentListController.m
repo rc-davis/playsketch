@@ -75,7 +75,6 @@
 	self.createDocButton.backgroundColor = BACKGROUND_COLOR;
 	
 	self.scrollView.delegate = self; //So we can respond to the scroll events
-	NSLog(@"%lf, %lf", UIScrollViewDecelerationRateFast, UIScrollViewDecelerationRateNormal);
 	self.scrollView.decelerationRate = UIScrollViewDecelerationRateFast;
 	
 	
@@ -125,12 +124,13 @@
 {
 	CGPoint newOffset = self.scrollView.contentOffset;
 	newOffset.x = DOC_END_PADDING + DOC_IMAGE_STEP * (i + 0.5) - DOC_IMAGE_SNAP_XVALUE;
+
 	if(animated)
 		[UIView animateWithDuration:ANIMATION_DURATION
 						 animations:^{self.scrollView.contentOffset = newOffset;}];
 	else
 		self.scrollView.contentOffset = newOffset;
-		
+
 }
 
 - (void)scrollToNearest:(BOOL)animated
@@ -262,8 +262,10 @@
 	[UIView animateWithDuration:ANIMATION_DURATION
 						  delay:ANIMATION_DURATION
 						options:0
-					 animations:^{	newImage.frame = destinationFrame;
-									newImage.alpha = 1.0;}
+					 animations:^{
+						 newImage.frame = destinationFrame;
+						 newImage.alpha = 1.0;
+						 self.docButtonsContainer.alpha = 1.0;}
 					 completion:nil];
 }
 
@@ -309,13 +311,15 @@
 								 newRect.origin.x -= DOC_IMAGE_STEP;
 								 img.frame = newRect;
 							 }
+							 self.docButtonsContainer.alpha = (self.documents.count > 1) ? 1.0 : 0.0;
 						 }
 						 
 						 completion:^(BOOL finished){
 							 [PSDataModel deleteDrawingDocument:docToDelete];
 							 [self.documentImages removeObjectAtIndex:currentI];
 							 [self.documents removeObjectAtIndex:currentI];
-							 [self scrollToIndex:MIN(currentI, self.documentImages.count - 1) animated:YES];}];
+							 [self scrollToIndex:MIN(currentI, self.documentImages.count - 1) animated:YES];
+						 }];
 	}
 }
 
@@ -404,7 +408,6 @@
 	CGFloat floatIndex = [self currentIndex];
 	CGFloat pcntOff = fabsf(floatIndex - round(floatIndex))*2.0; // 0 = hit, 1 = miss
 	int index = round(floatIndex);
-	NSLog(@"index: %d, %lf", index, pcntOff);
 	if(index < 0 || index >= self.documents.count)
 		self.docButtonsContainer.alpha = 0.0;
 	else
