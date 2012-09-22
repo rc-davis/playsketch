@@ -62,6 +62,9 @@
                                         <state key="highlighted">
                                             <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         </state>
+                                        <connections>
+                                            <action selector="deleteCurrentDocument:" destination="cg4-D5-CV4" eventType="touchUpInside" id="nEy-wj-EoR"/>
+                                        </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="dNJ-9F-hC9">
                                         <rect key="frame" x="0.0" y="102" width="220" height="44"/>
@@ -472,6 +475,7 @@
         <class className="PSDocumentListController" superclassName="UIViewController">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/PSDocumentListController.h"/>
             <relationships>
+                <relationship kind="action" name="deleteCurrentDocument:"/>
                 <relationship kind="action" name="newDocument:"/>
                 <relationship kind="action" name="openCurrentDocument:"/>
                 <relationship kind="outlet" name="createDocButton" candidateClass="UIButton"/>

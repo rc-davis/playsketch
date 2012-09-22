@@ -283,30 +283,41 @@
 	}
 }
 
-
-/*
-
--(IBAction)deleteDocument:(id)sender
+- (IBAction)deleteCurrentDocument:(id)sender
 {
-	PSDrawingDocument* docToDelete = [self selectedDocument:nil];
-	if ( docToDelete )
+	int currentI = round([self currentIndex]);
+	if(currentI >= 0 && currentI < self.documents.count)
 	{
-		//Delete it
-		CGPoint offsetBeforeDeleting = self.scrollView.contentOffset;
-		[PSDataModel deleteDrawingDocument:docToDelete];
+		PSDrawingDocument* docToDelete = self.documents[currentI];
+		UIImageView* docImage = self.documentImages[currentI];
+
+		// First: Show the current document disappearing
+		[UIView animateWithDuration:ANIMATION_DURATION
+						 animations:^{ docImage.alpha = 0.0; }];
 		
-		//Reload our data
-		[self generateDocumentButtons];
 		
-		// TODO: animate the delete better
-		
-		// Trigger an update of our labels
-		self.scrollView.contentOffset = offsetBeforeDeleting;
-		[self refreshSelectionAppearance];
-		
+		// Second: animate the others moving in to take its place
+		// On completion of this animation, clean up the ivars storing the old document
+		[UIView animateWithDuration:ANIMATION_DURATION
+							  delay:ANIMATION_DURATION/2.0
+							options:0
+						 animations:^{
+							 for(int i = currentI+1; i < self.documentImages.count; i++)
+							 {
+								 UIImageView* img = self.documentImages[i];
+								 CGRect newRect = img.frame;
+								 newRect.origin.x -= DOC_IMAGE_STEP;
+								 img.frame = newRect;
+							 }
+						 }
+						 
+						 completion:^(BOOL finished){
+							 [PSDataModel deleteDrawingDocument:docToDelete];
+							 [self.documentImages removeObjectAtIndex:currentI];
+							 [self.documents removeObjectAtIndex:currentI];
+							 [self scrollToIndex:MIN(currentI, self.documentImages.count - 1) animated:YES];}];
 	}
 }
- */
 
 
 /*

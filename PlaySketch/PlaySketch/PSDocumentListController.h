@@ -23,6 +23,6 @@
 
 - (IBAction)newDocument:(id)sender;
 - (IBAction)openCurrentDocument:(id)sender;
-//-(IBAction)deleteDocument:(id)sender;
+- (IBAction)deleteCurrentDocument:(id)sender;
 //-(IBAction)startRenameDocument:(id)sender;
 @end
