@@ -30,11 +30,11 @@
 @property(nonatomic)BOOL isReadyToRecord; // If manipulations should be treated as recording
 @property(nonatomic)BOOL isRecording;
 @property(nonatomic,retain) PSSelectionHelper* selectionHelper;
+@property(nonatomic,retain) UIPopoverController* penPopoverController;
+@property(nonatomic,retain) PSPenColorViewController* penController;
 @property(nonatomic) UInt64 currentColor; // the drawing color as an int
 @property(nonatomic) int penWeight;
-@property(nonatomic,retain) UIButton* highlightedButton;
 - (void)refreshManipulatorLocation;
-- (void)highlightButton:(UIButton*)b;
 @end
 
 
@@ -43,7 +43,6 @@
 @synthesize renderingController = _renderingController;
 @synthesize drawingTouchView = _drawingTouchView;
 @synthesize playButton = _playButton;
-@synthesize initialColorButton = _initialColorButton;
 @synthesize timelineSlider = _timelineSlider;
 @synthesize selectionOverlayButtons = _selectionOverlayButtons;
 @synthesize motionPathView = _motionPathView;
@@ -53,10 +52,11 @@
 @synthesize isReadyToRecord = _isReadyToRecord;
 @synthesize isRecording = _isRecording;
 @synthesize selectionHelper = _selectionHelper;
+@synthesize penPopoverController = _penPopoverController;
+@synthesize penController = _penController;
 @synthesize currentColor = _currentColor;
 @synthesize penWeight = _penWeight;
 @synthesize manipulator = _manipulator;
-@synthesize highlightedButton = _highlightedButton;
 
 
 
@@ -79,9 +79,9 @@
 	[self.renderingController viewDidLoad];
 	
 	// Start off in drawing mode
-	self.isSelecting = NO;
 	self.isReadyToRecord = NO;
 	self.isRecording = NO;
+	[self toggleSelecting:self.startDrawingButton];
 
 	
 	// Create the manipulator
@@ -92,8 +92,12 @@
 	
 	
 	// Initialize to be drawing with an initial color
-	[self setColor:self.initialColorButton];
-	self.penWeight = -1;
+	UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"SketchInterface" bundle:nil];
+	self.penController = [storyboard instantiateViewControllerWithIdentifier:@"PenController"];
+	self.penController.delegate = self;
+	self.penPopoverController = [[UIPopoverController alloc] initWithContentViewController:self.penController];
+	[self.penController setToDefaults];
+	
 
 	[self.selectionOverlayButtons hide:NO];
 	
@@ -156,21 +160,6 @@
 	[self dismissModalViewControllerAnimated:YES];
 }
 
-- (IBAction)setColor:(id)sender
-{
-	// Grab the background color of the button that called us and remember it
-	UIColor* c = [sender backgroundColor];
-	self.currentColor = [PSHelpers colorToInt64:c];
-	
-	[self highlightButton:sender];
-}
-
-- (IBAction)startSelecting:(id)sender
-{
-	self.isSelecting = YES;
-	[self highlightButton:sender];
-}
-
 - (IBAction)playPressed:(id)sender
 {
 	[self setPlaying:!self.timelineSlider.playing];
@@ -215,6 +204,31 @@
 	}
 }
 
+- (IBAction)showPenPopover:(id)sender
+{
+	[self.penPopoverController presentPopoverFromRect:[sender frame]
+											   inView:self.view
+							 permittedArrowDirections:UIPopoverArrowDirectionUp
+											 animated:YES];
+	
+}
+
+- (IBAction)toggleSelecting:(id)sender
+{
+	BOOL startSelecting = (sender == self.startSelectingButton);
+	self.isSelecting = startSelecting;
+
+	UIButton* toHighlight = (startSelecting) ? self.startSelectingButton : self.startDrawingButton;
+	UIButton* unHighlight = (!startSelecting) ? self.startSelectingButton : self.startDrawingButton;
+	toHighlight.layer.shadowRadius = 10.0;
+	toHighlight.layer.shadowColor = [UIColor whiteColor].CGColor;
+	toHighlight.layer.shadowOffset = CGSizeMake(0,0);
+	toHighlight.layer.shadowOpacity = 1.0;
+	unHighlight.layer.shadowRadius = 0.0;
+	unHighlight.layer.shadowOpacity = 0.0;
+}
+
+
 - (void)setPlaying:(BOOL)playing
 {
 	if(!playing && self.timelineSlider.playing)
@@ -255,26 +269,6 @@
 	//CGPointMake(m.group.currentCachedPosition.location.x, m.group.currentCachedPosition.location.y);
 	//-		[self.selectionOverlayButtons setLocation: newPoint];
 }
-
-- (void)highlightButton:(UIButton*)b
-{
-	if(self.highlightedButton)
-	{
-		self.highlightedButton.layer.shadowRadius = 0.0;
-		self.highlightedButton.layer.shadowOpacity = 0.0;
-	}
-	
-	if (b)
-	{
-		b.layer.shadowRadius = 10.0;
-		b.layer.shadowColor = [UIColor whiteColor].CGColor;
-		b.layer.shadowOffset = CGSizeMake(0,0);
-		b.layer.shadowOpacity = 1.0;
-	}
-	
-	self.highlightedButton = b;
-}
-
 
 /*
  ----------------------------------------------------------------------------
@@ -580,6 +574,32 @@
 	[self.motionPathView addLineForGroup:manipulator.group];
 	self.motionPathView.hidden = NO;
 	*/
+}
+
+
+/*
+ ----------------------------------------------------------------------------
+ PSPenColorChangeDelegate methods
+ Called by when our pen colours change
+ ----------------------------------------------------------------------------
+ */
+-(void)penColorChanged:(UIColor*)newColor
+{
+	self.currentColor = [PSHelpers colorToInt64:newColor];
+	self.startDrawingButton.backgroundColor = newColor;
+	if(self.isSelecting)
+		[self toggleSelecting:self.startDrawingButton];
+	if(self.penPopoverController && self.penPopoverController.popoverVisible)
+		[self.penPopoverController dismissPopoverAnimated:YES];
+}
+
+-(void)penWeightChanged:(int)newWeight
+{
+	self.penWeight = newWeight;
+	if(self.isSelecting)
+		[self toggleSelecting:self.startDrawingButton];
+	if(self.penPopoverController && self.penPopoverController.popoverVisible)
+		[self.penPopoverController dismissPopoverAnimated:YES];
 }
 
 @end
