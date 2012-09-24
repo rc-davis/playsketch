@@ -74,8 +74,6 @@
 		[self.scrollView addSubview:self.createDocumentButton];
 	}
 */
-	self.createDocButton.backgroundColor = BACKGROUND_COLOR;
-	
 	self.scrollView.delegate = self; //So we can respond to the scroll events
 	self.scrollView.decelerationRate = UIScrollViewDecelerationRateFast;
 	
