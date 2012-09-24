@@ -22,8 +22,7 @@
 
 - (void)configureForGroup:(PSDrawingGroup*)group;
 - (void)setLocation:(CGPoint)p;
-- (void)show:(BOOL)animated;
-- (void)hide:(BOOL)animated;
+- (void)setHidden:(BOOL)hidden animated:(BOOL)animated;
 - (void)startRecordingMode;
 - (void)stopRecordingMode;
 

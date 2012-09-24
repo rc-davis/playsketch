@@ -44,6 +44,7 @@
 
 @interface PSSRTManipulator : UIView
 @property(nonatomic,weak) id<PSSRTManipulatoDelegate> delegate;
+@property(nonatomic,retain) UIView* groupButtons;
 - (id)initAtLocation:(CGPoint)center;
 - (CGPoint)upperRightPoint;
 @end

@@ -52,21 +52,16 @@
 	self.frame = newFrame;
 }
 
-- (void)show:(BOOL)animated
+- (void)setHidden:(BOOL)hidden animated:(BOOL)animated
 {
 	if(animated) [UIView beginAnimations:@"GroupOverlayAppearance" context:nil];
-	self.alpha = 1.0;
+
+	if(hidden) self.alpha = 0.0;
+	else self.alpha = 1.0;
+
 	if(animated) [UIView commitAnimations];
+	
 }
-
-- (void)hide:(BOOL)animated;
-{
-	if(animated) [UIView beginAnimations:@"GroupOverlayAppearance" context:nil];
-	self.alpha = 0.0;
-	if(animated) [UIView commitAnimations];
-
-}
-
 
 - (void)startRecordingMode
 {

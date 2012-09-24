@@ -88,10 +88,9 @@
 	
 	// Create the manipulator
 	self.manipulator = [[PSSRTManipulator alloc] initAtLocation:CGPointZero];
-	[self.renderingController.view insertSubview:self.manipulator belowSubview:self.selectionOverlayButtons];
 	self.manipulator.delegate = self;
 	self.manipulator.hidden = YES;
-	
+	self.manipulator.groupButtons = self.selectionOverlayButtons;
 	
 	// Initialize to be drawing with an initial color
 	UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"SketchInterface" bundle:nil];
@@ -100,8 +99,6 @@
 	self.penPopoverController = [[UIPopoverController alloc] initWithContentViewController:self.penController];
 	[self.penController setToDefaults];
 	
-
-	[self.selectionOverlayButtons hide:NO];
 	
 	// initialize our objects to the right time
 	[self.renderingController jumpToTime:self.timelineSlider.value];
@@ -590,11 +587,7 @@
 			[g setCurrentCachedPosition:position];
 		}
 	}
-	
-	//Keep our buttons properly aligned
-	[self.selectionOverlayButtons setLocation:[manipulator upperRightPoint]];
-
-	
+		
 }
 
 -(void)manipulatorDidStopInteraction:(id)sender
