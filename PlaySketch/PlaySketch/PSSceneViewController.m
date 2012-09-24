@@ -453,7 +453,10 @@
 
 -(void)cancelledDrawingLine:(PSDrawingLine*)line inDrawingView:(id)drawingView
 {
-	if(line) [PSDataModel deleteDrawingLine:line];
+	if(line == self.selectionHelper.selectionLoupeLine)
+		[PSDataModel deleteDrawingLine:line];
+	else
+		[PSDataModel deleteDrawingGroup:line.group];
 	if(self.selectionHelper) self.selectionHelper = nil;
 }
 
@@ -565,7 +568,7 @@
 
 	for (PSDrawingGroup* g in self.rootGroup.children)
 	{
-		//TODO: recurse more than one level deep!
+		//TODO: recurse more than one level deep!??
 		
 		if (g.isSelected)
 		{

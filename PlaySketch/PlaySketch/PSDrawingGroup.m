@@ -437,4 +437,29 @@
 	return (self.drawingLines.count == 0 && self.children.count == 0);
 }
 
+- (BOOL)hitsPoint:(CGPoint)p
+{
+	// return true if any line in this group or its children is hit
+	// p is assumed to be in this group's parent's coordinate system
+		
+	//translate p into our coordinate system
+	bool isInvertable;
+	GLKMatrix4 selfInverted = GLKMatrix4Invert(currentModelViewMatrix, &isInvertable);
+	if(!isInvertable) NSLog(@"!!!! SHOULD ALWAYS BE INVERTABLE!!!");
+	GLKVector4 v4 = GLKMatrix4MultiplyVector4(selfInverted, GLKVector4Make(p.x, p.y, 1.0, 1.0));
+	CGPoint fixedP = CGPointMake(v4.x, v4.y);
+	NSLog(@"%lf, %lf, %lf -> %lf, %lf, %lf", p.x, p.y, 0.0, v4.x, v4.y, v4.z);
+
+	
+	for (PSDrawingLine* l in self.drawingLines)
+		if ([l hitsPoint:fixedP])
+			return YES;
+	
+	for (PSDrawingGroup* g in self.children)
+		if ([g hitsPoint:fixedP])
+			return YES;
+	
+	return NO;
+}
+
 @end

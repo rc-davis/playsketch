@@ -21,7 +21,7 @@
 @property(nonatomic)PSDrawingGroup* rootGroup;
 @property(readwrite)int selectedGroupCount;
 - (void) prepareForSelection:(PSDrawingGroup*)g;
-- (BOOL)selectAtTap:(CGPoint)tap inGroup:(PSDrawingGroup*)group;
+- (void)selectAtTap:(CGPoint)tap;
 @end
 
 
@@ -57,11 +57,7 @@
 	h.selectedGroupCount = 0;
 	[h prepareForSelection:rootGroup];
 
-	BOOL hits = [h selectAtTap:tapPoint inGroup:rootGroup];
-	if(hits) h.selectedGroupCount = 1;
-
-	//The root group should NEVER be selected (since you can't transform it!)
-	rootGroup.isSelected = NO;
+	[h selectAtTap:tapPoint];
 	
 	return h;
 }
@@ -212,32 +208,17 @@
 	The isSelected flag is not guaranteed to be selected on any children of the top-most selected group.
 	This selects a single group as a result
 */
--(BOOL)selectAtTap:(CGPoint)tap inGroup:(PSDrawingGroup*)group
+-(void)selectAtTap:(CGPoint)tap
 {
-	for (PSDrawingLine* l in group.drawingLines)
+	for (PSDrawingGroup* g in self.rootGroup.children)
 	{
-		if( [l hitsPoint:tap])
+		if([g hitsPoint:tap])
 		{
-			group.isSelected = YES;
-			return YES;
+			g.isSelected = YES;
+			self.selectedGroupCount = 1;
+			return;
 		}
 	}
-	
-	for (PSDrawingGroup* g in group.children)
-	{
-		if([self selectAtTap:tap inGroup:g])
-		{
-			group.isSelected = YES;
-			return YES;
-		}
-	}
-	return NO;
-}
-
--(void)setSelectedGroupCount:(int)selectedGroupCount
-{
-	NSLog(@"setting: %d", selectedGroupCount);
-	_selectedGroupCount = selectedGroupCount;
 }
 
 @end

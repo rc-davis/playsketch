@@ -72,6 +72,7 @@
 - (GLKMatrix4)getInverseMatrixToDocumentRoot;
 
 - (BOOL)eraseAtPoint:(CGPoint)p;
+- (BOOL)hitsPoint:(CGPoint)p;
 
 
 @end
