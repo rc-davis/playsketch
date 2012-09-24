@@ -436,8 +436,8 @@
 		//Clean up selection state
 		[PSDataModel deleteDrawingLine:self.selectionHelper.selectionLoupeLine];
 		self.selectionHelper.selectionLoupeLine = nil;
+		[self.selectionHelper finishSelection];
 		
-		NSLog(@"\n\nselected:%d", self.selectionHelper.selectedGroupCount);
 		[self.rootGroup printSelected:0];
 		
 		//Show the manipulator if it was worthwhile

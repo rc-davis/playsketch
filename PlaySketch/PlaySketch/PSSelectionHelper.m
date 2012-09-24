@@ -175,8 +175,6 @@
 	}
 
 	BOOL shouldBeSelected = anyLineSelected || (allChildrenSelected && group.children.count > 0);
-	if (!group.isSelected && shouldBeSelected) self.selectedGroupCount++;
-	if (group.isSelected && !shouldBeSelected) self.selectedGroupCount--;
 	group.isSelected = shouldBeSelected;
 }
 
@@ -207,6 +205,11 @@
 		[self prepareForSelection:c];
 }
 
+- (void)finishSelection
+{
+	self.selectedGroupCount = [self countSelectedGroups:self.rootGroup];
+}
+
 /* 
 	If any line in this group or its child groups hits the point, 
 	mark this group as selected and return YES.
@@ -235,6 +238,17 @@
 			return YES;
 	}
 	return NO;
+}
+
+- (int)countSelectedGroups:(PSDrawingGroup*)root
+{
+	int count = 0;
+	for (PSDrawingGroup* g in root.children)
+		if(g.isSelected)
+			count++;
+		else
+			count += [self countSelectedGroups:g];
+	return count;
 }
 
 @end

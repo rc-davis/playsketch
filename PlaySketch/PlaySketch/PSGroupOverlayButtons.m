@@ -18,13 +18,12 @@
 
 - (void)configureForSelection:(PSSelectionHelper*)helper
 {
-	BOOL multipleGroupsSelected = helper.selectedGroupCount > 1;
 	BOOL singleLeafOnlySelected = [helper singleLeafOnlySelected];
 	
 	// Decide what buttons to show
 	self.recordingButton.hidden = NO;
-	self.createGroupButton.hidden = !multipleGroupsSelected || singleLeafOnlySelected;
-	self.disbandGroupButton.hidden = multipleGroupsSelected || singleLeafOnlySelected;
+	self.createGroupButton.hidden = (helper.selectedGroupCount == 1);
+	self.disbandGroupButton.hidden = (helper.selectedGroupCount > 1) || singleLeafOnlySelected;
 	self.deleteGroupButton.hidden = NO;
 	
 	//Lay them out dynamically
