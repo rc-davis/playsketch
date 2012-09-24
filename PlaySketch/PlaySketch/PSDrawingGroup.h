@@ -76,6 +76,9 @@
 - (BOOL)hitsPoint:(CGPoint)p;
 
 - (void)deleteSelectedChildren;
+- (void)mergeSelectedChildrenIntoNewGroup;
 
+
+- (void)printSelected:(int)depth;
 
 @end

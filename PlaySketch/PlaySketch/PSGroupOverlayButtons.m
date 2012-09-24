@@ -18,7 +18,7 @@
 
 - (void)configureForSelection:(PSSelectionHelper*)helper
 {
-	BOOL isSingleGroup = helper.selectedGroupCount > 2;
+	BOOL isSingleGroup = helper.selectedGroupCount <= 1;
 	//TODO: we don't want to call it a single group when it has only one line
 	
 	// Decide what buttons to show

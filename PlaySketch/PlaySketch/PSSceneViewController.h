@@ -48,6 +48,7 @@
 - (IBAction)startDrawing:(id)sender;
 - (IBAction)startErasing:(id)sender;
 - (IBAction)deleteCurrentSelection:(id)sender;
+- (IBAction)createGroupFromCurrentSelection:(id)sender;
 - (void)setPlaying:(BOOL)playing;
 
 @end

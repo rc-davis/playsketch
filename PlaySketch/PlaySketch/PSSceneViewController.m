@@ -228,6 +228,18 @@
 	self.manipulator.hidden = YES;
 }
 
+- (IBAction)createGroupFromCurrentSelection:(id)sender
+{
+	[PSHelpers assert:(self.selectionHelper.selectedGroupCount > 1)
+		  withMessage:@"Need more than one existing group to create a new one"];
+	
+	[self.rootGroup mergeSelectedChildrenIntoNewGroup];
+	
+	self.selectionHelper = nil;
+	self.manipulator.hidden = YES;
+	
+}
+
 - (void)setPlaying:(BOOL)playing
 {
 	if(!playing && self.timelineSlider.playing)
@@ -414,6 +426,9 @@
 		//Clean up selection state
 		[PSDataModel deleteDrawingLine:self.selectionHelper.selectionLoupeLine];
 		self.selectionHelper.selectionLoupeLine = nil;
+		
+		NSLog(@"\n\nselected:%d", self.selectionHelper.selectedGroupCount);
+		[self.rootGroup printSelected:0];
 		
 		//Show the manipulator if it was worthwhile
 		

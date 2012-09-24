@@ -178,6 +178,9 @@
                                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                                 </state>
                                                 <state key="selected" backgroundImage="record_down.png"/>
+                                                <connections>
+                                                    <action selector="createGroupFromCurrentSelection:" destination="UPZ-Bt-XHw" eventType="touchUpInside" id="wzL-69-zyP"/>
+                                                </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="Awk-GD-mJN">
                                                 <rect key="frame" x="0.0" y="136" width="60" height="60"/>
@@ -671,6 +674,8 @@
         <class className="PSSceneViewController" superclassName="UIViewController">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/PSSceneViewController.h"/>
             <relationships>
+                <relationship kind="action" name="createGroupFromCurrentSelection:"/>
+                <relationship kind="action" name="deleteCurrentSelection:"/>
                 <relationship kind="action" name="dismissSceneView:"/>
                 <relationship kind="action" name="exportAsVideo:"/>
                 <relationship kind="action" name="playPressed:"/>
