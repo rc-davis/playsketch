@@ -328,7 +328,7 @@
 								 newRect.origin.x -= DOC_IMAGE_STEP;
 								 img.frame = newRect;
 							 }
-							 self.docButtonsContainer.alpha = (self.documents.count > 1) ? 1.0 : 0.0;
+							 self.docButtonsContainer.alpha = (self.documents.count > 0) ? 1.0 : 0.0;
 						 }
 						 
 						 completion:^(BOOL finished){
