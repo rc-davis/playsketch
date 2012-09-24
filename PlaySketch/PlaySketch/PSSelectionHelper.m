@@ -97,7 +97,8 @@
 					 reverseMinX:minXReverse
 					 reverseMaxX:maxXReverse
 						reverseB:bReverse
-						reverseM:mReverse];
+						reverseM:mReverse
+					  withMatrix:GLKMatrix4Identity];
 	
 }
 
@@ -110,6 +111,7 @@
 					reverseMaxX:(CGFloat)maxXReverse
 					   reverseB:(CGFloat)bReverse
 					   reverseM:(CGFloat)mReverse
+					 withMatrix:(GLKMatrix4)currentModelViewMatrix
 {
 	// Step 1: Find out if any of the lines that belong to THIS group are hit
 	BOOL anyLineSelected = NO;
@@ -119,6 +121,10 @@
 		for(int i = 0; i < [line pointCount]; i++)
 		{
 			CGPoint p = [line points][i];
+			
+			//translate point into global coordinates so we don't have to update all of our math
+			GLKVector4 fixedPoint = GLKMatrix4MultiplyVector4(currentModelViewMatrix, GLKVector4FromCGPoint(p));
+			p = CGPointFromGLKVector4(fixedPoint);
 			
 			// Test if we hit the new line
 			BOOL hitsForward =	p.x >= minXForward &&
@@ -133,9 +139,6 @@
 			
 			if ( hitsForward )
 				line.selectionHitCounts[i] += 1;
-			
-			//if (hitsForward || hitsReverse)
-			//	NSLog(@"here");
 			
 			int inferredCount = hitsReverse ? 1 : 0;
 			
@@ -155,6 +158,7 @@
 	{
 		// TODO: We'll need to push the group's current matrix before recursing
 		// to accomodate when the animation has moved the lines to a different position.
+		GLKMatrix4 childMatrix = GLKMatrix4Multiply(currentModelViewMatrix, g.currentModelViewMatrix);
 		
 		[self updateSelectionOnGroup:g
 						 forwardMinX:minXForward
@@ -164,7 +168,8 @@
 						 reverseMinX:minXReverse
 						 reverseMaxX:maxXReverse
 							reverseB:bReverse
-							reverseM:mReverse];
+							reverseM:mReverse
+						  withMatrix:childMatrix];
 
 		allChildrenSelected = allChildrenSelected && g.isSelected;
 	}

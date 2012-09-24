@@ -69,6 +69,7 @@
 - (void)applyTransform:(CGAffineTransform)transform;
 - (CGRect)boundingRect;
 
+- (GLKMatrix4)currentModelViewMatrix;
 - (GLKMatrix4)getInverseMatrixToDocumentRoot;
 
 - (BOOL)eraseAtPoint:(CGPoint)p;

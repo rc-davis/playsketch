@@ -453,9 +453,9 @@
 
 -(void)cancelledDrawingLine:(PSDrawingLine*)line inDrawingView:(id)drawingView
 {
-	if(line == self.selectionHelper.selectionLoupeLine)
+	if(line != nil && line == self.selectionHelper.selectionLoupeLine)
 		[PSDataModel deleteDrawingLine:line];
-	else
+	else if (line != nil)
 		[PSDataModel deleteDrawingGroup:line.group];
 	if(self.selectionHelper) self.selectionHelper = nil;
 }

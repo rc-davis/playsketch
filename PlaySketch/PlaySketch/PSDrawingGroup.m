@@ -404,6 +404,12 @@
 	return (SRTPosition*)_mutablePositionsAsData.bytes;
 }
 
+- (GLKMatrix4)currentModelViewMatrix
+{
+	return currentModelViewMatrix;
+}
+
+
 
 /*
 	TODO: This really requires some explanation....
@@ -446,9 +452,8 @@
 	bool isInvertable;
 	GLKMatrix4 selfInverted = GLKMatrix4Invert(currentModelViewMatrix, &isInvertable);
 	if(!isInvertable) NSLog(@"!!!! SHOULD ALWAYS BE INVERTABLE!!!");
-	GLKVector4 v4 = GLKMatrix4MultiplyVector4(selfInverted, GLKVector4Make(p.x, p.y, 1.0, 1.0));
-	CGPoint fixedP = CGPointMake(v4.x, v4.y);
-	NSLog(@"%lf, %lf, %lf -> %lf, %lf, %lf", p.x, p.y, 0.0, v4.x, v4.y, v4.z);
+	GLKVector4 v4 = GLKMatrix4MultiplyVector4(selfInverted, GLKVector4FromCGPoint(p));
+	CGPoint fixedP = CGPointFromGLKVector4(v4);
 
 	
 	for (PSDrawingLine* l in self.drawingLines)
