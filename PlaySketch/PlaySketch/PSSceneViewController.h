@@ -47,6 +47,7 @@
 - (IBAction)startSelecting:(id)sender;
 - (IBAction)startDrawing:(id)sender;
 - (IBAction)startErasing:(id)sender;
+- (IBAction)deleteCurrentSelection:(id)sender;
 - (void)setPlaying:(BOOL)playing;
 
 @end

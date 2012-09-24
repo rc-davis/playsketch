@@ -75,5 +75,7 @@
 - (BOOL)eraseAtPoint:(CGPoint)p;
 - (BOOL)hitsPoint:(CGPoint)p;
 
+- (void)deleteSelectedChildren;
+
 
 @end

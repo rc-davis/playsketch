@@ -313,6 +313,7 @@
 	currentSRTRate = SRTRateZero();
 	currentPositionIndex = 0;
 	currentModelViewMatrix = GLKMatrix4Identity;
+	isSelected = NO;
 	[self unpauseAll];
 }
 
@@ -328,6 +329,7 @@
 	currentSRTRate = SRTRateZero();
 	currentPositionIndex = 0;
 	currentModelViewMatrix = GLKMatrix4Identity;
+	isSelected = NO;
 	[self unpauseAll];
 }
 
@@ -341,6 +343,7 @@
 	[super awakeFromSnapshotEvents:flags];
 	[PSHelpers NYIWithmessage:@"drawinggroup awakeFromSnapshotEvents:"];
 	[self unpauseAll];
+	isSelected = NO;
 }
 
 
@@ -465,6 +468,18 @@
 			return YES;
 	
 	return NO;
+}
+
+
+- (void)deleteSelectedChildren
+{
+	for (PSDrawingGroup* g in [self.children copy])
+	{
+		if (g.isSelected)
+			[PSDataModel deleteDrawingGroup:g];
+		else
+			[g deleteSelectedChildren];
+	}
 }
 
 @end

@@ -220,6 +220,14 @@
 	self.isErasing = YES;
 }
 
+
+- (IBAction)deleteCurrentSelection:(id)sender
+{
+	[self.rootGroup deleteSelectedChildren];
+	self.selectionHelper = nil;
+	self.manipulator.hidden = YES;
+}
+
 - (void)setPlaying:(BOOL)playing
 {
 	if(!playing && self.timelineSlider.playing)
