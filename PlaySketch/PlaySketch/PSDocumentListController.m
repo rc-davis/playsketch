@@ -84,8 +84,15 @@
 	for (int i = 0; i < self.documents.count; i++)
 		[self createImageForDocumentAtIndex:i];
 	
-	//TODO: scroll to where we last were!
+	//Create a new document if there aren't any
+	if(self.documents.count == 0)
+	{
+		[self newDocument:nil];
+	}
+	
+	//TODO: Open up our last document ?
 	[self scrollToIndex:0 animated:NO];
+	
 }
 
 
