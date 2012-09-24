@@ -465,6 +465,10 @@
 	}
 }
 
+
+-(void)tappedAt:(CGPoint)p tapCount:(int)tapCount
+{
+}
 /*
  ----------------------------------------------------------------------------
  PSSRTManipulatoDelegate methods
