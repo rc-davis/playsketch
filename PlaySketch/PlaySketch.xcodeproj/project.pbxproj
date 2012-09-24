@@ -42,6 +42,8 @@
 		46C9AD1615B29D1E00EF3A92 /* PSDataModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 46C9AD1515B29D1E00EF3A92 /* PSDataModel.m */; };
 		46C9AD1815B2ABD400EF3A92 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46C9AD1715B2ABD300EF3A92 /* QuartzCore.framework */; };
 		46C9AD1B15B2B67800EF3A92 /* PSDrawingDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 46C9AD1A15B2B67800EF3A92 /* PSDrawingDocument.m */; };
+		46EAA0861610730B009D73DD /* group.png in Resources */ = {isa = PBXBuildFile; fileRef = 46EAA0841610730B009D73DD /* group.png */; };
+		46EAA0871610730B009D73DD /* ungroup.png in Resources */ = {isa = PBXBuildFile; fileRef = 46EAA0851610730B009D73DD /* ungroup.png */; };
 		46F1735215DB7AEE00F787AC /* PSGLKitVideoExporter.m in Sources */ = {isa = PBXBuildFile; fileRef = 46F1735115DB7AEE00F787AC /* PSGLKitVideoExporter.m */; };
 		46F1735515DB7C8E00F787AC /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46F1735415DB7C8E00F787AC /* AVFoundation.framework */; };
 		46F1735715DB836A00F787AC /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46F1735615DB836A00F787AC /* CoreVideo.framework */; };
@@ -127,6 +129,8 @@
 		46C9AD1715B2ABD300EF3A92 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		46C9AD1915B2B67700EF3A92 /* PSDrawingDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PSDrawingDocument.h; path = PlaySketch/PSDrawingDocument.h; sourceTree = "<group>"; };
 		46C9AD1A15B2B67800EF3A92 /* PSDrawingDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PSDrawingDocument.m; path = PlaySketch/PSDrawingDocument.m; sourceTree = "<group>"; };
+		46EAA0841610730B009D73DD /* group.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = group.png; sourceTree = "<group>"; };
+		46EAA0851610730B009D73DD /* ungroup.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ungroup.png; sourceTree = "<group>"; };
 		46F1735015DB7AEE00F787AC /* PSGLKitVideoExporter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSGLKitVideoExporter.h; sourceTree = "<group>"; };
 		46F1735115DB7AEE00F787AC /* PSGLKitVideoExporter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSGLKitVideoExporter.m; sourceTree = "<group>"; };
 		46F1735415DB7C8E00F787AC /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
@@ -226,6 +230,8 @@
 				4608D2A515D8B731005CEA6D /* details.png */,
 				46186F7215D78F6600A1E1A2 /* record_down.png */,
 				46186F7515D792B900A1E1A2 /* record_up.png */,
+				46EAA0841610730B009D73DD /* group.png */,
+				46EAA0851610730B009D73DD /* ungroup.png */,
 			);
 			name = Images;
 			sourceTree = "<group>";
@@ -458,6 +464,8 @@
 				4649EE94160D819300FAE620 /* pen.png in Resources */,
 				4649EE96160D88A600FAE620 /* more.png in Resources */,
 				4649EE98160D935300FAE620 /* eraser.png in Resources */,
+				46EAA0861610730B009D73DD /* group.png in Resources */,
+				46EAA0871610730B009D73DD /* ungroup.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

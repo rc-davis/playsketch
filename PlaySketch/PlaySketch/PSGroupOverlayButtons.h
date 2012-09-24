@@ -12,19 +12,19 @@
  */
 
 #import <UIKit/UIKit.h>
+#import "PSSelectionHelper.h"
+
 @class PSDrawingGroup;
 
 @interface PSGroupOverlayButtons : UIView
 @property(nonatomic,retain)IBOutlet UIButton* recordingButton;
-@property(nonatomic,retain)IBOutlet UIButton* showDetailsButton;
+@property(nonatomic,retain)IBOutlet UIButton* createGroupButton;
+@property(nonatomic,retain)IBOutlet UIButton* disbandGroupButton;
 @property(nonatomic,retain)IBOutlet UIButton* deleteGroupButton;
 @property(nonatomic) BOOL recordPulsing;
 
-- (void)configureForGroup:(PSDrawingGroup*)group;
-- (void)setLocation:(CGPoint)p;
-- (void)setHidden:(BOOL)hidden animated:(BOOL)animated;
+- (void)configureForSelection:(PSSelectionHelper*)helper;
 - (void)startRecordingMode;
 - (void)stopRecordingMode;
-
 
 @end

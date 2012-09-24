@@ -42,26 +42,6 @@
 
 
 @implementation PSSceneViewController
-@synthesize renderingController = _renderingController;
-@synthesize drawingTouchView = _drawingTouchView;
-@synthesize playButton = _playButton;
-@synthesize timelineSlider = _timelineSlider;
-@synthesize selectionOverlayButtons = _selectionOverlayButtons;
-@synthesize motionPathView = _motionPathView;
-@synthesize currentDocument = _currentDocument;
-@synthesize rootGroup = _rootGroup;
-@synthesize isSelecting = _isSelecting;
-@synthesize isReadyToRecord = _isReadyToRecord;
-@synthesize isRecording = _isRecording;
-@synthesize selectionHelper = _selectionHelper;
-@synthesize penPopoverController = _penPopoverController;
-@synthesize penController = _penController;
-@synthesize currentColor = _currentColor;
-@synthesize penWeight = _penWeight;
-@synthesize manipulator = _manipulator;
-
-
-
 
 /*
  ----------------------------------------------------------------------------
@@ -88,6 +68,7 @@
 	
 	// Create the manipulator
 	self.manipulator = [[PSSRTManipulator alloc] initAtLocation:CGPointZero];
+	[self.renderingController.view addSubview:self.manipulator];
 	self.manipulator.delegate = self;
 	self.manipulator.hidden = YES;
 	self.manipulator.groupButtons = self.selectionOverlayButtons;
@@ -426,9 +407,7 @@
 		[PSDataModel deleteDrawingLine:self.selectionHelper.selectionLoupeLine];
 		self.selectionHelper.selectionLoupeLine = nil;
 		
-		//Show the manipulator if it was worthwhile (TODO: test better?)
-		self.manipulator.hidden = NO;
-
+		//Show the manipulator if it was worthwhile
 		
 		if(self.selectionHelper.selectedGroupCount == 0)
 		{
@@ -438,7 +417,7 @@
 		else
 		{
 			self.manipulator.hidden = NO;
-			
+			[self.selectionOverlayButtons configureForSelection:self.selectionHelper];
 		}
 	}
 	else
@@ -477,6 +456,7 @@
 		// KEEP IT
 		self.selectionHelper = tapSelection;
 		self.manipulator.hidden = NO;
+		[self.selectionOverlayButtons configureForSelection:self.selectionHelper];
 	}
 	else
 	{

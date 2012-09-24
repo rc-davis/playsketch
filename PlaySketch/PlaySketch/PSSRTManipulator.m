@@ -50,7 +50,7 @@
 	
 	if (self = [super initWithFrame:frame])
 	{
-		self.backgroundColor = [UIColor clearColor];
+		self.backgroundColor = [UIColor yellowColor];
 		_isRotating = NO;
 		_isTranslating = NO;
 		_isScaling = NO;
