@@ -88,7 +88,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             </scrollView>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="main_gradient.png" id="f0F-XD-pty">
-                                <rect key="frame" x="0.0" y="239" width="200" height="270"/>
+                                <rect key="frame" x="0.0" y="0.0" width="300" height="748"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
                         </subviews>
@@ -470,7 +470,7 @@
         <image name="character.png" width="120" height="120"/>
         <image name="details.png" width="120" height="120"/>
         <image name="lasso.png" width="100" height="100"/>
-        <image name="main_gradient.png" width="200" height="100"/>
+        <image name="main_gradient.png" width="600" height="10"/>
         <image name="new_drawing.png" width="400" height="400"/>
         <image name="record_down.png" width="120" height="120"/>
         <image name="record_up.png" width="120" height="120"/>
