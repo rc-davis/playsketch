@@ -433,9 +433,10 @@
 		self.manipulator.hidden = NO;
 
 		
-		if(![self.selectionHelper anySelected])
+		if(self.selectionHelper.selectedGroupCount == 0)
 		{
 			self.selectionHelper = nil;
+			
 		}
 		else
 		{
@@ -467,16 +468,23 @@
 }
 
 
--(void)tappedAt:(CGPoint)p tapCount:(int)tapCount
+-(void)tappedAt:(CGPoint)p tapCount:(int)tapCount inDrawingView:(id)drawingView
 {
 	// Look to see if we tapped on an object!
-//	PSSelectionHelper* tapSelection = [PSSelectionHelper selectionForTap:p];
-//	if(tapCount == 1 && tapSelection)
+	PSSelectionHelper* tapSelection = [PSSelectionHelper selectionForTap:p inRootGroup:self.rootGroup];
+	if(tapCount == 1 && tapSelection.selectedGroupCount > 0)
 	{
+		// KEEP IT
+		self.selectionHelper = tapSelection;
+		self.manipulator.hidden = NO;
+	}
+	else
+	{
+		self.selectionHelper = nil;
+		self.manipulator.hidden = YES;
 		
 	}
-	
-	
+
 	
 }
 

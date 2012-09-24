@@ -75,7 +75,7 @@
 
 		//Inform our delegate
 		if(self.drawingDelegate)
-			[self.drawingDelegate tappedAt:[t locationInView:self] tapCount:t.tapCount];
+			[self.drawingDelegate tappedAt:[t locationInView:self] tapCount:t.tapCount inDrawingView:self];
 
 	}
 	else // Finish the line we are drawing

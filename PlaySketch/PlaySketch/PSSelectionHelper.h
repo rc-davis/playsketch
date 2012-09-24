@@ -17,13 +17,11 @@
 
 @interface PSSelectionHelper : NSObject
 @property(nonatomic,retain) PSDrawingLine* selectionLoupeLine;
+@property(readonly) int selectedGroupCount;
 
-+(PSSelectionHelper*)selectionWithLine:(PSDrawingLine*)line inRootGroup:(PSDrawingGroup*)rootGroup;
-+(PSSelectionHelper*)selectionForTap:(CGPoint)tapPoint inRootGroup:(PSDrawingGroup*)rootGroup;
--(void)addLineFrom:(CGPoint)from to:(CGPoint)to;
--(void)addLineFromDict:(NSDictionary*)pointsDict;
--(BOOL)anySelected;
-
-
++ (PSSelectionHelper*)selectionWithLine:(PSDrawingLine*)line inRootGroup:(PSDrawingGroup*)rootGroup;
++ (PSSelectionHelper*)selectionForTap:(CGPoint)tapPoint inRootGroup:(PSDrawingGroup*)rootGroup;
+- (void)addLineFrom:(CGPoint)from to:(CGPoint)to;
+- (void)addLineFromDict:(NSDictionary*)pointsDict;
 
 @end

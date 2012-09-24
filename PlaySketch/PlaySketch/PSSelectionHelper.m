@@ -19,15 +19,13 @@
 @property(nonatomic)CGPoint firstPoint;
 @property(nonatomic)BOOL haveFirstPoint;
 @property(nonatomic)PSDrawingGroup* rootGroup;
+@property(readwrite)int selectedGroupCount;
 - (void) prepareForSelection:(PSDrawingGroup*)g;
+- (BOOL)selectAtTap:(CGPoint)tap inGroup:(PSDrawingGroup*)group;
 @end
 
 
 @implementation PSSelectionHelper
-@synthesize selectionLoupeLine = _selectionLoupeLine;
-@synthesize firstPoint = _firstPoint;
-@synthesize haveFirstPoint = _haveFirstPoint;
-@synthesize rootGroup = _rootGroup;
 
 
 +(PSSelectionHelper*)selectionWithLine:(PSDrawingLine*)line inRootGroup:(PSDrawingGroup*)rootGroup
@@ -40,6 +38,7 @@
 	// Reset the selection information for all of these objects
 	// Each group maintains a BOOL of whether it is selected
 	// Each line contains a list with an int for each point for selection crossing count
+	h.selectedGroupCount = 0;
 	[h prepareForSelection:rootGroup];
 	
 	return h;
@@ -55,9 +54,14 @@
 	// Reset the selection information for all of these objects
 	// Each group maintains a BOOL of whether it is selected
 	// Each line contains a list with an int for each point for selection crossing count
+	h.selectedGroupCount = 0;
 	[h prepareForSelection:rootGroup];
 
-	//TODO: PROCESS TAP
+	BOOL hits = [h selectAtTap:tapPoint inGroup:rootGroup];
+	if(hits) h.selectedGroupCount = 1;
+
+	//The root group should NEVER be selected (since you can't transform it!)
+	rootGroup.isSelected = NO;
 	
 	return h;
 }
@@ -169,7 +173,10 @@
 		allChildrenSelected = allChildrenSelected && g.isSelected;
 	}
 
-	group.isSelected = anyLineSelected || (allChildrenSelected && group.children.count > 0);
+	BOOL shouldBeSelected = anyLineSelected || (allChildrenSelected && group.children.count > 0);
+	if (!group.isSelected && shouldBeSelected) self.selectedGroupCount++;
+	if (group.isSelected && !shouldBeSelected) self.selectedGroupCount--;
+	group.isSelected = shouldBeSelected;
 }
 
 /* 
@@ -188,6 +195,7 @@
 
 - (void) prepareForSelection:(PSDrawingGroup*)g
 {
+	
 	/*
 	 reset all of the selection metadata we're tracking in the objects
 	*/
@@ -198,18 +206,38 @@
 		[self prepareForSelection:c];
 }
 
--(BOOL)anySelected
+/* 
+	If any line in this group or its child groups hits the point, 
+	mark this group as selected and return YES.
+	The isSelected flag is not guaranteed to be selected on any children of the top-most selected group.
+	This selects a single group as a result
+*/
+-(BOOL)selectAtTap:(CGPoint)tap inGroup:(PSDrawingGroup*)group
 {
-	return [self anySelectedUnderGroup:self.rootGroup];
-}
-
--(BOOL)anySelectedUnderGroup:(PSDrawingGroup*)g
-{
-	for (PSDrawingGroup* c in g.children)
-		if(c.isSelected || [self anySelectedUnderGroup:c]) return YES;
-
+	for (PSDrawingLine* l in group.drawingLines)
+	{
+		if( [l hitsPoint:tap])
+		{
+			group.isSelected = YES;
+			return YES;
+		}
+	}
+	
+	for (PSDrawingGroup* g in group.children)
+	{
+		if([self selectAtTap:tap inGroup:g])
+		{
+			group.isSelected = YES;
+			return YES;
+		}
+	}
 	return NO;
 }
 
+-(void)setSelectedGroupCount:(int)selectedGroupCount
+{
+	NSLog(@"setting: %d", selectedGroupCount);
+	_selectedGroupCount = selectedGroupCount;
+}
 
 @end
