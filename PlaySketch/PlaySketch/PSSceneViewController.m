@@ -393,8 +393,8 @@
 		selectionLine.color = [NSNumber numberWithUnsignedLongLong:[PSHelpers colorToInt64:[UIColor redColor]]];
 		
 		// Start a new selection set helper
-		self.selectionHelper = [[PSSelectionHelper alloc] initWithGroup:self.rootGroup
-													   andSelectionLine:selectionLine];
+		self.selectionHelper = [PSSelectionHelper selectionWithLine:selectionLine
+														inRootGroup:self.rootGroup];
 		return selectionLine;
 	}
 		
@@ -412,6 +412,7 @@
 		// thread so it won't block the redrawing as much as possible
 		// That requires us to bundle up the points as objects instead of structs
 		// so they'll fit in a dictionary to pass to the performSelectorInBackground method
+		// This is ugly-looking, but the arguments need to be on the heap instead of the stack
 		NSDictionary* pointsDict = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSValue valueWithCGPoint:from], @"from",
 									[NSValue valueWithCGPoint:to], @"to", nil];
@@ -422,13 +423,13 @@
 
 -(void)finishedDrawingLine:(PSDrawingLine*)line inDrawingView:(id)drawingView
 {
-	if ( line == self.selectionHelper.selectionLoupeLine )
+	if ( line && line == self.selectionHelper.selectionLoupeLine )
 	{
 		//Clean up selection state
 		[PSDataModel deleteDrawingLine:self.selectionHelper.selectionLoupeLine];
 		self.selectionHelper.selectionLoupeLine = nil;
 		
-		//Show the manipulator if it was worthwhile
+		//Show the manipulator if it was worthwhile (TODO: test better?)
 		self.manipulator.hidden = NO;
 
 		
@@ -451,8 +452,8 @@
 
 -(void)cancelledDrawingLine:(PSDrawingLine*)line inDrawingView:(id)drawingView
 {
-	//TODO: similar to finishedDrawing
-	[PSHelpers NYIWithmessage:@"scene controller view: cancelledDrawingLine"];
+	if(line) [PSDataModel deleteDrawingLine:line];
+	if(self.selectionHelper) self.selectionHelper = nil;
 }
 
 -(void)movedAt:(CGPoint)p inDrawingView:(id)drawingView
@@ -468,7 +469,17 @@
 
 -(void)tappedAt:(CGPoint)p tapCount:(int)tapCount
 {
+	// Look to see if we tapped on an object!
+//	PSSelectionHelper* tapSelection = [PSSelectionHelper selectionForTap:p];
+//	if(tapCount == 1 && tapSelection)
+	{
+		
+	}
+	
+	
+	
 }
+
 /*
  ----------------------------------------------------------------------------
  PSSRTManipulatoDelegate methods

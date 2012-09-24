@@ -29,21 +29,37 @@
 @synthesize haveFirstPoint = _haveFirstPoint;
 @synthesize rootGroup = _rootGroup;
 
--(id)initWithGroup:(PSDrawingGroup*)rootGroup andSelectionLine:(PSDrawingLine*)line
+
++(PSSelectionHelper*)selectionWithLine:(PSDrawingLine*)line inRootGroup:(PSDrawingGroup*)rootGroup
 {
-	if(self = [super init])
-	{
-		self.selectionLoupeLine = line;
-		self.haveFirstPoint = NO;
-		self.rootGroup = rootGroup;
+	PSSelectionHelper* h = [[PSSelectionHelper alloc] init];
+	h.rootGroup = rootGroup;
+	h.selectionLoupeLine = line;
+	h.haveFirstPoint = NO;
+	
+	// Reset the selection information for all of these objects
+	// Each group maintains a BOOL of whether it is selected
+	// Each line contains a list with an int for each point for selection crossing count
+	[h prepareForSelection:rootGroup];
+	
+	return h;
+}
 
-		// Reset the selection information for all of these objects
-		// Each group maintains a BOOL of whether it is selected
-		// Each line contains a list with an int for each point for selection crossing count
-		[self prepareForSelection:rootGroup];
-	}
++(PSSelectionHelper*)selectionForTap:(CGPoint)tapPoint inRootGroup:(PSDrawingGroup*)rootGroup
+{
+	PSSelectionHelper* h = [[PSSelectionHelper alloc] init];
+	h.rootGroup = rootGroup;
+	h.selectionLoupeLine = nil;
+	h.haveFirstPoint = NO;
+	
+	// Reset the selection information for all of these objects
+	// Each group maintains a BOOL of whether it is selected
+	// Each line contains a list with an int for each point for selection crossing count
+	[h prepareForSelection:rootGroup];
 
-	return self;
+	//TODO: PROCESS TAP
+	
+	return h;
 }
 
 -(void)addLineFrom:(CGPoint)from to:(CGPoint)to
@@ -194,5 +210,6 @@
 
 	return NO;
 }
+
 
 @end
