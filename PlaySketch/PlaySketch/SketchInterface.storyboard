@@ -192,6 +192,9 @@
                                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                                 </state>
                                                 <state key="selected" backgroundImage="record_down.png"/>
+                                                <connections>
+                                                    <action selector="ungroupFromCurrentSelection:" destination="UPZ-Bt-XHw" eventType="touchUpInside" id="uiD-bY-84D"/>
+                                                </connections>
                                             </button>
                                         </subviews>
                                         <connections>
@@ -686,6 +689,7 @@
                 <relationship kind="action" name="startSelecting:"/>
                 <relationship kind="action" name="timelineScrubbed:"/>
                 <relationship kind="action" name="toggleRecording:"/>
+                <relationship kind="action" name="ungroupFromCurrentSelection:"/>
                 <relationship kind="outlet" name="drawingTouchView" candidateClass="PSDrawingEventsView"/>
                 <relationship kind="outlet" name="manipulator" candidateClass="PSSRTManipulator"/>
                 <relationship kind="outlet" name="motionPathView" candidateClass="PSMotionPathView"/>

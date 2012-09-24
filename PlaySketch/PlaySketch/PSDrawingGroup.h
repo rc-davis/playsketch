@@ -77,6 +77,8 @@
 
 - (void)deleteSelectedChildren;
 - (void)mergeSelectedChildrenIntoNewGroup;
+- (PSDrawingGroup*)topLevelSelectedChild;
+- (void)breakUpGroupAndMergeIntoParent;
 
 
 - (void)printSelected:(int)depth;

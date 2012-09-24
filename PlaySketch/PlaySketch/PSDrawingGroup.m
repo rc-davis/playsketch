@@ -504,7 +504,6 @@
 	[PSHelpers assert:selected.count > 0 withMessage:@"Need some selected children to merge"];
 	
 	// 2. Create a new group and move all of them into it
-	NSLog(@"Have selected %d", selected.count);
 	PSDrawingGroup* newGroup = [PSDataModel newDrawingGroupWithParent:self];
 	for (PSDrawingGroup* g in selected)
 		g.parent = newGroup;
@@ -512,6 +511,31 @@
 	
 	//TODO: we probably should displace the selected groups to keep them from jumping around?
 	
+}
+
+- (PSDrawingGroup*)topLevelSelectedChild
+{
+	// This assumes that there is a single subtree with selected nodes
+	for (PSDrawingGroup* g in self.children)
+		if (g.isSelected)
+			return g;
+
+	for (PSDrawingGroup* g in self.children)
+	{
+		PSDrawingGroup* result = [g topLevelSelectedChild];
+		if(result) return result;
+	}
+	
+	return nil;
+}
+
+
+- (void)breakUpGroupAndMergeIntoParent
+{
+	for (PSDrawingGroup* g in [self.children copy])
+		g.parent = self.parent;
+	
+	[PSDataModel deleteDrawingGroup:self];
 }
 
 

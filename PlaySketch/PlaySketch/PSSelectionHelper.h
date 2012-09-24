@@ -23,5 +23,6 @@
 + (PSSelectionHelper*)selectionForTap:(CGPoint)tapPoint inRootGroup:(PSDrawingGroup*)rootGroup;
 - (void)addLineFrom:(CGPoint)from to:(CGPoint)to;
 - (void)addLineFromDict:(NSDictionary*)pointsDict;
+- (BOOL)singleLeafOnlySelected;
 
 @end

@@ -49,6 +49,7 @@
 - (IBAction)startErasing:(id)sender;
 - (IBAction)deleteCurrentSelection:(id)sender;
 - (IBAction)createGroupFromCurrentSelection:(id)sender;
+- (IBAction)ungroupFromCurrentSelection:(id)sender;
 - (void)setPlaying:(BOOL)playing;
 
 @end

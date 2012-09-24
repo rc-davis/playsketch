@@ -240,6 +240,16 @@
 	
 }
 
+
+- (IBAction)ungroupFromCurrentSelection:(id)sender
+{
+	PSDrawingGroup* topLevelGroup = [self.rootGroup topLevelSelectedChild];
+	[PSHelpers assert:(topLevelGroup!=nil) withMessage:@"Need a non-nil child"];
+	[PSHelpers assert:(topLevelGroup!=self.rootGroup) withMessage:@"Selected child can't be the root"];
+	[topLevelGroup breakUpGroupAndMergeIntoParent];
+}
+
+
 - (void)setPlaying:(BOOL)playing
 {
 	if(!playing && self.timelineSlider.playing)

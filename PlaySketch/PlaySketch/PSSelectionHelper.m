@@ -226,4 +226,15 @@
 	}
 }
 
+- (BOOL)singleLeafOnlySelected
+{
+	if(self.selectedGroupCount == 1)
+	{
+		PSDrawingGroup* selectedGroup = [self.rootGroup topLevelSelectedChild];
+		if(selectedGroup.children.count == 0 && selectedGroup.drawingLines.count > 0)
+			return YES;
+	}
+	return NO;
+}
+
 @end
