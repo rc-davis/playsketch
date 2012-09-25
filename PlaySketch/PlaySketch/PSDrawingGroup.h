@@ -17,7 +17,7 @@
 
 #define POSITION_FPS 8.0
 
-@class PSDrawingGroup, PSDrawingLine;
+@class PSDrawingGroup, PSDrawingLine, PSRecordingSession;
 
 @interface PSDrawingGroup : NSManagedObject
 {
@@ -43,8 +43,7 @@
 
 @interface PSDrawingGroup (CoreDataGeneratedAccessors)
 
-- (void)addPosition:(SRTPosition)position withInterpolation:(BOOL)shouldInterpolate;
-- (void)flattenTranslation:(BOOL)translation rotation:(BOOL)rotation scale:(BOOL)scale betweenTime:(float)timeStart andTime:(float)timeEnd;
+- (int)addPosition:(SRTPosition)position withInterpolation:(BOOL)shouldInterpolate;
 - (void)pauseUpdatesOfTranslation:(BOOL)translation rotation:(BOOL)rotation scale:(BOOL)scale;
 - (void)unpauseAll;
 - (SRTPosition*)positions;
@@ -69,9 +68,36 @@
 - (void)applyTransform:(CGAffineTransform)transform;
 - (CGRect)boundingRect;
 
+- (GLKMatrix4)currentModelViewMatrix;
 - (GLKMatrix4)getInverseMatrixToDocumentRoot;
 
 - (BOOL)eraseAtPoint:(CGPoint)p;
+- (BOOL)hitsPoint:(CGPoint)p;
 
+- (void)deleteSelectedChildren;
+- (void)mergeSelectedChildrenIntoNewGroup;
+- (PSDrawingGroup*)topLevelSelectedChild;
+- (void)breakUpGroupAndMergeIntoParent;
+
+- (void)applyToSelectedSubTrees:( void ( ^ )( PSDrawingGroup* g ) )functionToApply;
+
+- (void)transformSelectionByX:(float)dX
+						 andY:(float)dY
+					 rotation:(float)dRotation
+						scale:(float)dScale
+					   atTime:(float)time
+			   addingKeyframe:(SRTKeyframeType)keyframeType
+		   usingInterpolation:(BOOL)interpolate;
+
+
+
+- (PSRecordingSession*)startSelectedGroupsRecordingTranslation:(BOOL)isTranslating
+											rotation:(BOOL)isRotating
+											 scaling:(BOOL)isScaling
+											  atTime:(float)time;
+
+
+- (void)printSelected:(int)depth;
+- (void)setPosition:(SRTPosition)p atIndex:(int)i;
 
 @end

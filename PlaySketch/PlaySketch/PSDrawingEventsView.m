@@ -65,32 +65,36 @@
 
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-
-	if(self.currentLine)
+	UITouch* t = [touches anyObject];
+	
+	// Check if this was a tap!
+	if(touches.count == 1 && t.tapCount > 0)
 	{
-		if (self.drawingDelegate)
-		{
-			[self.drawingDelegate finishedDrawingLine:self.currentLine inDrawingView:self];
-			[self.currentLine finishLine];
-		}
-		self.currentLine = nil;
-	}
+		// Cancel the current line we are drawing
+		[self touchesCancelled:touches withEvent:event];
 
+		//Inform our delegate
+		if(self.drawingDelegate)
+			[self.drawingDelegate tappedAt:[t locationInView:self] tapCount:t.tapCount inDrawingView:self];
+
+	}
+	else // Finish the line we are drawing
+	{
+		if(self.currentLine)
+			[self.currentLine finishLine];
+	
+		if (self.drawingDelegate)
+			[self.drawingDelegate finishedDrawingLine:self.currentLine inDrawingView:self];
+
+	}
+	
+	self.currentLine = nil;
 }
 
 -(void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
 {
-	
-	if(self.currentLine)
-	{
-		if (self.drawingDelegate)
-		{
-			[self.drawingDelegate finishedDrawingLine:self.currentLine inDrawingView:self];
-			[self.currentLine finishLine];
-		}
-		self.currentLine = nil;	
-	}
-
+	if(self.drawingDelegate)
+		[self.drawingDelegate cancelledDrawingLine:self.currentLine inDrawingView:self];
 }
 
 @end

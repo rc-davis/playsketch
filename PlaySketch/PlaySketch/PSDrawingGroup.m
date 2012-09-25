@@ -15,6 +15,7 @@
 #import "PSDrawingLine.h"
 #import "PSDataModel.h"
 #import "PSHelpers.h"
+#import "PSRecordingSession.h"
 
 @interface PSDrawingGroup ()
 {
@@ -35,7 +36,7 @@
 
 
 
-- (void)addPosition:(SRTPosition)position withInterpolation:(BOOL)shouldInterpolate
+- (int)addPosition:(SRTPosition)position withInterpolation:(BOOL)shouldInterpolate
 {
 	const int FPS_MULTIPLE = 4;
 	// We want to cap the rate that we are storing datapoints at.
@@ -82,6 +83,8 @@
 		memmove(currentPositions + newIndex + 1, 
 				currentPositions + newIndex ,
 				(currentPositionCount - newIndex)*sizeof(SRTPosition));
+		
+		currentPositionIndex++;
 	}
 
 	// If this time is already a keyframe, tag the new position as a keyframe too
@@ -145,58 +148,8 @@
 			}
 		}
 
-	}	
-}
-
-
-// Find the value for S,R,T from the last position <= timeStart
-// Copy it into every position between timeStart to (inclusive) timeEnd
-// Remove any timestamps that have been made redundant in the process
-- (void)flattenTranslation:(BOOL)translation rotation:(BOOL)rotation scale:(BOOL)scale betweenTime:(float)timeStart andTime:(float)timeEnd
-{
-	// Get a handle to some mutable data
-	int currentPositionCount = self.positionCount;
-	SRTPosition* currentPositions = [self mutablePositionBytes];
-	
-	// Advance to the start time and remember the last position before the time range
-	int i = 0;
-	SRTPosition positionBefore = SRTPositionZero();
-	while (i < currentPositionCount && currentPositions[i].timeStamp <= timeStart)
-		positionBefore = currentPositions[i++];
-	
-	// Move through the time span, patch up the elements and discard duplicates
-	int copyFrom = i;
-	int copyTo = i;
-	
-	while (copyFrom > 0 && copyFrom < currentPositionCount && currentPositions[i].timeStamp <= timeEnd)
-	{
-		SRTPosition erasedPos = currentPositions[copyFrom];
-		
-		// Unset the keyframes for the channels we are flattening
-		erasedPos.keyframeType = SRTKeyframeRemove(erasedPos.keyframeType,scale, rotation, translation);
-		
-		if(translation) erasedPos.location = positionBefore.location;
-		if(rotation) erasedPos.rotation = positionBefore.rotation;
-		if(scale) erasedPos.scale = positionBefore.scale;
-		
-		// Keep this frame only if it is different from the previous one
-		if(copyTo == 0 || SRTKeyframeIsAny( erasedPos.keyframeType )
-		   || !SRTPositionsEqual(currentPositions[copyTo - 1], erasedPos, YES))
-			currentPositions[copyTo++] = erasedPos;
-		
-		copyFrom++;
 	}
-	
-	// Copy over the remainder of our array and truncate
-	if(copyFrom != copyTo)
-	{
-		memmove(_mutablePositionsAsData.mutableBytes + sizeof(SRTPosition)*copyTo,
-				_mutablePositionsAsData.bytes + sizeof(SRTPosition)*copyFrom,
-				sizeof(SRTPosition)*(currentPositionCount - copyFrom));
-		currentPositionCount -= (copyFrom - copyTo);
-		_mutablePositionsAsData.length =currentPositionCount * sizeof(SRTPosition);
-	}
-
+	return newIndex;
 }
 
 
@@ -220,6 +173,7 @@
 		return (SRTPosition*)self.positionsAsData.bytes;
 
 }
+
 
 - (int)positionCount
 {
@@ -313,6 +267,7 @@
 	currentSRTRate = SRTRateZero();
 	currentPositionIndex = 0;
 	currentModelViewMatrix = GLKMatrix4Identity;
+	isSelected = NO;
 	[self unpauseAll];
 }
 
@@ -328,6 +283,7 @@
 	currentSRTRate = SRTRateZero();
 	currentPositionIndex = 0;
 	currentModelViewMatrix = GLKMatrix4Identity;
+	isSelected = NO;
 	[self unpauseAll];
 }
 
@@ -341,6 +297,7 @@
 	[super awakeFromSnapshotEvents:flags];
 	[PSHelpers NYIWithmessage:@"drawinggroup awakeFromSnapshotEvents:"];
 	[self unpauseAll];
+	isSelected = NO;
 }
 
 
@@ -404,6 +361,12 @@
 	return (SRTPosition*)_mutablePositionsAsData.bytes;
 }
 
+- (GLKMatrix4)currentModelViewMatrix
+{
+	return currentModelViewMatrix;
+}
+
+
 
 /*
 	TODO: This really requires some explanation....
@@ -437,4 +400,171 @@
 	return (self.drawingLines.count == 0 && self.children.count == 0);
 }
 
+- (BOOL)hitsPoint:(CGPoint)p
+{
+	// return true if any line in this group or its children is hit
+	// p is assumed to be in this group's parent's coordinate system
+		
+	//translate p into our coordinate system
+	bool isInvertable;
+	GLKMatrix4 selfInverted = GLKMatrix4Invert(currentModelViewMatrix, &isInvertable);
+	if(!isInvertable) NSLog(@"!!!! SHOULD ALWAYS BE INVERTABLE!!!");
+	GLKVector4 v4 = GLKMatrix4MultiplyVector4(selfInverted, GLKVector4FromCGPoint(p));
+	CGPoint fixedP = CGPointFromGLKVector4(v4);
+
+	
+	for (PSDrawingLine* l in self.drawingLines)
+		if ([l hitsPoint:fixedP])
+			return YES;
+	
+	for (PSDrawingGroup* g in self.children)
+		if ([g hitsPoint:fixedP])
+			return YES;
+	
+	return NO;
+}
+
+
+- (void)deleteSelectedChildren
+{
+	for (PSDrawingGroup* g in [self.children copy])
+	{
+		if (g.isSelected)
+			[PSDataModel deleteDrawingGroup:g];
+		else
+			[g deleteSelectedChildren];
+	}
+}
+
+
+- (void)getAllSelectedChildren:(NSMutableSet*)selected
+{
+	for (PSDrawingGroup* g in self.children)
+	{
+		if (g.isSelected)
+			[selected addObject:g];
+		else
+			[g getAllSelectedChildren:selected];
+	}
+}
+
+
+- (void)mergeSelectedChildrenIntoNewGroup
+{
+
+	// 1. Recurse through the tree and get all of the selected roots of subtrees
+	NSMutableSet* selected = [NSMutableSet set];
+	[self getAllSelectedChildren:selected];
+	[PSHelpers assert:selected.count > 0 withMessage:@"Need some selected children to merge"];
+	
+	// 2. Create a new group and move all of them into it
+	PSDrawingGroup* newGroup = [PSDataModel newDrawingGroupWithParent:self];
+	for (PSDrawingGroup* g in selected)
+		g.parent = newGroup;
+
+	
+	//TODO: we probably should displace the selected groups to keep them from jumping around?
+	
+}
+
+- (PSDrawingGroup*)topLevelSelectedChild
+{
+	// This assumes that there is a single subtree with selected nodes
+	for (PSDrawingGroup* g in self.children)
+		if (g.isSelected)
+			return g;
+
+	for (PSDrawingGroup* g in self.children)
+	{
+		PSDrawingGroup* result = [g topLevelSelectedChild];
+		if(result) return result;
+	}
+	
+	return nil;
+}
+
+
+- (void)breakUpGroupAndMergeIntoParent
+{
+	for (PSDrawingGroup* g in [self.children copy])
+		g.parent = self.parent;
+	
+	[PSDataModel deleteDrawingGroup:self];
+}
+
+
+- (void)transformSelectionByX:(float)dX
+						 andY:(float)dY
+					 rotation:(float)dRotation
+						scale:(float)dScale
+					   atTime:(float)time
+			   addingKeyframe:(SRTKeyframeType)keyframeType
+		   usingInterpolation:(BOOL)interpolate
+{
+	[self applyToSelectedSubTrees:^(PSDrawingGroup *g) {
+
+		// Start with our current position and apply these deltas
+		SRTPosition position = g.currentCachedPosition;
+		position.location.x += dX;
+		position.location.y += dY;
+		position.rotation += dRotation;
+		position.scale *= dScale;
+		position.timeStamp = time;
+		position.keyframeType = keyframeType;
+		
+		//Store the position at the current time and refresh the cache
+		[g addPosition:position withInterpolation:interpolate];
+		g.currentCachedPosition = position;
+	}];
+}
+
+
+- (void)applyToSelectedSubTrees:( void ( ^ )( PSDrawingGroup* g ) )functionToApply
+{
+	if(self.isSelected)
+		functionToApply(self);
+	else
+		for (PSDrawingGroup* c in self.children)
+			[c applyToSelectedSubTrees:functionToApply];
+}
+
+
+
+- (PSRecordingSession*)startSelectedGroupsRecordingTranslation:(BOOL)isTranslating
+													  rotation:(BOOL)isRotating
+													   scaling:(BOOL)isScaling
+														atTime:(float)time
+{
+	// Create a recording session
+	PSRecordingSession* session = [[PSRecordingSession alloc] initWithTranslation:isTranslating
+																		 rotation:isRotating
+																			scale:isScaling
+																   startingAtTime:time];
+	
+	// Add each selected group to the session
+	[self applyToSelectedSubTrees:^(PSDrawingGroup *g) {
+
+		[session addGroupToSession:g];
+
+	}];
+
+	return session;
+}
+
+
+
+- (void)printSelected:(int)depth
+{
+	NSLog(@"%d:\t------------ %@", depth, (self.isSelected ? @"SELECTED" : @"NO!"));
+	
+	
+	for (PSDrawingGroup* g in self.children)
+		[g printSelected:depth+1];
+	
+}
+
+- (void)setPosition:(SRTPosition)p atIndex:(int)i
+{
+	self.mutablePositionBytes[i] = p;
+}
 @end

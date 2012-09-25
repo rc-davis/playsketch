@@ -18,6 +18,7 @@
 
 #define EXPANDED_WIDTH_2 110.0
 #define SHRUNK_WIDTH_2 40.0
+#define GROUPBUTTON_PADDING 30.0
 
 
 @interface PSSRTManipulator ()
@@ -59,6 +60,30 @@
 	}
 	
 	return self;
+}
+
+- (void)setGroupButtons:(UIView *)groupButtons
+{
+	if(_groupButtons)
+		[_groupButtons removeFromSuperview];
+
+	
+	if(groupButtons)
+	{
+		CGRect newOwnFrame = self.frame;
+		newOwnFrame.size.width = 2.0*(EXPANDED_WIDTH_2 + GROUPBUTTON_PADDING + groupButtons.frame.size.width);
+		self.frame = newOwnFrame;
+
+		[self addSubview:groupButtons];
+		CGRect newFrame = groupButtons.frame;
+		newFrame.origin.x = groupButtons.frame.size.width + EXPANDED_WIDTH_2*2.0 + GROUPBUTTON_PADDING*2.0;
+		newFrame.origin.y = 0;
+		groupButtons.frame = newFrame;
+		
+	}
+	
+	_groupButtons = groupButtons;
+
 }
 
 - (void)drawRect:(CGRect)rect
@@ -125,6 +150,7 @@
 											willScale:_isScaling];
 	
 	[self setNeedsDisplay];
+	self.groupButtons.hidden = YES;
 
 }
 
@@ -213,6 +239,7 @@
 	_lastTimeStamp = 0;
 	
 	[self setNeedsDisplay];
+	self.groupButtons.hidden = NO;
 }
 
 
@@ -232,6 +259,7 @@
 	_lastTimeStamp = 0;
 	
 	[self setNeedsDisplay];
+	self.groupButtons.hidden = NO;
 }
 
 

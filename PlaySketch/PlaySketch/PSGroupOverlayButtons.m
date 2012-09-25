@@ -14,23 +14,22 @@
 #import "PSGroupOverlayButtons.h"
 #import "PSDrawingGroup.h"
 
-
 @implementation PSGroupOverlayButtons
-@synthesize recordingButton = _recordingButton;
-@synthesize showDetailsButton = _showDetailsButton;
-@synthesize recordPulsing = _recordPulsing;
 
-- (void)configureForGroup:(PSDrawingGroup*)group
+- (void)configureForSelection:(PSSelectionHelper*)helper
 {
+	BOOL singleLeafOnlySelected = [helper singleLeafOnlySelected];
+	
 	// Decide what buttons to show
-	BOOL isExplicit = [group.explicitCharacter boolValue];
-	self.recordingButton.hidden = !isExplicit;
-	self.showDetailsButton.hidden = !isExplicit;
-	self.deleteGroupButton.hidden = !isExplicit;
+	self.recordingButton.hidden = NO;
+	self.createGroupButton.hidden = (helper.selectedGroupCount == 1);
+	self.disbandGroupButton.hidden = (helper.selectedGroupCount > 1) || singleLeafOnlySelected;
+	self.deleteGroupButton.hidden = NO;
 	
 	//Lay them out dynamically
 	NSArray* allButtons = [NSArray arrayWithObjects:self.recordingButton,
-													self.showDetailsButton,
+													self.createGroupButton,
+													self.disbandGroupButton,
 													self.deleteGroupButton,
 													nil];
 	CGFloat yOffset = 0;
@@ -44,29 +43,6 @@
 	}
 	
 }
-
-- (void)setLocation:(CGPoint)p
-{
-	CGRect newFrame = self.frame;
-	newFrame.origin = p;
-	self.frame = newFrame;
-}
-
-- (void)show:(BOOL)animated
-{
-	if(animated) [UIView beginAnimations:@"GroupOverlayAppearance" context:nil];
-	self.alpha = 1.0;
-	if(animated) [UIView commitAnimations];
-}
-
-- (void)hide:(BOOL)animated;
-{
-	if(animated) [UIView beginAnimations:@"GroupOverlayAppearance" context:nil];
-	self.alpha = 0.0;
-	if(animated) [UIView commitAnimations];
-
-}
-
 
 - (void)startRecordingMode
 {

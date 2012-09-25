@@ -292,6 +292,22 @@
 	return (self.pointCount < 10);
 }
 
+
+- (BOOL)hitsPoint:(CGPoint)p
+{
+	//TODO: This does NOT take transforms into account!
+	float HIT_DISTANCE = 20.0;
+	CGPoint* points = self.points;
+	int pointCount = self.pointCount;
+	for (int i = 0; i < pointCount; i++) {
+		CGPoint q = points[i];
+		if(hypot(q.x - p.x, q.y - p.y) < HIT_DISTANCE)
+			return YES;
+	}
+	return NO;
+}
+
+
 - (void)setMutablePoints:(NSMutableData*)newPoints
 {
 	_mutablePoints = newPoints;

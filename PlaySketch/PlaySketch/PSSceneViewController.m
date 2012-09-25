@@ -22,6 +22,7 @@
 #import "PSGroupOverlayButtons.h"
 #import "PSVideoExportControllerViewController.h"
 #import "PSMotionPathView.h"
+#import "PSRecordingSession.h"
 #import <QuartzCore/QuartzCore.h>
 
 
@@ -35,6 +36,7 @@
 @property(nonatomic,retain) PSPenColorViewController* penController;
 @property(nonatomic) UInt64 currentColor; // the drawing color as an int
 @property(nonatomic) int penWeight;
+@property(nonatomic,retain) PSRecordingSession* recordingSession;
 - (void)refreshManipulatorLocation;
 - (void)highlightButton:(UIButton*)b on:(BOOL)highlight;
 @end
@@ -42,26 +44,6 @@
 
 
 @implementation PSSceneViewController
-@synthesize renderingController = _renderingController;
-@synthesize drawingTouchView = _drawingTouchView;
-@synthesize playButton = _playButton;
-@synthesize timelineSlider = _timelineSlider;
-@synthesize selectionOverlayButtons = _selectionOverlayButtons;
-@synthesize motionPathView = _motionPathView;
-@synthesize currentDocument = _currentDocument;
-@synthesize rootGroup = _rootGroup;
-@synthesize isSelecting = _isSelecting;
-@synthesize isReadyToRecord = _isReadyToRecord;
-@synthesize isRecording = _isRecording;
-@synthesize selectionHelper = _selectionHelper;
-@synthesize penPopoverController = _penPopoverController;
-@synthesize penController = _penController;
-@synthesize currentColor = _currentColor;
-@synthesize penWeight = _penWeight;
-@synthesize manipulator = _manipulator;
-
-
-
 
 /*
  ----------------------------------------------------------------------------
@@ -88,10 +70,10 @@
 	
 	// Create the manipulator
 	self.manipulator = [[PSSRTManipulator alloc] initAtLocation:CGPointZero];
-	[self.renderingController.view insertSubview:self.manipulator belowSubview:self.selectionOverlayButtons];
+	[self.renderingController.view addSubview:self.manipulator];
 	self.manipulator.delegate = self;
 	self.manipulator.hidden = YES;
-	
+	self.manipulator.groupButtons = self.selectionOverlayButtons;
 	
 	// Initialize to be drawing with an initial color
 	UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"SketchInterface" bundle:nil];
@@ -100,8 +82,6 @@
 	self.penPopoverController = [[UIPopoverController alloc] initWithContentViewController:self.penController];
 	[self.penController setToDefaults];
 	
-
-	[self.selectionOverlayButtons hide:NO];
 	
 	// initialize our objects to the right time
 	[self.renderingController jumpToTime:self.timelineSlider.value];
@@ -241,6 +221,36 @@
 	self.isSelecting = NO;
 	self.isErasing = YES;
 }
+
+
+- (IBAction)deleteCurrentSelection:(id)sender
+{
+	[self.rootGroup deleteSelectedChildren];
+	self.selectionHelper = nil;
+	self.manipulator.hidden = YES;
+}
+
+- (IBAction)createGroupFromCurrentSelection:(id)sender
+{
+	[PSHelpers assert:(self.selectionHelper.selectedGroupCount > 1)
+		  withMessage:@"Need more than one existing group to create a new one"];
+	
+	[self.rootGroup mergeSelectedChildrenIntoNewGroup];
+	
+	self.selectionHelper = nil;
+	self.manipulator.hidden = YES;
+	
+}
+
+
+- (IBAction)ungroupFromCurrentSelection:(id)sender
+{
+	PSDrawingGroup* topLevelGroup = [self.rootGroup topLevelSelectedChild];
+	[PSHelpers assert:(topLevelGroup!=nil) withMessage:@"Need a non-nil child"];
+	[PSHelpers assert:(topLevelGroup!=self.rootGroup) withMessage:@"Selected child can't be the root"];
+	[topLevelGroup breakUpGroupAndMergeIntoParent];
+}
+
 
 - (void)setPlaying:(BOOL)playing
 {
@@ -393,8 +403,8 @@
 		selectionLine.color = [NSNumber numberWithUnsignedLongLong:[PSHelpers colorToInt64:[UIColor redColor]]];
 		
 		// Start a new selection set helper
-		self.selectionHelper = [[PSSelectionHelper alloc] initWithGroup:self.rootGroup
-													   andSelectionLine:selectionLine];
+		self.selectionHelper = [PSSelectionHelper selectionWithLine:selectionLine
+														inRootGroup:self.rootGroup];
 		return selectionLine;
 	}
 		
@@ -412,6 +422,7 @@
 		// thread so it won't block the redrawing as much as possible
 		// That requires us to bundle up the points as objects instead of structs
 		// so they'll fit in a dictionary to pass to the performSelectorInBackground method
+		// This is ugly-looking, but the arguments need to be on the heap instead of the stack
 		NSDictionary* pointsDict = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSValue valueWithCGPoint:from], @"from",
 									[NSValue valueWithCGPoint:to], @"to", nil];
@@ -422,24 +433,26 @@
 
 -(void)finishedDrawingLine:(PSDrawingLine*)line inDrawingView:(id)drawingView
 {
-	if ( line == self.selectionHelper.selectionLoupeLine )
+	if ( line && line == self.selectionHelper.selectionLoupeLine )
 	{
 		//Clean up selection state
 		[PSDataModel deleteDrawingLine:self.selectionHelper.selectionLoupeLine];
 		self.selectionHelper.selectionLoupeLine = nil;
+		[self.selectionHelper finishSelection];
+		
+		[self.rootGroup printSelected:0];
 		
 		//Show the manipulator if it was worthwhile
-		self.manipulator.hidden = NO;
-
 		
-		if(![self.selectionHelper anySelected])
+		if(self.selectionHelper.selectedGroupCount == 0)
 		{
 			self.selectionHelper = nil;
+			
 		}
 		else
 		{
 			self.manipulator.hidden = NO;
-			
+			[self.selectionOverlayButtons configureForSelection:self.selectionHelper];
 		}
 	}
 	else
@@ -451,8 +464,11 @@
 
 -(void)cancelledDrawingLine:(PSDrawingLine*)line inDrawingView:(id)drawingView
 {
-	//TODO: similar to finishedDrawing
-	[PSHelpers NYIWithmessage:@"scene controller view: cancelledDrawingLine"];
+	if(line != nil && line == self.selectionHelper.selectionLoupeLine)
+		[PSDataModel deleteDrawingLine:line];
+	else if (line != nil)
+		[PSDataModel deleteDrawingGroup:line.group];
+	if(self.selectionHelper) self.selectionHelper = nil;
 }
 
 -(void)movedAt:(CGPoint)p inDrawingView:(id)drawingView
@@ -463,6 +479,28 @@
 	{
 		[self.rootGroup eraseAtPoint:p];
 	}
+}
+
+
+-(void)tappedAt:(CGPoint)p tapCount:(int)tapCount inDrawingView:(id)drawingView
+{
+	// Look to see if we tapped on an object!
+	PSSelectionHelper* tapSelection = [PSSelectionHelper selectionForTap:p inRootGroup:self.rootGroup];
+	if(tapCount == 1 && tapSelection.selectedGroupCount > 0)
+	{
+		// KEEP IT
+		self.selectionHelper = tapSelection;
+		self.manipulator.hidden = NO;
+		[self.selectionOverlayButtons configureForSelection:self.selectionHelper];
+	}
+	else
+	{
+		self.selectionHelper = nil;
+		self.manipulator.hidden = YES;
+		
+	}
+
+	
 }
 
 /*
@@ -477,38 +515,18 @@
 						   willRotate:(BOOL)isRotating
 							willScale:(BOOL)isScaling
 {
-	
-	PSSRTManipulator* manipulator = sender;
-/*
-	TODO: bring back recording!
- 
 	if(self.isReadyToRecord)
 	{
 		self.isRecording = YES;
-		
-		//Remember this location and clear everything after it
-		SRTPosition currentPos = [manipulator.group currentCachedPosition];
-		currentPos.timeStamp = self.timelineSlider.value;
-		currentPos.keyframeType = SRTKeyframeMake(isScaling, isRotating, isTranslating);
-		[manipulator.group addPosition:currentPos withInterpolation:NO];
-
+	
+		self.recordingSession = [self.rootGroup startSelectedGroupsRecordingTranslation:isTranslating
+																			   rotation:isRotating
+																				scaling:isScaling
+																				 atTime:self.timelineSlider.value];
 		// Start playing the timeline
 		[self setPlaying:YES];
-		
-		// Pause the group
-		[manipulator.group pauseUpdatesOfTranslation:isTranslating
-											rotation:(isRotating||isTranslating)
-											   scale:(isScaling||isTranslating)];
-		
-		[manipulator.group flattenTranslation:isTranslating
-								   rotation:(isRotating||isTranslating)
-									  scale:(isScaling||isTranslating)
-								  betweenTime:self.timelineSlider.value
-									  andTime:1e99];
-
 		self.selectionOverlayButtons.recordPulsing = YES;
 	}
-*/	
 	
 	// We would like to keep the motion paths updating in realtime while we
 	// record, but that's too expensive until we optimize the path updating
@@ -527,48 +545,30 @@
 		 isScaling:(BOOL)isScaling
 	  timeDuration:(float)duration
 {
-	PSSRTManipulator* manipulator = sender;
-	
-	// Clear out the frames we are overwriting if this is a recording!
-/*
-	TODO: fix up recording
-	if( self.isRecording)
-		[manipulator.group flattenTranslation:isTranslating
-								   rotation:isRotating || isTranslating
-									  scale:isScaling || isTranslating
-								  betweenTime:self.timelineSlider.value - duration
-									  andTime:self.timelineSlider.value];
-*/
 
-	for (PSDrawingGroup* g in self.rootGroup.children)
+	if (self.isRecording)
 	{
-		//TODO: recurse more than one level deep!
-		
-		if (g.isSelected)
-		{
-			// Get the group's position
-			SRTPosition position = [g currentCachedPosition];
-			
-			// Update it with these changes
-			position.location.x += dX;
-			position.location.y += dY;
-			position.rotation += dRotation;
-			position.scale *= dScale;
-			
-			//Store the position at the current time
-			position.timeStamp = self.timelineSlider.value;
-			position.keyframeType = self.isRecording ? SRTKeyframeTypeNone() :
-			SRTKeyframeMake(isScaling, isRotating, isTranslating);
-			[g addPosition:position withInterpolation:!self.isRecording];
-			
-			[g setCurrentCachedPosition:position];
-		}
+		[self.recordingSession transformAllGroupsByX:dX
+												andY:dY
+											rotation:dRotation
+											   scale:dScale
+											  atTime:self.timelineSlider.value];
 	}
-	
-	//Keep our buttons properly aligned
-	[self.selectionOverlayButtons setLocation:[manipulator upperRightPoint]];
+	else
+	{
 
-	
+		SRTKeyframeType keyframeType =  self.isRecording ?
+											SRTKeyframeTypeNone() :
+											SRTKeyframeMake(isScaling, isRotating, isTranslating);
+
+		[self.rootGroup transformSelectionByX:dX
+										 andY:dY
+									 rotation:dRotation
+										scale:dScale
+									   atTime:self.timelineSlider.value
+							   addingKeyframe:keyframeType
+						   usingInterpolation:YES];
+	}
 }
 
 -(void)manipulatorDidStopInteraction:(id)sender
@@ -577,44 +577,27 @@
 						  wasScaling:(BOOL)isScaling
 						withDuration:(float)duration
 {
-	PSSRTManipulator* manipulator = sender;
-
-	/*
+	
 	if(self.isRecording)
 	{
 		self.isRecording = NO;
-		
+
 		// Before we add our last keyframe, snap the timeline so our keyframe
 		// will be easy to scrub to later
 		[self snapTimeline:nil];
-		
-		// Erase all the data after this point
-		[manipulator.group flattenTranslation:isTranslating
-									 rotation:isRotating || isTranslating
-										scale:isScaling || isTranslating
-								  betweenTime:self.timelineSlider.value - duration
-									  andTime:1e100];
-		
-		// Put a marker at this location and stop playing
-		SRTPosition currentPos = [manipulator.group currentCachedPosition];
-		currentPos.timeStamp = self.timelineSlider.value;
-		currentPos.keyframeType = SRTKeyframeMake(isScaling, isRotating, isTranslating);
-		[manipulator.group addPosition:currentPos withInterpolation:NO];
 
-		self.selectionOverlayButtons.recordPulsing = NO;
-		
-		// Unpause the group
-		[manipulator.group unpauseAll];
 
+		[self.recordingSession finishAtTime:self.timelineSlider.value];
+		
 		// Stop playing
 		[self setPlaying:NO];
-
+		self.selectionOverlayButtons.recordPulsing = NO;
 	}
 	
 	// We would rather be doing this real-time instead of at the end of the interaction
-	[self.motionPathView addLineForGroup:manipulator.group];
+	// TODO: fix up motion paths!
+	//	[self.motionPathView addLineForGroup:manipulator.group];
 	self.motionPathView.hidden = NO;
-	*/
 }
 
 

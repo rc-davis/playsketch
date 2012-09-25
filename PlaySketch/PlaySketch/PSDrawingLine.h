@@ -33,6 +33,7 @@
 - (CGRect)boundingRect;
 - (void)prepareForSelection;
 - (BOOL)eraseAtPoint:(CGPoint)p;
+- (BOOL)hitsPoint:(CGPoint)p;
 - (void)setMutablePoints:(NSMutableData*)newPoints;
 
 @end

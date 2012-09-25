@@ -252,4 +252,15 @@ static inline BOOL SRTPositionsEqual(SRTPosition p1, SRTPosition p2, BOOL ignore
 			p1.origin.y == p2.origin.y;
 }
 
+static inline CGPoint CGPointFromGLKVector4(GLKVector4 v)
+{
+	return CGPointMake(v.x, v.y);
+}
+
+static inline GLKVector4 GLKVector4FromCGPoint(CGPoint p)
+{
+	return GLKVector4Make(p.x, p.y, 1.0, 1.0);
+}
+
+
 #endif

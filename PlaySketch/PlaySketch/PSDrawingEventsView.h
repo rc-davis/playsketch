@@ -26,6 +26,7 @@
 -(void)finishedDrawingLine:(PSDrawingLine*)line inDrawingView:(id)drawingView;
 -(void)cancelledDrawingLine:(PSDrawingLine*)line inDrawingView:(id)drawingView;
 -(void)movedAt:(CGPoint)p inDrawingView:(id)drawingView;
+-(void)tappedAt:(CGPoint)p tapCount:(int)tapCount inDrawingView:(id)drawingView;
 @end
 
 
