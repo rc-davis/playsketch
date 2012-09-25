@@ -80,6 +80,8 @@
 - (PSDrawingGroup*)topLevelSelectedChild;
 - (void)breakUpGroupAndMergeIntoParent;
 
+- (void)applyToSelectedSubTrees:( void ( ^ )( PSDrawingGroup* g ) )functionToApply;
+
 - (void)transformSelectionByX:(float)dX
 						 andY:(float)dY
 					 rotation:(float)dRotation

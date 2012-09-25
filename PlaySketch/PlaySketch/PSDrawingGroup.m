@@ -577,91 +577,65 @@
 }
 
 
+- (void)applyToSelectedSubTrees:( void ( ^ )( PSDrawingGroup* g ) )functionToApply
+{
+	if(self.isSelected)
+		functionToApply(self);
+	else
+		for (PSDrawingGroup* c in self.children)
+			[c applyToSelectedSubTrees:functionToApply];
+}
+
 - (void)prepareSelectedGroupsForRecordingTranslation:(BOOL)isTranslating
 											rotation:(BOOL)isRotating
 											 scaling:(BOOL)isScaling
 											  atTime:(float)time
 {
-	if (self.isSelected)
-	{
+	[self applyToSelectedSubTrees:^(PSDrawingGroup *g) {
 		//Remember this location and clear everything after it
 		SRTPosition currentPos = currentSRTPosition;
 		currentPos.timeStamp = time;
 		currentPos.keyframeType = SRTKeyframeMake(isScaling, isRotating, isTranslating);
-		[self addPosition:currentPos withInterpolation:NO];
+		[g addPosition:currentPos withInterpolation:NO];
 		
 		// Pause the group so it won't keep moving when we hit play
-		[self pauseUpdatesOfTranslation:isTranslating
+		[g pauseUpdatesOfTranslation:isTranslating
 							   rotation:isRotating
 								  scale:isScaling];
 		
 		// Get rid of the future motion for the type we are recording
-		[self flattenTranslation:isTranslating
+		[g flattenTranslation:isTranslating
 						rotation:isRotating
 						   scale:isScaling
 					 betweenTime:time
 						 andTime:1e99];
-	}
-	else
-	{
-		// If we aren't selected, recurse in case our children are
-		for (PSDrawingGroup* g in self.children)
-		{
-			[g prepareSelectedGroupsForRecordingTranslation:isTranslating
-												   rotation:isRotating
-													scaling:isScaling
-													 atTime:time];
-		}
-	}
+	}];
 }
 
 - (void)finishRecordingOnSelectedGroupsAtTime:(float)time addingKeyframe:(SRTKeyframeType)keyframeType
 {
-	if(self.isSelected)
-	{
+	[self applyToSelectedSubTrees:^(PSDrawingGroup *g) {
+
 		// Put a marker at this location
 		SRTPosition currentPos = currentSRTPosition;
 		currentPos.timeStamp = time;
 		currentPos.keyframeType = keyframeType;
-		[self addPosition:currentPos withInterpolation:NO];
+		[g addPosition:currentPos withInterpolation:NO];
 
 		// Unpause the group
-		[self unpauseAll];
-
-	}
-	else
-	{
-		// If we aren't selected, recurse in case our children are
-		for (PSDrawingGroup* g in self.children)
-		{
-			[g finishRecordingOnSelectedGroupsAtTime:time addingKeyframe:keyframeType];
-		}
-	}
+		[g unpauseAll];
+	}];
 }
 
 - (void)flattenSelectedTranslation:(BOOL)translation rotation:(BOOL)rotation scale:(BOOL)scale betweenTime:(float)timeStart andTime:(float)timeEnd
 {
-	if(self.isSelected)
-	{
+	[self applyToSelectedSubTrees:^(PSDrawingGroup *g) {
 		[self flattenTranslation:translation
 						rotation:rotation
 						   scale:scale
 					 betweenTime:timeStart
 						 andTime:timeEnd];
-	}
-	else
-	{
-		// If we aren't selected, recurse in case our children are
-		for (PSDrawingGroup* g in self.children)
-		{
-			[g flattenSelectedTranslation:translation
-									rotation:rotation
-									   scale:scale
-								 betweenTime:timeStart
-									 andTime:timeEnd];
-		}
-	}
-	
+	}];
 }
 
 
