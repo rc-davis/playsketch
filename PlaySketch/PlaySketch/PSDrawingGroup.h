@@ -17,7 +17,7 @@
 
 #define POSITION_FPS 8.0
 
-@class PSDrawingGroup, PSDrawingLine;
+@class PSDrawingGroup, PSDrawingLine, PSRecordingSession;
 
 @interface PSDrawingGroup : NSManagedObject
 {
@@ -43,8 +43,7 @@
 
 @interface PSDrawingGroup (CoreDataGeneratedAccessors)
 
-- (void)addPosition:(SRTPosition)position withInterpolation:(BOOL)shouldInterpolate;
-- (void)flattenTranslation:(BOOL)translation rotation:(BOOL)rotation scale:(BOOL)scale betweenTime:(float)timeStart andTime:(float)timeEnd;
+- (int)addPosition:(SRTPosition)position withInterpolation:(BOOL)shouldInterpolate;
 - (void)pauseUpdatesOfTranslation:(BOOL)translation rotation:(BOOL)rotation scale:(BOOL)scale;
 - (void)unpauseAll;
 - (SRTPosition*)positions;
@@ -90,16 +89,15 @@
 			   addingKeyframe:(SRTKeyframeType)keyframeType
 		   usingInterpolation:(BOOL)interpolate;
 
-- (void)prepareSelectedGroupsForRecordingTranslation:(BOOL)isTranslating
+
+
+- (PSRecordingSession*)startSelectedGroupsRecordingTranslation:(BOOL)isTranslating
 											rotation:(BOOL)isRotating
 											 scaling:(BOOL)isScaling
 											  atTime:(float)time;
-- (void)finishRecordingOnSelectedGroupsAtTime:(float)time addingKeyframe:(SRTKeyframeType)keyframeType;
-
-- (void)flattenSelectedTranslation:(BOOL)translation rotation:(BOOL)rotation scale:(BOOL)scale betweenTime:(float)timeStart andTime:(float)timeEnd;
-
 
 
 - (void)printSelected:(int)depth;
+- (void)setPosition:(SRTPosition)p atIndex:(int)i;
 
 @end

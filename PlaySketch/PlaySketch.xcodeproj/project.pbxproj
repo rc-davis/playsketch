@@ -22,6 +22,7 @@
 		4649EE96160D88A600FAE620 /* more.png in Resources */ = {isa = PBXBuildFile; fileRef = 4649EE95160D88A600FAE620 /* more.png */; };
 		4649EE98160D935300FAE620 /* eraser.png in Resources */ = {isa = PBXBuildFile; fileRef = 4649EE97160D935300FAE620 /* eraser.png */; };
 		464A4F3D15DCAFD4008A59DF /* PSMotionPathView.m in Sources */ = {isa = PBXBuildFile; fileRef = 464A4F3C15DCAFD4008A59DF /* PSMotionPathView.m */; };
+		464AF3861611600C009090D0 /* PSRecordingSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 464AF3851611600C009090D0 /* PSRecordingSession.m */; };
 		4673A46A15B6A9100053FDF0 /* PSHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 4673A46915B6A9100053FDF0 /* PSHelpers.m */; };
 		467BF45D15DB963D002321A7 /* PSVideoExportControllerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 467BF45C15DB963D002321A7 /* PSVideoExportControllerViewController.m */; };
 		467E4E4215B4235700F70C1E /* PSSelectionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 467E4E4115B4235700F70C1E /* PSSelectionHelper.m */; };
@@ -94,6 +95,8 @@
 		4649EE97160D935300FAE620 /* eraser.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = eraser.png; sourceTree = "<group>"; };
 		464A4F3B15DCAFD4008A59DF /* PSMotionPathView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PSMotionPathView.h; path = PlaySketch/PSMotionPathView.h; sourceTree = "<group>"; };
 		464A4F3C15DCAFD4008A59DF /* PSMotionPathView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PSMotionPathView.m; path = PlaySketch/PSMotionPathView.m; sourceTree = "<group>"; };
+		464AF3841611600C009090D0 /* PSRecordingSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSRecordingSession.h; sourceTree = "<group>"; };
+		464AF3851611600C009090D0 /* PSRecordingSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSRecordingSession.m; sourceTree = "<group>"; };
 		4673A46815B6A9100053FDF0 /* PSHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSHelpers.h; sourceTree = "<group>"; };
 		4673A46915B6A9100053FDF0 /* PSHelpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSHelpers.m; sourceTree = "<group>"; };
 		467BF45B15DB963D002321A7 /* PSVideoExportControllerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PSVideoExportControllerViewController.h; path = PlaySketch/PSVideoExportControllerViewController.h; sourceTree = "<group>"; };
@@ -210,6 +213,8 @@
 				4673A46915B6A9100053FDF0 /* PSHelpers.m */,
 				46F1735015DB7AEE00F787AC /* PSGLKitVideoExporter.h */,
 				46F1735115DB7AEE00F787AC /* PSGLKitVideoExporter.m */,
+				464AF3841611600C009090D0 /* PSRecordingSession.h */,
+				464AF3851611600C009090D0 /* PSRecordingSession.m */,
 			);
 			name = Helpers;
 			sourceTree = "<group>";
@@ -533,6 +538,7 @@
 				467BF45D15DB963D002321A7 /* PSVideoExportControllerViewController.m in Sources */,
 				464A4F3D15DCAFD4008A59DF /* PSMotionPathView.m in Sources */,
 				4649EE90160D5FDB00FAE620 /* PSPenColorViewController.m in Sources */,
+				464AF3861611600C009090D0 /* PSRecordingSession.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

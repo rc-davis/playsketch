@@ -15,6 +15,7 @@
 #import "PSDrawingLine.h"
 #import "PSDataModel.h"
 #import "PSHelpers.h"
+#import "PSRecordingSession.h"
 
 @interface PSDrawingGroup ()
 {
@@ -35,7 +36,7 @@
 
 
 
-- (void)addPosition:(SRTPosition)position withInterpolation:(BOOL)shouldInterpolate
+- (int)addPosition:(SRTPosition)position withInterpolation:(BOOL)shouldInterpolate
 {
 	const int FPS_MULTIPLE = 4;
 	// We want to cap the rate that we are storing datapoints at.
@@ -82,6 +83,8 @@
 		memmove(currentPositions + newIndex + 1, 
 				currentPositions + newIndex ,
 				(currentPositionCount - newIndex)*sizeof(SRTPosition));
+		
+		currentPositionIndex++;
 	}
 
 	// If this time is already a keyframe, tag the new position as a keyframe too
@@ -145,58 +148,8 @@
 			}
 		}
 
-	}	
-}
-
-
-// Find the value for S,R,T from the last position <= timeStart
-// Copy it into every position between timeStart to (inclusive) timeEnd
-// Remove any timestamps that have been made redundant in the process
-- (void)flattenTranslation:(BOOL)translation rotation:(BOOL)rotation scale:(BOOL)scale betweenTime:(float)timeStart andTime:(float)timeEnd
-{
-	// Get a handle to some mutable data
-	int currentPositionCount = self.positionCount;
-	SRTPosition* currentPositions = [self mutablePositionBytes];
-	
-	// Advance to the start time and remember the last position before the time range
-	int i = 0;
-	SRTPosition positionBefore = SRTPositionZero();
-	while (i < currentPositionCount && currentPositions[i].timeStamp <= timeStart)
-		positionBefore = currentPositions[i++];
-	
-	// Move through the time span, patch up the elements and discard duplicates
-	int copyFrom = i;
-	int copyTo = i;
-	
-	while (copyFrom > 0 && copyFrom < currentPositionCount && currentPositions[i].timeStamp <= timeEnd)
-	{
-		SRTPosition erasedPos = currentPositions[copyFrom];
-		
-		// Unset the keyframes for the channels we are flattening
-		erasedPos.keyframeType = SRTKeyframeRemove(erasedPos.keyframeType,scale, rotation, translation);
-		
-		if(translation) erasedPos.location = positionBefore.location;
-		if(rotation) erasedPos.rotation = positionBefore.rotation;
-		if(scale) erasedPos.scale = positionBefore.scale;
-		
-		// Keep this frame only if it is different from the previous one
-		if(copyTo == 0 || SRTKeyframeIsAny( erasedPos.keyframeType )
-		   || !SRTPositionsEqual(currentPositions[copyTo - 1], erasedPos, YES))
-			currentPositions[copyTo++] = erasedPos;
-		
-		copyFrom++;
 	}
-	
-	// Copy over the remainder of our array and truncate
-	if(copyFrom != copyTo)
-	{
-		memmove(_mutablePositionsAsData.mutableBytes + sizeof(SRTPosition)*copyTo,
-				_mutablePositionsAsData.bytes + sizeof(SRTPosition)*copyFrom,
-				sizeof(SRTPosition)*(currentPositionCount - copyFrom));
-		currentPositionCount -= (copyFrom - copyTo);
-		_mutablePositionsAsData.length =currentPositionCount * sizeof(SRTPosition);
-	}
-
+	return newIndex;
 }
 
 
@@ -220,6 +173,7 @@
 		return (SRTPosition*)self.positionsAsData.bytes;
 
 }
+
 
 - (int)positionCount
 {
@@ -574,57 +528,29 @@
 			[c applyToSelectedSubTrees:functionToApply];
 }
 
-- (void)prepareSelectedGroupsForRecordingTranslation:(BOOL)isTranslating
-											rotation:(BOOL)isRotating
-											 scaling:(BOOL)isScaling
-											  atTime:(float)time
-{
-	[self applyToSelectedSubTrees:^(PSDrawingGroup *g) {
-		//Remember this location and clear everything after it
-		SRTPosition currentPos = g.currentCachedPosition;
-		currentPos.timeStamp = time;
-		currentPos.keyframeType = SRTKeyframeMake(isScaling, isRotating, isTranslating);
-		[g addPosition:currentPos withInterpolation:NO];
-		
-		// Pause the group so it won't keep moving when we hit play
-		[g pauseUpdatesOfTranslation:isTranslating
-							   rotation:isRotating
-								  scale:isScaling];
-		
-		// Get rid of the future motion for the type we are recording
-		[g flattenTranslation:isTranslating
-						rotation:isRotating
-						   scale:isScaling
-					 betweenTime:time
-						 andTime:1e99];
-	}];
-}
 
-- (void)finishRecordingOnSelectedGroupsAtTime:(float)time addingKeyframe:(SRTKeyframeType)keyframeType
+
+- (PSRecordingSession*)startSelectedGroupsRecordingTranslation:(BOOL)isTranslating
+													  rotation:(BOOL)isRotating
+													   scaling:(BOOL)isScaling
+														atTime:(float)time
 {
+	// Create a recording session
+	PSRecordingSession* session = [[PSRecordingSession alloc] initWithTranslation:isTranslating
+																		 rotation:isRotating
+																			scale:isScaling
+																   startingAtTime:time];
+	
+	// Add each selected group to the session
 	[self applyToSelectedSubTrees:^(PSDrawingGroup *g) {
 
-		// Put a marker at this location
-		SRTPosition currentPos = g.currentCachedPosition;
-		currentPos.timeStamp = time;
-		currentPos.keyframeType = keyframeType;
-		[g addPosition:currentPos withInterpolation:NO];
+		[session addGroupToSession:g];
 
-		// Unpause the group
-		[g unpauseAll];
 	}];
+
+	return session;
 }
 
-- (void)flattenSelectedTranslation:(BOOL)translation rotation:(BOOL)rotation scale:(BOOL)scale betweenTime:(float)timeStart andTime:(float)timeEnd
-{
-	[self applyToSelectedSubTrees:^(PSDrawingGroup *g) {
-		[self flattenTranslation:translation
-						rotation:rotation
-						   scale:scale
-					 betweenTime:timeStart
-						 andTime:timeEnd];
-	}];
-}
 
 
 - (void)printSelected:(int)depth
@@ -637,5 +563,8 @@
 	
 }
 
-
+- (void)setPosition:(SRTPosition)p atIndex:(int)i
+{
+	self.mutablePositionBytes[i] = p;
+}
 @end

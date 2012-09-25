@@ -22,6 +22,7 @@
 #import "PSGroupOverlayButtons.h"
 #import "PSVideoExportControllerViewController.h"
 #import "PSMotionPathView.h"
+#import "PSRecordingSession.h"
 #import <QuartzCore/QuartzCore.h>
 
 
@@ -35,6 +36,7 @@
 @property(nonatomic,retain) PSPenColorViewController* penController;
 @property(nonatomic) UInt64 currentColor; // the drawing color as an int
 @property(nonatomic) int penWeight;
+@property(nonatomic,retain) PSRecordingSession* recordingSession;
 - (void)refreshManipulatorLocation;
 - (void)highlightButton:(UIButton*)b on:(BOOL)highlight;
 @end
@@ -516,14 +518,13 @@
 	if(self.isReadyToRecord)
 	{
 		self.isRecording = YES;
-		
-		[self.rootGroup prepareSelectedGroupsForRecordingTranslation:isTranslating
-															rotation:isRotating
-															 scaling:isScaling
-															  atTime:self.timelineSlider.value];
 	
-		 // Start playing the timeline
-		 [self setPlaying:YES];
+		self.recordingSession = [self.rootGroup startSelectedGroupsRecordingTranslation:isTranslating
+																			   rotation:isRotating
+																				scaling:isScaling
+																				 atTime:self.timelineSlider.value];
+		// Start playing the timeline
+		[self setPlaying:YES];
 		self.selectionOverlayButtons.recordPulsing = YES;
 	}
 	
@@ -545,29 +546,29 @@
 	  timeDuration:(float)duration
 {
 
-	// Clear out the frames we are overwriting if this is a recording!
-	// I don't think we should have to do this, since it should be covered by the start manipulation call
 	if (self.isRecording)
 	{
-		[self.rootGroup flattenSelectedTranslation:isTranslating
-										  rotation:isRotating
-											 scale:isScaling
-									   betweenTime:self.timelineSlider.value - duration
-										   andTime:self.timelineSlider.value];
-
+		[self.recordingSession transformAllGroupsByX:dX
+												andY:dY
+											rotation:dRotation
+											   scale:dScale
+											  atTime:self.timelineSlider.value];
 	}
+	else
+	{
 
-	SRTKeyframeType keyframeType =  self.isRecording ?
-										SRTKeyframeTypeNone() :
-										SRTKeyframeMake(isScaling, isRotating, isTranslating);
+		SRTKeyframeType keyframeType =  self.isRecording ?
+											SRTKeyframeTypeNone() :
+											SRTKeyframeMake(isScaling, isRotating, isTranslating);
 
-	[self.rootGroup transformSelectionByX:dX
-									 andY:dY
-								 rotation:dRotation
-									scale:dScale
-								   atTime:self.timelineSlider.value
-						   addingKeyframe:keyframeType
-					   usingInterpolation:!self.isRecording];
+		[self.rootGroup transformSelectionByX:dX
+										 andY:dY
+									 rotation:dRotation
+										scale:dScale
+									   atTime:self.timelineSlider.value
+							   addingKeyframe:keyframeType
+						   usingInterpolation:YES];
+	}
 }
 
 -(void)manipulatorDidStopInteraction:(id)sender
@@ -585,17 +586,8 @@
 		// will be easy to scrub to later
 		[self snapTimeline:nil];
 
-		// Erase all data after this point (shouldn't have to do this again?)
-		[self.rootGroup flattenSelectedTranslation:isTranslating
-										  rotation:isRotating
-											 scale:isScaling
-									   betweenTime:self.timelineSlider.value - duration
-										   andTime:1e100];
-		
-		// Tell the selected groups that we are finished
-		SRTKeyframeType keyframeType = SRTKeyframeMake(isScaling, isRotating, isTranslating);
-		[self.rootGroup finishRecordingOnSelectedGroupsAtTime:self.timelineSlider.value
-											   addingKeyframe:keyframeType];
+
+		[self.recordingSession finishAtTime:self.timelineSlider.value];
 		
 		// Stop playing
 		[self setPlaying:NO];
