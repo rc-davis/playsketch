@@ -392,6 +392,9 @@
 		
 		PSDrawingGroup* newLineGroup = [PSDataModel newDrawingGroupWithParent:self.rootGroup];
 		PSDrawingLine* line = [PSDataModel newLineInGroup:newLineGroup withWeight:self.penWeight];
+		SRTPosition newPosition = SRTPositionZero();
+		newPosition.timeStamp = self.timelineSlider.value;
+		[newLineGroup addPosition:newPosition withInterpolation:NO];
 		line.color = [NSNumber numberWithUnsignedLongLong:self.currentColor];
 		return line;
 	}
@@ -440,14 +443,10 @@
 		self.selectionHelper.selectionLoupeLine = nil;
 		[self.selectionHelper finishSelection];
 		
-		[self.rootGroup printSelected:0];
-		
 		//Show the manipulator if it was worthwhile
-		
 		if(self.selectionHelper.selectedGroupCount == 0)
 		{
 			self.selectionHelper = nil;
-			
 		}
 		else
 		{
@@ -457,7 +456,11 @@
 	}
 	else
 	{
-		[PSDataModel save];
+		// Center the new group on the middle of the bounding box
+		CGPoint newCenter = CGRectGetCenter([line.group boundingRect]);
+		CGSize offset = CGSizeMake(newCenter.x, newCenter.y);
+		[line.group offsetGroupByDistance:offset atTime:self.timelineSlider.value];
+		[line.group jumpToTime:self.timelineSlider.value]; // Refresh the view
 	}
 }
 
@@ -618,6 +621,7 @@
 
 -(void)penWeightChanged:(int)newWeight
 {
+	NSLog(@"weight changed: %d", newWeight);
 	self.penWeight = newWeight;
 	[self startDrawing:nil];
 	if(self.penPopoverController && self.penPopoverController.popoverVisible)

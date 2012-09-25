@@ -315,6 +315,20 @@
 }
 
 
+- (void)offsetGroupByDistance:(CGSize)offset atTime:(float)time
+{
+	// 1. Adjust its lines to be centred on zero
+	[self applyTransform:CGAffineTransformMakeTranslation(-offset.width, -offset.height)];
+	
+	// 2. Set the group's location to be offset by the same amount
+	SRTPosition p;
+	[self getStateAtTime:time position:&p rate:nil helperIndex:nil];
+	p.location.x += offset.width;
+	p.location.y += offset.height;
+	[self addPosition:p withInterpolation:NO];	
+}
+
+
 - (void)applyTransform:(CGAffineTransform)transform
 {
 	/*	Brute-force adjusting the points of the lines in this group

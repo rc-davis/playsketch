@@ -257,10 +257,26 @@ static inline CGPoint CGPointFromGLKVector4(GLKVector4 v)
 	return CGPointMake(v.x, v.y);
 }
 
+static inline CGPoint CGPointFromGLKVector2(GLKVector2 v)
+{
+	return CGPointMake(v.x, v.y);
+}
+
+
 static inline GLKVector4 GLKVector4FromCGPoint(CGPoint p)
 {
 	return GLKVector4Make(p.x, p.y, 1.0, 1.0);
 }
 
+static inline GLKVector2 GLKVector2FromCGPoint(CGPoint p)
+{
+	return GLKVector2Make(p.x, p.y);
+}
+
+
+static inline CGPoint CGRectGetCenter(CGRect r)
+{
+	return CGPointMake(CGRectGetMidX(r), CGRectGetMidY(r));
+}
 
 #endif

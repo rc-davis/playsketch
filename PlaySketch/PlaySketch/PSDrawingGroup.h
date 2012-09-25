@@ -65,6 +65,8 @@
 - (void)addDrawingLines:(NSSet *)values;
 - (void)removeDrawingLines:(NSSet *)values;
 
+
+- (void)offsetGroupByDistance:(CGSize)distance atTime:(float)time;
 - (void)applyTransform:(CGAffineTransform)transform;
 - (CGRect)boundingRect;
 
