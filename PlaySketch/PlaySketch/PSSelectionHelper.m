@@ -62,6 +62,14 @@
 	return h;
 }
 
+-(void)dealloc
+{
+	[self.rootGroup applyToSelectedSubTrees:^(PSDrawingGroup *g) {
+		g.isSelected = NO;
+	}];
+}
+
+
 -(void)addLineFrom:(CGPoint)from to:(CGPoint)to
 {
 	// Save this as our first point if we don't have one already

@@ -268,6 +268,12 @@ static inline GLKVector4 GLKVector4FromCGPoint(CGPoint p)
 	return GLKVector4Make(p.x, p.y, 1.0, 1.0);
 }
 
+static inline GLKVector4 GLKVector4FromVector2(GLKVector2 p)
+{
+	return GLKVector4Make(p.x, p.y, 1.0, 1.0);
+}
+
+
 static inline GLKVector2 GLKVector2FromCGPoint(CGPoint p)
 {
 	return GLKVector2Make(p.x, p.y);

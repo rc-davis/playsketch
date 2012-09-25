@@ -245,7 +245,6 @@
 	[newGroup centerOnCurrentBoundingBox];
 	[newGroup jumpToTime:self.timelineSlider.value];
 	
-	
 	self.selectionHelper = nil;
 	self.manipulator.hidden = YES;
 	
@@ -295,11 +294,15 @@
 
 - (void)refreshManipulatorLocation
 {
-	self.manipulator.center = CGPointMake(0,0);
-	
-	// TODO:
-	//CGPointMake(m.group.currentCachedPosition.location.x, m.group.currentCachedPosition.location.y);
-	//-		[self.selectionOverlayButtons setLocation: newPoint];
+	if (self.selectionHelper.selectedGroupCount == 1)
+	{
+		PSDrawingGroup* group = [self.rootGroup topLevelSelectedChild];
+		self.manipulator.center = [group currentOriginInWorldCoordinates];
+	}
+	else
+	{
+		self.manipulator.center = CGPointZero;
+	}
 }
 
 - (void)highlightButton:(UIButton*)b on:(BOOL)highlight
@@ -461,6 +464,7 @@
 		{
 			self.manipulator.hidden = NO;
 			[self.selectionOverlayButtons configureForSelection:self.selectionHelper];
+			[self refreshManipulatorLocation];
 		}
 	}
 	else
@@ -501,6 +505,7 @@
 		self.selectionHelper = tapSelection;
 		self.manipulator.hidden = NO;
 		[self.selectionOverlayButtons configureForSelection:self.selectionHelper];
+		[self refreshManipulatorLocation];
 	}
 	else
 	{
@@ -627,7 +632,6 @@
 
 -(void)penWeightChanged:(int)newWeight
 {
-	NSLog(@"weight changed: %d", newWeight);
 	self.penWeight = newWeight;
 	[self startDrawing:nil];
 	if(self.penPopoverController && self.penPopoverController.popoverVisible)

@@ -244,6 +244,12 @@
 
 }
 
+- (CGPoint)currentOriginInWorldCoordinates
+{
+	// TODO: I don't think this will work properly for nested groups!
+	return CGPointFromGLKVector2(currentSRTPosition.location);
+}
+
 
 - (SRTPosition)currentCachedPosition
 {

@@ -52,6 +52,7 @@
 			  position:(SRTPosition*)pPosition
 				  rate:(SRTRate*)pRate
 		   helperIndex:(int*)pIndex;
+- (CGPoint)currentOriginInWorldCoordinates;
 - (SRTPosition)currentCachedPosition;
 - (void)setCurrentCachedPosition:(SRTPosition)position;
 
