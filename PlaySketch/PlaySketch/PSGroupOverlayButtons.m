@@ -16,7 +16,6 @@
 
 
 @implementation PSGroupOverlayButtons
-@synthesize createGroupButton = _createGroupButton;
 @synthesize recordingButton = _recordingButton;
 @synthesize showDetailsButton = _showDetailsButton;
 @synthesize recordPulsing = _recordPulsing;
@@ -25,14 +24,12 @@
 {
 	// Decide what buttons to show
 	BOOL isExplicit = [group.explicitCharacter boolValue];
-	self.createGroupButton.hidden = isExplicit;
 	self.recordingButton.hidden = !isExplicit;
 	self.showDetailsButton.hidden = !isExplicit;
 	self.deleteGroupButton.hidden = !isExplicit;
 	
 	//Lay them out dynamically
-	NSArray* allButtons = [NSArray arrayWithObjects:self.createGroupButton,
-													self.recordingButton,
+	NSArray* allButtons = [NSArray arrayWithObjects:self.recordingButton,
 													self.showDetailsButton,
 													self.deleteGroupButton,
 													nil];

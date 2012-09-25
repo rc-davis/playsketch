@@ -15,7 +15,6 @@
 @class PSDrawingGroup;
 
 @interface PSGroupOverlayButtons : UIView
-@property(nonatomic,retain)IBOutlet UIButton* createGroupButton;
 @property(nonatomic,retain)IBOutlet UIButton* recordingButton;
 @property(nonatomic,retain)IBOutlet UIButton* showDetailsButton;
 @property(nonatomic,retain)IBOutlet UIButton* deleteGroupButton;

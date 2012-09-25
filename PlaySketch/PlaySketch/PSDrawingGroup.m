@@ -13,6 +13,7 @@
 
 #import "PSDrawingGroup.h"
 #import "PSDrawingLine.h"
+#import "PSDataModel.h"
 #import "PSHelpers.h"
 
 @interface PSDrawingGroup ()
@@ -30,6 +31,7 @@
 @dynamic drawingLines;
 @dynamic positionsAsData;
 @dynamic parent;
+@synthesize isSelected;
 
 
 
@@ -417,6 +419,22 @@
 	GLKMatrix4 selfInverted = GLKMatrix4Invert(currentModelViewMatrix, &isInvertable);
 	if(!isInvertable) NSLog(@"!!!! SHOULD ALWAYS BE INVERTABLE!!!");
 	return GLKMatrix4Multiply(selfInverted, parentInverted);
+}
+
+- (BOOL)eraseAtPoint:(CGPoint)p
+{
+	//TODO: apply the transform to the point!
+	
+	for (PSDrawingLine* l in [self.drawingLines allObjects])
+		if([l eraseAtPoint:p])
+			[PSDataModel deleteDrawingLine:l];
+	
+	for (PSDrawingGroup* g in [self.children allObjects])
+		if([g eraseAtPoint:p])
+			[PSDataModel deleteDrawingGroup:g];
+	
+	
+	return (self.drawingLines.count == 0 && self.children.count == 0);
 }
 
 @end

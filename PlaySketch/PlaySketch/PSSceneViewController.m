@@ -27,18 +27,16 @@
 
 @interface PSSceneViewController ()
 @property(nonatomic)BOOL isSelecting; // If we are selecting instead of drawing
+@property(nonatomic)BOOL isErasing;
 @property(nonatomic)BOOL isReadyToRecord; // If manipulations should be treated as recording
 @property(nonatomic)BOOL isRecording;
 @property(nonatomic,retain) PSSelectionHelper* selectionHelper;
-@property(nonatomic,retain) PSDrawingGroup* selectedGroup;
+@property(nonatomic,retain) UIPopoverController* penPopoverController;
+@property(nonatomic,retain) PSPenColorViewController* penController;
 @property(nonatomic) UInt64 currentColor; // the drawing color as an int
-@property(nonatomic,retain) NSMutableSet* manipulators;
-@property(nonatomic,retain) UIButton* highlightedButton;
-- (PSSRTManipulator*)createManipulatorForGroup:(PSDrawingGroup*)group;
-- (void)removeManipulatorForGroup:(PSDrawingGroup*)group;
-- (PSSRTManipulator*)manipulatorForGroup:(PSDrawingGroup*)group;
-- (void)refreshManipulatorLocations;
-- (void)highlightButton:(UIButton*)b;
+@property(nonatomic) int penWeight;
+- (void)refreshManipulatorLocation;
+- (void)highlightButton:(UIButton*)b on:(BOOL)highlight;
 @end
 
 
@@ -46,9 +44,7 @@
 @implementation PSSceneViewController
 @synthesize renderingController = _renderingController;
 @synthesize drawingTouchView = _drawingTouchView;
-@synthesize createCharacterButton = _createCharacterButton;
 @synthesize playButton = _playButton;
-@synthesize initialColorButton = _initialColorButton;
 @synthesize timelineSlider = _timelineSlider;
 @synthesize selectionOverlayButtons = _selectionOverlayButtons;
 @synthesize motionPathView = _motionPathView;
@@ -58,10 +54,11 @@
 @synthesize isReadyToRecord = _isReadyToRecord;
 @synthesize isRecording = _isRecording;
 @synthesize selectionHelper = _selectionHelper;
-@synthesize selectedGroup = _selectedGroup;
+@synthesize penPopoverController = _penPopoverController;
+@synthesize penController = _penController;
 @synthesize currentColor = _currentColor;
-@synthesize manipulators = _manipulators;
-@synthesize highlightedButton = _highlightedButton;
+@synthesize penWeight = _penWeight;
+@synthesize manipulator = _manipulator;
 
 
 
@@ -84,24 +81,31 @@
 	[self.renderingController viewDidLoad];
 	
 	// Start off in drawing mode
-	self.isSelecting = NO;
 	self.isReadyToRecord = NO;
 	self.isRecording = NO;
+	[self startDrawing:nil];
+
+	
+	// Create the manipulator
+	self.manipulator = [[PSSRTManipulator alloc] initAtLocation:CGPointZero];
+	[self.renderingController.view insertSubview:self.manipulator belowSubview:self.selectionOverlayButtons];
+	self.manipulator.delegate = self;
+	self.manipulator.hidden = YES;
+	
 	
 	// Initialize to be drawing with an initial color
-	[self setColor:self.initialColorButton];
+	UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"SketchInterface" bundle:nil];
+	self.penController = [storyboard instantiateViewControllerWithIdentifier:@"PenController"];
+	self.penController.delegate = self;
+	self.penPopoverController = [[UIPopoverController alloc] initWithContentViewController:self.penController];
+	[self.penController setToDefaults];
+	
 
-	self.createCharacterButton.enabled = NO;
 	[self.selectionOverlayButtons hide:NO];
 	
 	// initialize our objects to the right time
 	[self.renderingController jumpToTime:self.timelineSlider.value];
-	
-	// Create manipulator views for our root group's children
-	self.manipulators = [NSMutableSet set];
-	for (PSDrawingGroup* child in self.rootGroup.children)
-		[self createManipulatorForGroup:child];
-	
+		
 	// Create motion paths to illustrate our objects
 	for (PSDrawingGroup* child in self.rootGroup.children)
 		[self.motionPathView addLineForGroup:child];
@@ -158,53 +162,6 @@
 	[self dismissModalViewControllerAnimated:YES];
 }
 
-- (IBAction)setColor:(id)sender
-{
-	// Grab the background color of the button that called us and remember it
-	UIColor* c = [sender backgroundColor];
-	self.currentColor = [PSHelpers colorToInt64:c];
-	
-	//Stop any selection that is happening
-	self.isSelecting = NO;
-	self.selectionHelper = nil;
-	self.selectedGroup = nil;
-	
-	[self highlightButton:sender];
-}
-
-- (IBAction)startSelecting:(id)sender
-{
-	self.isSelecting = YES;
-	[self highlightButton:sender];
-}
-
-
-- (IBAction)createCharacterWithCurrentSelection:(id)sender
-{
-	[PSHelpers assert:(self.selectedGroup != nil) withMessage:@"need a selection to make character"];
-	
-	// Keep the selection group by not flattening it when it is unselected
-	self.selectedGroup.explicitCharacter = [NSNumber numberWithBool:YES];
-	[PSDataModel save];
-	
-	[self.selectionOverlayButtons configureForGroup:self.selectedGroup];
-	[[self manipulatorForGroup:self.selectedGroup] setApperanceIsSelected:YES
-															  isCharacter:YES
-															  isRecording:NO];
-}
-
-
-- (IBAction)deleteCurrentSelection:(id)sender
-{
-	[PSHelpers assert:(self.selectedGroup != nil) withMessage:@"need a selection to delete"];
-	PSDrawingGroup* toDelete = self.selectedGroup;
-	self.selectedGroup = nil;
-	[PSDataModel deleteDrawingGroup:toDelete];
-	[self removeManipulatorForGroup:toDelete];
-	[self.motionPathView removeLineForGroup:toDelete];
-}
-
-
 - (IBAction)playPressed:(id)sender
 {
 	[self setPlaying:!self.timelineSlider.playing];
@@ -215,9 +172,7 @@
 {
 	self.timelineSlider.playing = NO;
 	[self.renderingController jumpToTime:self.timelineSlider.value];
-	[self refreshManipulatorLocations];
-	for (PSSRTManipulator* m in self.manipulators)
-		m.hidden = NO;
+	[self refreshManipulatorLocation];
 	self.motionPathView.hidden = NO;
 }
 
@@ -226,22 +181,6 @@
 {
 	self.isReadyToRecord = ! self.isReadyToRecord;
 }
-
-
-- (IBAction)showDetailsForSelection:(id)sender
-{
-	// Create and push a new view
-	UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"SketchInterface" bundle:nil];
-	PSSceneViewController *vc = [storyboard instantiateViewControllerWithIdentifier:@"SceneViewController"];
-	vc.currentDocument = self.currentDocument;
-	vc.rootGroup = self.selectedGroup;
-	[vc setModalPresentationStyle:UIModalPresentationFullScreen];
-	[self presentModalViewController:vc animated:YES];
-	
-	// TODO: Prepare some way to get out of it?
-
-}
-
 
 - (IBAction)exportAsVideo:(id)sender
 {
@@ -267,6 +206,42 @@
 	}
 }
 
+- (IBAction)showPenPopover:(id)sender
+{
+	[self.penPopoverController presentPopoverFromRect:[sender frame]
+											   inView:self.view
+							 permittedArrowDirections:UIPopoverArrowDirectionUp
+											 animated:YES];
+	
+}
+
+- (IBAction)startSelecting:(id)sender
+{
+	[self highlightButton:self.startSelectingButton on:YES];
+	[self highlightButton:self.startDrawingButton on:NO];
+	[self highlightButton:self.startErasingButton on:NO];
+	self.isSelecting = YES;
+	self.isErasing = NO;	
+}
+
+- (IBAction)startDrawing:(id)sender
+{
+	[self highlightButton:self.startSelectingButton on:NO];
+	[self highlightButton:self.startDrawingButton on:YES];
+	[self highlightButton:self.startErasingButton on:NO];
+	self.isSelecting = NO;
+	self.isErasing = NO;
+}
+
+- (IBAction)startErasing:(id)sender
+{
+	[self highlightButton:self.startSelectingButton on:NO];
+	[self highlightButton:self.startDrawingButton on:NO];
+	[self highlightButton:self.startErasingButton on:YES];
+	self.isSelecting = NO;
+	self.isErasing = YES;
+}
+
 - (void)setPlaying:(BOOL)playing
 {
 	if(!playing && self.timelineSlider.playing)
@@ -274,22 +249,17 @@
 		// PAUSE
 		[self.renderingController stopPlaying];
 		self.timelineSlider.playing = NO;
-		[self refreshManipulatorLocations];
-		for (PSSRTManipulator* m in self.manipulators)
-			m.hidden = NO;
+		[self refreshManipulatorLocation];
 		self.motionPathView.hidden = NO;
 	}
 	else if(playing && !self.timelineSlider.playing)
 	{
 		// PLAY!
-		if (! self.isRecording) self.selectedGroup = nil;
+		// TODO: unselect things
 		float time = self.timelineSlider.value;
 		[self.renderingController playFromTime:time];
 		self.timelineSlider.value = time;
 		self.timelineSlider.playing = YES;
-		for (PSSRTManipulator* m in self.manipulators)
-			if ( ! (self.isRecording && m.group == self.selectedGroup) )
-				m.hidden = YES;
 		if(!self.isRecording)
 			self.motionPathView.hidden = YES;
 	}
@@ -304,76 +274,29 @@
  ----------------------------------------------------------------------------
  */
 
-
-- (PSSRTManipulator*)createManipulatorForGroup:(PSDrawingGroup*)group
+- (void)refreshManipulatorLocation
 {
-	CGPoint groupCenter = CGPointMake(group.currentCachedPosition.location.x,
-									  group.currentCachedPosition.location.y);
-
-	// Create the manipulator & set its location
-	PSSRTManipulator* man = [[PSSRTManipulator alloc] initAtLocation:groupCenter];
-	[self.renderingController.view insertSubview:man belowSubview:self.selectionOverlayButtons];
-	man.delegate = self;
-	man.group = group;
-
-	[man setApperanceIsSelected:(group == self.selectedGroup)
-					   isCharacter:[group.explicitCharacter boolValue]
-					   isRecording:NO];
-
-	[self.manipulators addObject:man];
+	self.manipulator.center = CGPointMake(0,0);
 	
-	return man;
+	// TODO:
+	//CGPointMake(m.group.currentCachedPosition.location.x, m.group.currentCachedPosition.location.y);
+	//-		[self.selectionOverlayButtons setLocation: newPoint];
 }
 
-- (void)removeManipulatorForGroup:(PSDrawingGroup*)group
+- (void)highlightButton:(UIButton*)b on:(BOOL)highlight
 {
-	PSSRTManipulator* groupMan = [self manipulatorForGroup:group];
-	[PSHelpers assert:(groupMan != nil) withMessage:@"removeManipulator for group without one!"];
-	[groupMan removeFromSuperview];
-	[self.manipulators removeObject:groupMan];
-}
-
-- (PSSRTManipulator*)manipulatorForGroup:(PSDrawingGroup*)group
-{
-	for (PSSRTManipulator* m in self.manipulators)
-		if ( m.group == group )
-			return m;
-	return nil;
-}
-
-
-- (void)refreshManipulatorLocations
-{
-	for (PSSRTManipulator* m in self.manipulators)
-		m.center = 	CGPointMake(m.group.currentCachedPosition.location.x,
-								m.group.currentCachedPosition.location.y);
-
-	
-	if(self.selectedGroup)
-	{
-		CGPoint newPoint = [[self manipulatorForGroup:self.selectedGroup] upperRightPoint];
-		[self.selectionOverlayButtons setLocation: newPoint];
-	}
-}
-
-
-- (void)highlightButton:(UIButton*)b
-{
-	if(self.highlightedButton)
-	{
-		self.highlightedButton.layer.shadowRadius = 0.0;
-		self.highlightedButton.layer.shadowOpacity = 0.0;
-	}
-	
-	if (b)
+	if(highlight)
 	{
 		b.layer.shadowRadius = 10.0;
 		b.layer.shadowColor = [UIColor whiteColor].CGColor;
 		b.layer.shadowOffset = CGSizeMake(0,0);
 		b.layer.shadowOpacity = 1.0;
 	}
-	
-	self.highlightedButton = b;
+	else
+	{
+		b.layer.shadowRadius = 0.0;
+		b.layer.shadowOpacity = 0.0;
+	}
 }
 
 
@@ -404,58 +327,17 @@
 
 -(void)setSelectionHelper:(PSSelectionHelper *)selectionHelper
 {
+	if(selectionHelper == nil)
+		self.manipulator.hidden = YES;
+	
+	//TODO: if the selection helper is going away, zero out its selections!
+	
 	_selectionHelper = selectionHelper;
 	//Also tell the rendering controller about the selection helper so it can draw the loupe and highlight objects
 	self.renderingController.selectionHelper = selectionHelper;
 }
 
 
-- (void)setSelectedGroup:(PSDrawingGroup *)selectedGroup
-{
-	if (selectedGroup == _selectedGroup)
-		return;
-	
-	// De select the current one
-	if (_selectedGroup)
-	{
-		PSSRTManipulator* oldManipulator = [self manipulatorForGroup:_selectedGroup];
-		[oldManipulator setApperanceIsSelected:NO
-								   isCharacter:[_selectedGroup.explicitCharacter boolValue]
-								   isRecording:NO];
-
-		// Merge it back into the parent if it hasn't been explicitly made a character
-		if([_selectedGroup.explicitCharacter boolValue] == NO)
-		{
-			[self removeManipulatorForGroup:_selectedGroup];
-			[self.motionPathView removeLineForGroup:_selectedGroup];
-			[PSDataModel mergeGroup:_selectedGroup intoParentAtTime:self.timelineSlider.value];
-		}
-	}
-	
-	_selectedGroup = selectedGroup;
-	self.renderingController.selectedGroup = selectedGroup;
-	
-	// Start the new one being selected
-	if ( selectedGroup )
-	{
-		PSSRTManipulator* newManipulator = [self manipulatorForGroup:selectedGroup];
-		[newManipulator setApperanceIsSelected:YES
-								   isCharacter:[selectedGroup.explicitCharacter boolValue]
-								   isRecording:NO];
-		
-		[self.selectionOverlayButtons configureForGroup:selectedGroup];
-		[self.selectionOverlayButtons setLocation: [newManipulator upperRightPoint]];
-		[self.selectionOverlayButtons show:YES];
-	}
-	else
-	{
-		[self.selectionOverlayButtons hide:YES];
-	}
-	
-	// Reset any recording we are doing
-	self.isReadyToRecord = NO;
-
-}
 
 - (void)setIsReadyToRecord:(BOOL)isReadyToRecord
 {
@@ -463,18 +345,12 @@
 	{
 		//Stop Recording
 		[self.selectionOverlayButtons stopRecordingMode];
-		[[self manipulatorForGroup:self.selectedGroup] setApperanceIsSelected:YES
-																  isCharacter:YES
-																  isRecording:NO];
 	}
 	
 	if(!_isReadyToRecord && isReadyToRecord)
 	{
 		//Start Recording
 		[self.selectionOverlayButtons startRecordingMode];
-		[[self manipulatorForGroup:self.selectedGroup] setApperanceIsSelected:YES
-																  isCharacter:YES
-																  isRecording:YES];
 	}
 	
 	_isReadyToRecord = isReadyToRecord;
@@ -495,30 +371,30 @@
 -(PSDrawingLine*)newLineToDrawTo:(id)drawingView
 {
 	//Clear out any old selection state
-	if(self.selectionHelper)
-	{
-		self.selectionHelper = nil;
-		self.createCharacterButton.enabled = NO;
-	}
+	self.selectionHelper = nil;
 	
-	self.selectedGroup = nil;
-
+	if (self.isErasing) return nil;
 	
-	if (! self.isSelecting )
+	if (! self.isSelecting)
 	{
-		PSDrawingLine* line = [PSDataModel newLineInGroup:self.rootGroup];
+		// Creating a new line!
+		// Every line gets put into a new group of its own, directly under self.rootGroup
+		
+		PSDrawingGroup* newLineGroup = [PSDataModel newDrawingGroupWithParent:self.rootGroup];
+		PSDrawingLine* line = [PSDataModel newLineInGroup:newLineGroup withWeight:self.penWeight];
 		line.color = [NSNumber numberWithUnsignedLongLong:self.currentColor];
 		return line;
 	}
 	else
 	{
-		// Create a line to draw
-		PSDrawingLine* selectionLine = [PSDataModel newLineInGroup:nil];
+		// Create a selection line to draw with
+		// TODO: this shouldn't be part of the model since it screws up the undo/redo
+		PSDrawingLine* selectionLine = [PSDataModel newLineInGroup:nil withWeight:2];
 		selectionLine.color = [NSNumber numberWithUnsignedLongLong:[PSHelpers colorToInt64:[UIColor redColor]]];
 		
 		// Start a new selection set helper
 		self.selectionHelper = [[PSSelectionHelper alloc] initWithGroup:self.rootGroup
-																	 andLine:selectionLine];		
+													   andSelectionLine:selectionLine];
 		return selectionLine;
 	}
 		
@@ -553,27 +429,16 @@
 		self.selectionHelper.selectionLoupeLine = nil;
 		
 		//Show the manipulator if it was worthwhile
-		if(self.selectionHelper.selectedLines.count > 0)
-		{
-			self.createCharacterButton.enabled = YES;
-			
-			// create a new group for the lines
-			PSDrawingGroup* newGroup = [PSDataModel newChildOfGroup:self.rootGroup
-												   withLines:self.selectionHelper.selectedLines];
-			
-			[newGroup jumpToTime:self.timelineSlider.value];
-			
-			// create a new manipulator for the new group
-			PSSRTManipulator* newMan = [self createManipulatorForGroup:newGroup];
-			[newMan setApperanceIsSelected:YES
-							   isCharacter:NO
-							   isRecording:NO];
+		self.manipulator.hidden = NO;
 
-			
-			self.selectedGroup = newGroup;
-			
-			// get rid of the selection helper so our lines are highlighted anymore
+		
+		if(![self.selectionHelper anySelected])
+		{
 			self.selectionHelper = nil;
+		}
+		else
+		{
+			self.manipulator.hidden = NO;
 			
 		}
 	}
@@ -590,6 +455,15 @@
 	[PSHelpers NYIWithmessage:@"scene controller view: cancelledDrawingLine"];
 }
 
+-(void)movedAt:(CGPoint)p inDrawingView:(id)drawingView
+{
+	// We only care about this when we are erasing.
+	// For drawing and selecting, we let the drawingView build a line
+	if(self.isErasing)
+	{
+		[self.rootGroup eraseAtPoint:p];
+	}
+}
 
 /*
  ----------------------------------------------------------------------------
@@ -605,11 +479,9 @@
 {
 	
 	PSSRTManipulator* manipulator = sender;
-	self.selectedGroup = manipulator.group;
-	[manipulator setApperanceIsSelected:YES
-							isCharacter:[self.selectedGroup.explicitCharacter boolValue]
-							isRecording:self.isReadyToRecord];
-	
+/*
+	TODO: bring back recording!
+ 
 	if(self.isReadyToRecord)
 	{
 		self.isRecording = YES;
@@ -636,7 +508,7 @@
 
 		self.selectionOverlayButtons.recordPulsing = YES;
 	}
-	
+*/	
 	
 	// We would like to keep the motion paths updating in realtime while we
 	// record, but that's too expensive until we optimize the path updating
@@ -658,32 +530,44 @@
 	PSSRTManipulator* manipulator = sender;
 	
 	// Clear out the frames we are overwriting if this is a recording!
+/*
+	TODO: fix up recording
 	if( self.isRecording)
 		[manipulator.group flattenTranslation:isTranslating
 								   rotation:isRotating || isTranslating
 									  scale:isScaling || isTranslating
 								  betweenTime:self.timelineSlider.value - duration
 									  andTime:self.timelineSlider.value];
+*/
 
-	// Get the group's position
-	SRTPosition position = [manipulator.group currentCachedPosition];
-
-	// Update it with these changes
-	position.location.x += dX;
-	position.location.y += dY;
-	position.rotation += dRotation;
-	position.scale *= dScale;
-	
-	//Store the position at the current time
-	position.timeStamp = self.timelineSlider.value;
-	position.keyframeType = self.isRecording ? SRTKeyframeTypeNone() :
-												SRTKeyframeMake(isScaling, isRotating, isTranslating);
-	[manipulator.group addPosition:position withInterpolation:!self.isRecording];
-	
-	[manipulator.group setCurrentCachedPosition:position];
+	for (PSDrawingGroup* g in self.rootGroup.children)
+	{
+		//TODO: recurse more than one level deep!
+		
+		if (g.isSelected)
+		{
+			// Get the group's position
+			SRTPosition position = [g currentCachedPosition];
+			
+			// Update it with these changes
+			position.location.x += dX;
+			position.location.y += dY;
+			position.rotation += dRotation;
+			position.scale *= dScale;
+			
+			//Store the position at the current time
+			position.timeStamp = self.timelineSlider.value;
+			position.keyframeType = self.isRecording ? SRTKeyframeTypeNone() :
+			SRTKeyframeMake(isScaling, isRotating, isTranslating);
+			[g addPosition:position withInterpolation:!self.isRecording];
+			
+			[g setCurrentCachedPosition:position];
+		}
+	}
 	
 	//Keep our buttons properly aligned
 	[self.selectionOverlayButtons setLocation:[manipulator upperRightPoint]];
+
 	
 }
 
@@ -694,7 +578,8 @@
 						withDuration:(float)duration
 {
 	PSSRTManipulator* manipulator = sender;
-	
+
+	/*
 	if(self.isRecording)
 	{
 		self.isRecording = NO;
@@ -713,7 +598,6 @@
 		// Put a marker at this location and stop playing
 		SRTPosition currentPos = [manipulator.group currentCachedPosition];
 		currentPos.timeStamp = self.timelineSlider.value;
-		NSLog(@"stopping at time: %lf", self.timelineSlider.value);
 		currentPos.keyframeType = SRTKeyframeMake(isScaling, isRotating, isTranslating);
 		[manipulator.group addPosition:currentPos withInterpolation:NO];
 
@@ -730,6 +614,33 @@
 	// We would rather be doing this real-time instead of at the end of the interaction
 	[self.motionPathView addLineForGroup:manipulator.group];
 	self.motionPathView.hidden = NO;
+	*/
 }
 
+
+/*
+ ----------------------------------------------------------------------------
+ PSPenColorChangeDelegate methods
+ Called by when our pen colours change
+ ----------------------------------------------------------------------------
+ */
+-(void)penColorChanged:(UIColor*)newColor
+{
+	self.currentColor = [PSHelpers colorToInt64:newColor];
+	self.startDrawingButton.backgroundColor = newColor;
+	[self startDrawing:nil];
+	if(self.penPopoverController && self.penPopoverController.popoverVisible)
+		[self.penPopoverController dismissPopoverAnimated:YES];
+}
+
+-(void)penWeightChanged:(int)newWeight
+{
+	self.penWeight = newWeight;
+	[self startDrawing:nil];
+	if(self.penPopoverController && self.penPopoverController.popoverVisible)
+		[self.penPopoverController dismissPopoverAnimated:YES];
+}
+
+
 @end
+

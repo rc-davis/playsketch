@@ -13,6 +13,14 @@
 		46186F7615D792B900A1E1A2 /* record_up.png in Resources */ = {isa = PBXBuildFile; fileRef = 46186F7515D792B900A1E1A2 /* record_up.png */; };
 		4633559315B6D820001AE6CD /* Shader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 4625EA1E15B6D55100316216 /* Shader.fsh */; };
 		4633559415B6D820001AE6CD /* Shader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 4625EA2115B6D56900316216 /* Shader.vsh */; };
+		4649EE89160D5D9F00FAE620 /* pen_fountain.png in Resources */ = {isa = PBXBuildFile; fileRef = 4649EE85160D5D9F00FAE620 /* pen_fountain.png */; };
+		4649EE8A160D5D9F00FAE620 /* pen_thin.png in Resources */ = {isa = PBXBuildFile; fileRef = 4649EE86160D5D9F00FAE620 /* pen_thin.png */; };
+		4649EE8B160D5D9F00FAE620 /* pen_medium.png in Resources */ = {isa = PBXBuildFile; fileRef = 4649EE87160D5D9F00FAE620 /* pen_medium.png */; };
+		4649EE8C160D5D9F00FAE620 /* pen_thick.png in Resources */ = {isa = PBXBuildFile; fileRef = 4649EE88160D5D9F00FAE620 /* pen_thick.png */; };
+		4649EE90160D5FDB00FAE620 /* PSPenColorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4649EE8F160D5FDB00FAE620 /* PSPenColorViewController.m */; };
+		4649EE94160D819300FAE620 /* pen.png in Resources */ = {isa = PBXBuildFile; fileRef = 4649EE93160D819300FAE620 /* pen.png */; };
+		4649EE96160D88A600FAE620 /* more.png in Resources */ = {isa = PBXBuildFile; fileRef = 4649EE95160D88A600FAE620 /* more.png */; };
+		4649EE98160D935300FAE620 /* eraser.png in Resources */ = {isa = PBXBuildFile; fileRef = 4649EE97160D935300FAE620 /* eraser.png */; };
 		464A4F3D15DCAFD4008A59DF /* PSMotionPathView.m in Sources */ = {isa = PBXBuildFile; fileRef = 464A4F3C15DCAFD4008A59DF /* PSMotionPathView.m */; };
 		4673A46A15B6A9100053FDF0 /* PSHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 4673A46915B6A9100053FDF0 /* PSHelpers.m */; };
 		467BF45D15DB963D002321A7 /* PSVideoExportControllerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 467BF45C15DB963D002321A7 /* PSVideoExportControllerViewController.m */; };
@@ -75,6 +83,15 @@
 		4625EA1E15B6D55100316216 /* Shader.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = Shader.fsh; sourceTree = "<group>"; };
 		4625EA2115B6D56900316216 /* Shader.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = Shader.vsh; sourceTree = "<group>"; };
 		4634AD1015B80730009A6E95 /* Brush.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Brush.png; sourceTree = "<group>"; };
+		4649EE85160D5D9F00FAE620 /* pen_fountain.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pen_fountain.png; sourceTree = "<group>"; };
+		4649EE86160D5D9F00FAE620 /* pen_thin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pen_thin.png; sourceTree = "<group>"; };
+		4649EE87160D5D9F00FAE620 /* pen_medium.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pen_medium.png; sourceTree = "<group>"; };
+		4649EE88160D5D9F00FAE620 /* pen_thick.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pen_thick.png; sourceTree = "<group>"; };
+		4649EE8E160D5FDB00FAE620 /* PSPenColorViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PSPenColorViewController.h; path = PlaySketch/PSPenColorViewController.h; sourceTree = "<group>"; };
+		4649EE8F160D5FDB00FAE620 /* PSPenColorViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PSPenColorViewController.m; path = PlaySketch/PSPenColorViewController.m; sourceTree = "<group>"; };
+		4649EE93160D819300FAE620 /* pen.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pen.png; sourceTree = "<group>"; };
+		4649EE95160D88A600FAE620 /* more.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = more.png; sourceTree = "<group>"; };
+		4649EE97160D935300FAE620 /* eraser.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = eraser.png; sourceTree = "<group>"; };
 		464A4F3B15DCAFD4008A59DF /* PSMotionPathView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PSMotionPathView.h; path = PlaySketch/PSMotionPathView.h; sourceTree = "<group>"; };
 		464A4F3C15DCAFD4008A59DF /* PSMotionPathView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PSMotionPathView.m; path = PlaySketch/PSMotionPathView.m; sourceTree = "<group>"; };
 		4673A46815B6A9100053FDF0 /* PSHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSHelpers.h; sourceTree = "<group>"; };
@@ -200,6 +217,13 @@
 		469E009C15C2438000EE7EC9 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				4649EE85160D5D9F00FAE620 /* pen_fountain.png */,
+				4649EE86160D5D9F00FAE620 /* pen_thin.png */,
+				4649EE87160D5D9F00FAE620 /* pen_medium.png */,
+				4649EE88160D5D9F00FAE620 /* pen_thick.png */,
+				4649EE95160D88A600FAE620 /* more.png */,
+				4649EE97160D935300FAE620 /* eraser.png */,
+				4649EE93160D819300FAE620 /* pen.png */,
 				46186F6E15D78D3200A1E1A2 /* character.png */,
 				469E009915C2437500EE7EC9 /* lasso.png */,
 				4692B9D915E6529C00157F5F /* Delete.png */,
@@ -260,6 +284,8 @@
 				46BF25AE15B02B5C00834681 /* PSAnimationRenderingController.m */,
 				467BF45B15DB963D002321A7 /* PSVideoExportControllerViewController.h */,
 				467BF45C15DB963D002321A7 /* PSVideoExportControllerViewController.m */,
+				4649EE8E160D5FDB00FAE620 /* PSPenColorViewController.h */,
+				4649EE8F160D5FDB00FAE620 /* PSPenColorViewController.m */,
 			);
 			name = Controllers;
 			path = ..;
@@ -433,6 +459,13 @@
 				4692B9DA15E6529C00157F5F /* Delete.png in Resources */,
 				46DB9591161018D600CCC5C2 /* new_drawing.png in Resources */,
 				46DB959516101B4600CCC5C2 /* main_gradient.png in Resources */,
+				4649EE89160D5D9F00FAE620 /* pen_fountain.png in Resources */,
+				4649EE8A160D5D9F00FAE620 /* pen_thin.png in Resources */,
+				4649EE8B160D5D9F00FAE620 /* pen_medium.png in Resources */,
+				4649EE8C160D5D9F00FAE620 /* pen_thick.png in Resources */,
+				4649EE94160D819300FAE620 /* pen.png in Resources */,
+				4649EE96160D88A600FAE620 /* more.png in Resources */,
+				4649EE98160D935300FAE620 /* eraser.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -499,6 +532,7 @@
 				46F1735215DB7AEE00F787AC /* PSGLKitVideoExporter.m in Sources */,
 				467BF45D15DB963D002321A7 /* PSVideoExportControllerViewController.m in Sources */,
 				464A4F3D15DCAFD4008A59DF /* PSMotionPathView.m in Sources */,
+				4649EE90160D5FDB00FAE620 /* PSPenColorViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
