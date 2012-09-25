@@ -547,10 +547,10 @@
 			   addingKeyframe:(SRTKeyframeType)keyframeType
 		   usingInterpolation:(BOOL)interpolate
 {
-	if (self.isSelected)
-	{
+	[self applyToSelectedSubTrees:^(PSDrawingGroup *g) {
+
 		// Start with our current position and apply these deltas
-		SRTPosition position = currentSRTPosition;
+		SRTPosition position = g.currentCachedPosition;
 		position.location.x += dX;
 		position.location.y += dY;
 		position.rotation += dRotation;
@@ -559,21 +559,9 @@
 		position.keyframeType = keyframeType;
 		
 		//Store the position at the current time and refresh the cache
-		[self addPosition:position withInterpolation:interpolate];
-		currentSRTPosition = position;
-	}
-	else
-	{
-		// If we aren't selected, recurse in case our children are
-		for (PSDrawingGroup* g in self.children)
-			[g transformSelectionByX:dX
-								andY:dY
-							rotation:dRotation
-							   scale:dScale
-							  atTime:time
-					  addingKeyframe:keyframeType
-				  usingInterpolation:interpolate];
-	}
+		[g addPosition:position withInterpolation:interpolate];
+		g.currentCachedPosition = position;
+	}];
 }
 
 
@@ -593,7 +581,7 @@
 {
 	[self applyToSelectedSubTrees:^(PSDrawingGroup *g) {
 		//Remember this location and clear everything after it
-		SRTPosition currentPos = currentSRTPosition;
+		SRTPosition currentPos = g.currentCachedPosition;
 		currentPos.timeStamp = time;
 		currentPos.keyframeType = SRTKeyframeMake(isScaling, isRotating, isTranslating);
 		[g addPosition:currentPos withInterpolation:NO];
@@ -617,7 +605,7 @@
 	[self applyToSelectedSubTrees:^(PSDrawingGroup *g) {
 
 		// Put a marker at this location
-		SRTPosition currentPos = currentSRTPosition;
+		SRTPosition currentPos = g.currentCachedPosition;
 		currentPos.timeStamp = time;
 		currentPos.keyframeType = keyframeType;
 		[g addPosition:currentPos withInterpolation:NO];
