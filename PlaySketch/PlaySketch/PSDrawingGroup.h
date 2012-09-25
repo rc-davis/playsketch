@@ -66,9 +66,10 @@
 - (void)removeDrawingLines:(NSSet *)values;
 
 
-- (void)offsetGroupByDistance:(CGSize)distance atTime:(float)time;
-- (void)applyTransform:(CGAffineTransform)transform;
-- (CGRect)boundingRect;
+- (void)centerOnCurrentBoundingBox;
+- (void)applyTransformToLines:(CGAffineTransform)transform;
+- (void)applyTransformToPath:(CGAffineTransform)transform;
+- (CGRect)currentBoundingRect;
 
 - (GLKMatrix4)currentModelViewMatrix;
 - (GLKMatrix4)getInverseMatrixToDocumentRoot;
@@ -77,7 +78,7 @@
 - (BOOL)hitsPoint:(CGPoint)p;
 
 - (void)deleteSelectedChildren;
-- (void)mergeSelectedChildrenIntoNewGroup;
+- (PSDrawingGroup*)mergeSelectedChildrenIntoNewGroup;
 - (PSDrawingGroup*)topLevelSelectedChild;
 - (void)breakUpGroupAndMergeIntoParent;
 

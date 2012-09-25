@@ -235,7 +235,16 @@
 	[PSHelpers assert:(self.selectionHelper.selectedGroupCount > 1)
 		  withMessage:@"Need more than one existing group to create a new one"];
 	
-	[self.rootGroup mergeSelectedChildrenIntoNewGroup];
+	PSDrawingGroup* newGroup = [self.rootGroup mergeSelectedChildrenIntoNewGroup];
+
+	// Insert new keyframe
+	SRTPosition newPosition = SRTPositionZero();
+	newPosition.timeStamp = self.timelineSlider.value;
+	[newGroup addPosition:newPosition withInterpolation:NO];
+	
+	[newGroup centerOnCurrentBoundingBox];
+	[newGroup jumpToTime:self.timelineSlider.value];
+	
 	
 	self.selectionHelper = nil;
 	self.manipulator.hidden = YES;
@@ -456,11 +465,8 @@
 	}
 	else
 	{
-		// Center the new group on the middle of the bounding box
-		CGPoint newCenter = CGRectGetCenter([line.group boundingRect]);
-		CGSize offset = CGSizeMake(newCenter.x, newCenter.y);
-		[line.group offsetGroupByDistance:offset atTime:self.timelineSlider.value];
-		[line.group jumpToTime:self.timelineSlider.value]; // Refresh the view
+		[line.group centerOnCurrentBoundingBox];
+		[line.group jumpToTime:self.timelineSlider.value];
 	}
 }
 

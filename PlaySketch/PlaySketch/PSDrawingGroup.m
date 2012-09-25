@@ -315,21 +315,27 @@
 }
 
 
-- (void)offsetGroupByDistance:(CGSize)offset atTime:(float)time
+
+- (void)centerOnCurrentBoundingBox
 {
-	// 1. Adjust its lines to be centred on zero
-	[self applyTransform:CGAffineTransformMakeTranslation(-offset.width, -offset.height)];
+	// 1. Figure out the point we want to center on (in the parent's coordinates)
+	CGPoint newCenter = CGRectGetCenter([self currentBoundingRect]);
+	CGAffineTransform offsetForward = CGAffineTransformMakeTranslation(newCenter.x, newCenter.y);
+	CGAffineTransform offsetBackward = CGAffineTransformMakeTranslation(-newCenter.x, -newCenter.y);
 	
-	// 2. Set the group's location to be offset by the same amount
-	SRTPosition p;
-	[self getStateAtTime:time position:&p rate:nil helperIndex:nil];
-	p.location.x += offset.width;
-	p.location.y += offset.height;
-	[self addPosition:p withInterpolation:NO];	
+	// 2. Fix up our lines
+	[self applyTransformToLines:offsetBackward];
+	
+	// 3. Fix up our own location
+	[self applyTransformToPath:offsetForward];
+
+	// 4. Fix our our children's locations
+	for (PSDrawingGroup* g in self.children)
+		[g applyTransformToPath:offsetBackward];
 }
 
 
-- (void)applyTransform:(CGAffineTransform)transform
+- (void)applyTransformToLines:(CGAffineTransform)transform
 {
 	/*	Brute-force adjusting the points of the lines in this group
 		Very slow and destructive to the original point information.
@@ -339,17 +345,30 @@
 	
 	for (PSDrawingLine* line in self.drawingLines)
 		[line applyTransform:transform];
-	
-	for (PSDrawingGroup* group in self.children)
-		[group applyTransform:transform];
 }
 
 
-- (CGRect)boundingRect
+- (void)applyTransformToPath:(CGAffineTransform)transform
 {
-	//TODO: WE SHOULD BE CACHING THIS INSTEAD OF BRUTE-FORCING IT
-	if ( self.drawingLines.count == 0 )
-		return CGRectNull;
+	SRTPosition* positions = self.mutablePositionBytes;
+	SRTPosition transformAsDelta = SRTPositionFromTransform(transform);
+
+	for(int i = 0; i < self.positionCount; i++)
+	{
+		SRTPosition p = positions[i];
+		p.location.x += transformAsDelta.location.x;
+		p.location.y += transformAsDelta.location.y;
+		p.origin.x += transformAsDelta.origin.x;
+		p.origin.y += transformAsDelta.origin.y;
+		p.rotation += transformAsDelta.rotation;
+		p.scale *= transformAsDelta.scale;
+		positions[i] = p;
+	}
+}
+
+
+- (CGRect)currentBoundingRect
+{
 	
 	CGPoint min = CGPointMake(1e100, 1e100);
 	CGPoint max = CGPointMake(-1e100, -1e100);
@@ -364,6 +383,16 @@
 			max.y = MAX(max.y, CGRectGetMaxY(lineRect));
 		}
 	}
+	
+	for (PSDrawingGroup* g in self.children)
+	{
+		SRTPosition p = g.currentCachedPosition;
+		min.x = MIN(min.x, p.location.x);
+		min.y = MIN(min.y, p.location.y);
+		max.x = MAX(max.x, p.location.x);
+		max.y = MAX(max.y, p.location.y);
+	}
+	
 	return CGRectMake(min.x, min.y, max.x - min.x, max.y - min.y);
 }
 
@@ -463,7 +492,7 @@
 }
 
 
-- (void)mergeSelectedChildrenIntoNewGroup
+- (PSDrawingGroup*)mergeSelectedChildrenIntoNewGroup
 {
 
 	// 1. Recurse through the tree and get all of the selected roots of subtrees
@@ -479,6 +508,7 @@
 	
 	//TODO: we probably should displace the selected groups to keep them from jumping around?
 	
+	return newGroup;
 }
 
 - (PSDrawingGroup*)topLevelSelectedChild
