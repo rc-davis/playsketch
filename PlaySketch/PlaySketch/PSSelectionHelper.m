@@ -208,6 +208,7 @@
 - (void)finishSelection
 {
 	self.selectedGroupCount = [self countSelectedGroups:self.rootGroup];
+	self.rootGroup.isSelected = NO; // Make sure we are never selecting the root!
 }
 
 /* 

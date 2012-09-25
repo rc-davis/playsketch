@@ -513,38 +513,19 @@
 						   willRotate:(BOOL)isRotating
 							willScale:(BOOL)isScaling
 {
-	
-	PSSRTManipulator* manipulator = sender;
-/*
-	TODO: bring back recording!
- 
 	if(self.isReadyToRecord)
 	{
 		self.isRecording = YES;
 		
-		//Remember this location and clear everything after it
-		SRTPosition currentPos = [manipulator.group currentCachedPosition];
-		currentPos.timeStamp = self.timelineSlider.value;
-		currentPos.keyframeType = SRTKeyframeMake(isScaling, isRotating, isTranslating);
-		[manipulator.group addPosition:currentPos withInterpolation:NO];
-
-		// Start playing the timeline
-		[self setPlaying:YES];
-		
-		// Pause the group
-		[manipulator.group pauseUpdatesOfTranslation:isTranslating
-											rotation:(isRotating||isTranslating)
-											   scale:(isScaling||isTranslating)];
-		
-		[manipulator.group flattenTranslation:isTranslating
-								   rotation:(isRotating||isTranslating)
-									  scale:(isScaling||isTranslating)
-								  betweenTime:self.timelineSlider.value
-									  andTime:1e99];
-
+		[self.rootGroup prepareSelectedGroupsForRecordingTranslation:isTranslating
+															rotation:isRotating
+															 scaling:isScaling
+															  atTime:self.timelineSlider.value];
+	
+		 // Start playing the timeline
+		 [self setPlaying:YES];
 		self.selectionOverlayButtons.recordPulsing = YES;
 	}
-*/	
 	
 	// We would like to keep the motion paths updating in realtime while we
 	// record, but that's too expensive until we optimize the path updating
@@ -563,18 +544,18 @@
 		 isScaling:(BOOL)isScaling
 	  timeDuration:(float)duration
 {
-	PSSRTManipulator* manipulator = sender;
-	
+
 	// Clear out the frames we are overwriting if this is a recording!
-/*
-	TODO: fix up recording
-	if( self.isRecording)
-		[manipulator.group flattenTranslation:isTranslating
-								   rotation:isRotating || isTranslating
-									  scale:isScaling || isTranslating
-								  betweenTime:self.timelineSlider.value - duration
-									  andTime:self.timelineSlider.value];
-*/
+	// I don't think we should have to do this, since it should be covered by the start manipulation call
+	if (self.isRecording)
+	{
+		[self.rootGroup flattenSelectedTranslation:isTranslating
+										  rotation:isRotating
+											 scale:isScaling
+									   betweenTime:self.timelineSlider.value - duration
+										   andTime:self.timelineSlider.value];
+
+	}
 
 	SRTKeyframeType keyframeType =  self.isRecording ?
 										SRTKeyframeTypeNone() :
@@ -595,44 +576,36 @@
 						  wasScaling:(BOOL)isScaling
 						withDuration:(float)duration
 {
-	PSSRTManipulator* manipulator = sender;
-
-	/*
+	
 	if(self.isRecording)
 	{
 		self.isRecording = NO;
-		
+
 		// Before we add our last keyframe, snap the timeline so our keyframe
 		// will be easy to scrub to later
 		[self snapTimeline:nil];
-		
-		// Erase all the data after this point
-		[manipulator.group flattenTranslation:isTranslating
-									 rotation:isRotating || isTranslating
-										scale:isScaling || isTranslating
-								  betweenTime:self.timelineSlider.value - duration
-									  andTime:1e100];
-		
-		// Put a marker at this location and stop playing
-		SRTPosition currentPos = [manipulator.group currentCachedPosition];
-		currentPos.timeStamp = self.timelineSlider.value;
-		currentPos.keyframeType = SRTKeyframeMake(isScaling, isRotating, isTranslating);
-		[manipulator.group addPosition:currentPos withInterpolation:NO];
 
-		self.selectionOverlayButtons.recordPulsing = NO;
+		// Erase all data after this point (shouldn't have to do this again?)
+		[self.rootGroup flattenSelectedTranslation:isTranslating
+										  rotation:isRotating
+											 scale:isScaling
+									   betweenTime:self.timelineSlider.value - duration
+										   andTime:1e100];
 		
-		// Unpause the group
-		[manipulator.group unpauseAll];
-
+		// Tell the selected groups that we are finished
+		SRTKeyframeType keyframeType = SRTKeyframeMake(isScaling, isRotating, isTranslating);
+		[self.rootGroup finishRecordingOnSelectedGroupsAtTime:self.timelineSlider.value
+											   addingKeyframe:keyframeType];
+		
 		// Stop playing
 		[self setPlaying:NO];
-
+		self.selectionOverlayButtons.recordPulsing = NO;
 	}
 	
 	// We would rather be doing this real-time instead of at the end of the interaction
-	[self.motionPathView addLineForGroup:manipulator.group];
+	// TODO: fix up motion paths!
+	//	[self.motionPathView addLineForGroup:manipulator.group];
 	self.motionPathView.hidden = NO;
-	*/
 }
 
 

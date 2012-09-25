@@ -88,6 +88,15 @@
 			   addingKeyframe:(SRTKeyframeType)keyframeType
 		   usingInterpolation:(BOOL)interpolate;
 
+- (void)prepareSelectedGroupsForRecordingTranslation:(BOOL)isTranslating
+											rotation:(BOOL)isRotating
+											 scaling:(BOOL)isScaling
+											  atTime:(float)time;
+- (void)finishRecordingOnSelectedGroupsAtTime:(float)time addingKeyframe:(SRTKeyframeType)keyframeType;
+
+- (void)flattenSelectedTranslation:(BOOL)translation rotation:(BOOL)rotation scale:(BOOL)scale betweenTime:(float)timeStart andTime:(float)timeEnd;
+
+
 
 - (void)printSelected:(int)depth;
 
