@@ -78,59 +78,6 @@
 }
 
 
-+(PSDrawingGroup*)newChildOfGroup:(PSDrawingGroup*)parentGroup withLines:(NSSet*)lines
-{
-	// This creates a new group that is a child of parentGroup
-	// all of the lines in lines are removed from parentGroup and added to the
-	// new child group
-	
-	PSDrawingGroup* newGroup = [PSDataModel newDrawingGroupWithParent:parentGroup];
-	for (PSDrawingLine* line in lines)
-	{
-		line.group = newGroup;
-	}
-	
-	
-	// Fix up the offsets of the new group to treat a new center-point as (0,0)
-	CGRect groupFrame = [newGroup boundingRect];
-	CGAffineTransform fixOrigin = 
-			CGAffineTransformMakeTranslation(-(groupFrame.origin.x + groupFrame.size.width/2.0),
-											 -(groupFrame.origin.y + groupFrame.size.height/2.0));
-	[newGroup applyTransform:fixOrigin];
-	
-
-	// Add a new item to the model to hold the current location
-	SRTPosition p = SRTPositionMake(0, -fixOrigin.tx, -fixOrigin.ty, 1, 0, 0, 0, NO);
-	[newGroup addPosition:p withInterpolation:NO];
-	
-	return newGroup;
-}
-
-
-+(PSDrawingGroup*)mergeGroup:(PSDrawingGroup*)group intoParentAtTime:(float)time
-{
-	[PSHelpers assert:(group.parent != nil) withMessage:@"need a parent to flatten to!"];
-	PSDrawingGroup* parent = group.parent;
-	
-	// Get the  transform that will move from group-space to parent-space
-	SRTPosition groupPosition;
-	[group getStateAtTime:time position:&groupPosition rate:nil helperIndex:nil];
-	CGAffineTransform groupToWorldTransform = SRTPositionToTransform(groupPosition);
-
-	//Apply to the lines
-	[group applyTransform:groupToWorldTransform];
-
-	//add to parent group
-	for (PSDrawingLine* line in group.drawingLines)
-		line.group = parent;
-
-	//Delete the selection Group
-	[PSDataModel deleteDrawingGroup:group];
-
-	return parent;
-}
-
-
 +(void)deleteDrawingDocument:(PSDrawingDocument*)doc
 {
 	
