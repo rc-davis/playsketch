@@ -539,6 +539,44 @@
 }
 
 
+- (void)transformSelectionByX:(float)dX
+						 andY:(float)dY
+					 rotation:(float)dRotation
+						scale:(float)dScale
+					   atTime:(float)time
+			   addingKeyframe:(SRTKeyframeType)keyframeType
+		   usingInterpolation:(BOOL)interpolate
+{
+	if (self.isSelected)
+	{
+		// Start with our current position and apply these deltas
+		SRTPosition position = currentSRTPosition;
+		position.location.x += dX;
+		position.location.y += dY;
+		position.rotation += dRotation;
+		position.scale *= dScale;
+		position.timeStamp = time;
+		position.keyframeType = keyframeType;
+		
+		//Store the position at the current time and refresh the cache
+		[self addPosition:position withInterpolation:interpolate];
+		currentSRTPosition = position;
+	}
+	else
+	{
+		// If we aren't selected, recurse in case our children are
+		for (PSDrawingGroup* g in self.children)
+			[g transformSelectionByX:dX
+								andY:dY
+							rotation:dRotation
+							   scale:dScale
+							  atTime:time
+					  addingKeyframe:keyframeType
+				  usingInterpolation:interpolate];
+	}
+}
+
+
 - (void)printSelected:(int)depth
 {
 	NSLog(@"%d:\t------------ %@", depth, (self.isSelected ? @"SELECTED" : @"NO!"));

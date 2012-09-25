@@ -576,31 +576,17 @@
 									  andTime:self.timelineSlider.value];
 */
 
-	for (PSDrawingGroup* g in self.rootGroup.children)
-	{
-		//TODO: recurse more than one level deep!??
-		
-		if (g.isSelected)
-		{
-			// Get the group's position
-			SRTPosition position = [g currentCachedPosition];
-			
-			// Update it with these changes
-			position.location.x += dX;
-			position.location.y += dY;
-			position.rotation += dRotation;
-			position.scale *= dScale;
-			
-			//Store the position at the current time
-			position.timeStamp = self.timelineSlider.value;
-			position.keyframeType = self.isRecording ? SRTKeyframeTypeNone() :
-			SRTKeyframeMake(isScaling, isRotating, isTranslating);
-			[g addPosition:position withInterpolation:!self.isRecording];
-			
-			[g setCurrentCachedPosition:position];
-		}
-	}
-		
+	SRTKeyframeType keyframeType =  self.isRecording ?
+										SRTKeyframeTypeNone() :
+										SRTKeyframeMake(isScaling, isRotating, isTranslating);
+
+	[self.rootGroup transformSelectionByX:dX
+									 andY:dY
+								 rotation:dRotation
+									scale:dScale
+								   atTime:self.timelineSlider.value
+						   addingKeyframe:keyframeType
+					   usingInterpolation:!self.isRecording];
 }
 
 -(void)manipulatorDidStopInteraction:(id)sender

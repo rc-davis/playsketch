@@ -80,6 +80,14 @@
 - (PSDrawingGroup*)topLevelSelectedChild;
 - (void)breakUpGroupAndMergeIntoParent;
 
+- (void)transformSelectionByX:(float)dX
+						 andY:(float)dY
+					 rotation:(float)dRotation
+						scale:(float)dScale
+					   atTime:(float)time
+			   addingKeyframe:(SRTKeyframeType)keyframeType
+		   usingInterpolation:(BOOL)interpolate;
+
 
 - (void)printSelected:(int)depth;
 
