@@ -412,12 +412,20 @@
 	}
 	else
 	{
-		// Create a selection line to draw with
-		// TODO: this shouldn't be part of the model since it screws up the undo/redo
-		PSDrawingLine* selectionLine = [PSDataModel newLineInGroup:nil withWeight:2];
-		selectionLine.color = [NSNumber numberWithUnsignedLongLong:[PSHelpers colorToInt64:[UIColor redColor]]];
+		// Create a line for the selection lasso
 		
-		// Start a new selection set helper
+		// Note: This line is being created differently than the drawing line for a good reason
+		// We don't want this new object to be "inserted" into the Core Data store
+		// If it were, it would be treated like *real* user data that needs to be persisted
+		// That automatically gets it saved and added to our undo/redo stack
+		// By creating the object with a nil managedObjectContext (basically like a database),
+		// we avoid all of that.
+		// The result is that it cannot have relationships (parent/child/etc) with other objects
+		// that ARE part of the real user data, since relationships cannot, by definition,
+		// span between two managedObjectContexts
+		PSDrawingLine* selectionLine = [PSDataModel newTemporaryLineWithWeight:2];
+		
+		// Start a new selection set helper to keep track of what's being selected
 		self.selectionHelper = [PSSelectionHelper selectionWithLine:selectionLine
 														inRootGroup:self.rootGroup];
 		return selectionLine;

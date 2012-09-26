@@ -36,6 +36,7 @@
 +(PSDrawingDocument*)newDrawingDocumentWithName:(NSString*)name;
 +(PSDrawingGroup*)newDrawingGroupWithParent:(PSDrawingGroup*)parent;
 +(PSDrawingLine*)newLineInGroup:(PSDrawingGroup*)group withWeight:(int)weight;
++(PSDrawingLine*)newTemporaryLineWithWeight:(int)weight;
 +(void)deleteDrawingDocument:(PSDrawingDocument*)doc;
 +(void)deleteDrawingGroup:(PSDrawingGroup*)group;
 +(void)deleteDrawingLine:(PSDrawingLine*)line;

@@ -78,6 +78,18 @@
 }
 
 
++(PSDrawingLine*)newTemporaryLineWithWeight:(int)weight
+{
+	NSEntityDescription *entity = [NSEntityDescription entityForName:@"PSDrawingLine"
+											  inManagedObjectContext:[PSDataModel context]];
+	
+	PSDrawingLine* newLine = (PSDrawingLine*)[[NSManagedObject alloc] initWithEntity:entity
+													  insertIntoManagedObjectContext:nil];
+	newLine.penWeight = weight;
+	return newLine;
+}
+
+
 +(void)deleteDrawingDocument:(PSDrawingDocument*)doc
 {
 	
