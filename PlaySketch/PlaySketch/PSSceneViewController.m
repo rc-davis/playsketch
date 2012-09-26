@@ -277,29 +277,19 @@
 
 - (IBAction)markCurrentSelectionVisible:(id)sender
 {
-	[self.rootGroup transformSelectionByX:0
-									 andY:0
-								 rotation:0
-									scale:1
-							   visibility:YES
-								   atTime:self.timelineSlider.value
-						   addingKeyframe:SRTKeyframeMake(NO, NO, NO, YES)
-					   usingInterpolation:YES];
-
+	[self.rootGroup applyToSelectedSubTrees:^(PSDrawingGroup *g) {
+		[g setVisibility:YES atTime:self.timelineSlider.value];
+	}];
+	
 	[self refreshInterfaceAfterDataChange:YES selectionChange:YES];
 }
 
 - (IBAction)markCurrentSelectionNotVisible:(id)sender
 {
-	[self.rootGroup transformSelectionByX:0
-									 andY:0
-								 rotation:0
-									scale:1
-							   visibility:NO
-								   atTime:self.timelineSlider.value
-						   addingKeyframe:SRTKeyframeMake(NO, NO, NO, YES)
-					   usingInterpolation:YES];
-	
+	[self.rootGroup applyToSelectedSubTrees:^(PSDrawingGroup *g) {
+		[g setVisibility:NO atTime:self.timelineSlider.value];
+	}];
+
 	[self refreshInterfaceAfterDataChange:YES selectionChange:YES];
 }
 
@@ -649,7 +639,7 @@
 
 		SRTKeyframeType keyframeType =  self.isRecording ?
 											SRTKeyframeTypeNone() :
-											SRTKeyframeMake(isScaling, isRotating, isTranslating, YES);
+											SRTKeyframeMake(isScaling, isRotating, isTranslating, NO);
 
 		[self.rootGroup transformSelectionByX:dX
 										 andY:dY

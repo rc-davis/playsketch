@@ -106,6 +106,8 @@
 											  atTime:(float)time;
 
 
+- (void)setVisibility:(BOOL)visible atTime:(float)time;
+
 - (void)printSelected:(int)depth;
 - (void)setPosition:(SRTPosition)p atIndex:(int)i;
 

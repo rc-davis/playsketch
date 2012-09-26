@@ -86,11 +86,6 @@
 		
 		currentPositionIndex++;
 	}
-
-	// If this time is already a keyframe, tag the new position as a keyframe too
-	if(overwriting)
-		position.keyframeType = SRTKeyframeAdd2(position.keyframeType,
-												currentPositions[newIndex].keyframeType);
 	
 	//Write the new one
 	currentPositions[newIndex] = position;
@@ -630,6 +625,43 @@
 }
 
 
+- (void)setVisibility:(BOOL)visible atTime:(float)time
+{
+	// STEP 1: add a new keyframe to set the visibility at time
+	SRTPosition pos;
+	[self getStateAtTime:time position:&pos rate:nil helperIndex:nil];
+	
+	// If there is already a visibility keyframe at this point, clear it instead of setting a new one
+	if (pos.timeStamp != time)
+		pos.keyframeType = SRTKeyframeMake(NO, NO, NO, YES);
+	else if (SRTKeyframeIsVisibility(pos.keyframeType))
+		pos.keyframeType = SRTKeyframeRemove(pos.keyframeType, NO, NO, NO, YES);
+	else
+		pos.keyframeType = SRTKeyframeAdd(pos.keyframeType, NO, NO, NO, YES);
+
+	pos.isVisible = visible;
+	pos.timeStamp = time;
+	
+	// Add it to the list
+	int i = [self addPosition:pos withInterpolation:NO];
+	
+	// STEP 2: Move forward until the next visibility keyframe and change the visibility
+	SRTPosition* positions = [self mutablePositionBytes];
+	i += 1;
+	while (i < self.positionCount && !SRTKeyframeIsVisibility(positions[i].keyframeType))
+	{
+		positions[i].isVisible = visible;
+		i++;
+	}
+	
+	// STEP 3:If we ended by hitting the next visibility keyframe, remove it since it is redundant now
+	if(i < self.positionCount)
+		positions[i].keyframeType = SRTKeyframeRemove(positions[i].keyframeType, NO, NO, NO, YES);
+	
+	
+	currentSRTPosition = pos;
+}
+
 
 - (void)printSelected:(int)depth
 {
@@ -645,4 +677,5 @@
 {
 	self.mutablePositionBytes[i] = p;
 }
+
 @end
