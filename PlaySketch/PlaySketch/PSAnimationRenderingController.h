@@ -27,8 +27,7 @@
 
 @property(nonatomic,retain) PSDrawingDocument* currentDocument;
 @property(nonatomic,retain) PSDrawingGroup* rootGroup;
-@property(nonatomic,retain) PSSelectionHelper* selectionHelper;
-@property(nonatomic,retain) PSDrawingGroup* selectedGroup;
+@property(nonatomic,retain) PSDrawingLine* currentLine;
 @property(nonatomic, readonly)int currentFrame; // the time frame that we are at right now
 @property(nonatomic)BOOL playing;
 - (void)playFromTime:(float)frame;

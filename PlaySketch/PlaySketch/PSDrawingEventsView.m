@@ -70,12 +70,12 @@
 	// Check if this was a tap!
 	if(touches.count == 1 && t.tapCount > 0)
 	{
-		// Cancel the current line we are drawing
-		[self touchesCancelled:touches withEvent:event];
-
 		//Inform our delegate
 		if(self.drawingDelegate)
-			[self.drawingDelegate tappedAt:[t locationInView:self] tapCount:t.tapCount inDrawingView:self];
+			[self.drawingDelegate whileDrawingLine:self.currentLine
+										  tappedAt:[t locationInView:self]
+										  tapCount:t.tapCount
+									 inDrawingView:self];
 
 	}
 	else // Finish the line we are drawing

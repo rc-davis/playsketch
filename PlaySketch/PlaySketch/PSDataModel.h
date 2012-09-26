@@ -36,11 +36,15 @@
 +(PSDrawingDocument*)newDrawingDocumentWithName:(NSString*)name;
 +(PSDrawingGroup*)newDrawingGroupWithParent:(PSDrawingGroup*)parent;
 +(PSDrawingLine*)newLineInGroup:(PSDrawingGroup*)group withWeight:(int)weight;
-+(PSDrawingLine*)newTemporaryLineWithWeight:(int)weight;
++(PSDrawingLine*)newTemporaryLineWithWeight:(int)weight andColor:(UInt64)color;
 +(void)deleteDrawingDocument:(PSDrawingDocument*)doc;
 +(void)deleteDrawingGroup:(PSDrawingGroup*)group;
 +(void)deleteDrawingLine:(PSDrawingLine*)line;
-
++ (BOOL)canUndo;
++ (BOOL)canRedo;
++ (void)undo;
++ (void)redo;
++ (void)makeTemporaryLinePermanent:(PSDrawingLine*)line;
 +(void)DEBUG_printTotalObjectCount;
 +(void)DEBUG_generateTestShapesIntoGroup:(PSDrawingGroup*)rootGroup;
 +(void)DEBUG_generateRandomLittleLinesIntoGroup:(PSDrawingGroup*)rootGroup lineCount:(int)lineCount;

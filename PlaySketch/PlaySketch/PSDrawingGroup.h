@@ -47,6 +47,7 @@
 - (void)pauseUpdatesOfTranslation:(BOOL)translation rotation:(BOOL)rotation scale:(BOOL)scale;
 - (void)unpauseAll;
 - (SRTPosition*)positions;
+- (void)doneMutatingPositions;
 - (int)positionCount;
 - (void)getStateAtTime:(float)time
 			  position:(SRTPosition*)pPosition

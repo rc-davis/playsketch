@@ -28,11 +28,10 @@
 @implementation PSSelectionHelper
 
 
-+(PSSelectionHelper*)selectionWithLine:(PSDrawingLine*)line inRootGroup:(PSDrawingGroup*)rootGroup
++(PSSelectionHelper*)selectionWithRootGroup:(PSDrawingGroup*)rootGroup
 {
 	PSSelectionHelper* h = [[PSSelectionHelper alloc] init];
 	h.rootGroup = rootGroup;
-	h.selectionLoupeLine = line;
 	h.haveFirstPoint = NO;
 	
 	// Reset the selection information for all of these objects
@@ -48,7 +47,6 @@
 {
 	PSSelectionHelper* h = [[PSSelectionHelper alloc] init];
 	h.rootGroup = rootGroup;
-	h.selectionLoupeLine = nil;
 	h.haveFirstPoint = NO;
 	
 	// Reset the selection information for all of these objects
