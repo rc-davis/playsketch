@@ -149,6 +149,11 @@
 	[[PSDataModel context] redo];
 }
 
++ (void)clearUndoStack
+{
+	[[PSDataModel context].undoManager removeAllActions];
+}
+
 + (void)makeTemporaryLinePermanent:(PSDrawingLine*)line
 {
 	[[PSDataModel context] insertObject:line];

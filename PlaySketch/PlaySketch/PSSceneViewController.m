@@ -93,7 +93,7 @@
 	// Create motion paths to illustrate our objects
 	for (PSDrawingGroup* child in self.rootGroup.children)
 		[self.motionPathView addLineForGroup:child];
-
+	
 }
 
 
@@ -108,6 +108,12 @@
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
 	return UIInterfaceOrientationIsLandscape(interfaceOrientation);
+}
+
+- (void) viewWillAppear:(BOOL)animated
+{
+	// Don't let us undo past this point
+	[PSDataModel clearUndoStack];
 }
 
 
@@ -127,6 +133,9 @@
 		self.currentDocument.previewImage = UIImagePNGRepresentation(previewImgSmall);
 		[PSDataModel save];
 	}
+	
+	// Don't let us undo past this point
+	[PSDataModel clearUndoStack];
 }
 
 
