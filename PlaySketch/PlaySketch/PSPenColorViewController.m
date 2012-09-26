@@ -44,10 +44,10 @@
 	b.layer.shadowOpacity = 1.0;
 	
 	// Applogies in advance this is a pretty hacky solution
-	// I'm stealing the "accessibility label" property of the button to
-	// store the pen weight the button represents
+	// Stealing the "tag" function to store an integer value for the weight the pen should represent
+	// Lets us set the pen weights in interface builder
 	if(self.delegate)
-		[self.delegate penWeightChanged:[b.accessibilityLabel intValue]];
+		[self.delegate penWeightChanged:b.tag];
 
 }
 

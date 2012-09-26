@@ -52,6 +52,7 @@
 			  position:(SRTPosition*)pPosition
 				  rate:(SRTRate*)pRate
 		   helperIndex:(int*)pIndex;
+- (CGPoint)currentOriginInWorldCoordinates;
 - (SRTPosition)currentCachedPosition;
 - (void)setCurrentCachedPosition:(SRTPosition)position;
 
@@ -65,8 +66,11 @@
 - (void)addDrawingLines:(NSSet *)values;
 - (void)removeDrawingLines:(NSSet *)values;
 
-- (void)applyTransform:(CGAffineTransform)transform;
-- (CGRect)boundingRect;
+
+- (void)centerOnCurrentBoundingBox;
+- (void)applyTransformToLines:(CGAffineTransform)transform;
+- (void)applyTransformToPath:(CGAffineTransform)transform;
+- (CGRect)currentBoundingRect;
 
 - (GLKMatrix4)currentModelViewMatrix;
 - (GLKMatrix4)getInverseMatrixToDocumentRoot;
@@ -75,7 +79,7 @@
 - (BOOL)hitsPoint:(CGPoint)p;
 
 - (void)deleteSelectedChildren;
-- (void)mergeSelectedChildrenIntoNewGroup;
+- (PSDrawingGroup*)mergeSelectedChildrenIntoNewGroup;
 - (PSDrawingGroup*)topLevelSelectedChild;
 - (void)breakUpGroupAndMergeIntoParent;
 

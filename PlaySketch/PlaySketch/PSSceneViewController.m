@@ -235,7 +235,15 @@
 	[PSHelpers assert:(self.selectionHelper.selectedGroupCount > 1)
 		  withMessage:@"Need more than one existing group to create a new one"];
 	
-	[self.rootGroup mergeSelectedChildrenIntoNewGroup];
+	PSDrawingGroup* newGroup = [self.rootGroup mergeSelectedChildrenIntoNewGroup];
+
+	// Insert new keyframe
+	SRTPosition newPosition = SRTPositionZero();
+	newPosition.timeStamp = self.timelineSlider.value;
+	[newGroup addPosition:newPosition withInterpolation:NO];
+	
+	[newGroup centerOnCurrentBoundingBox];
+	[newGroup jumpToTime:self.timelineSlider.value];
 	
 	self.selectionHelper = nil;
 	self.manipulator.hidden = YES;
@@ -286,11 +294,15 @@
 
 - (void)refreshManipulatorLocation
 {
-	self.manipulator.center = CGPointMake(0,0);
-	
-	// TODO:
-	//CGPointMake(m.group.currentCachedPosition.location.x, m.group.currentCachedPosition.location.y);
-	//-		[self.selectionOverlayButtons setLocation: newPoint];
+	if (self.selectionHelper.selectedGroupCount == 1)
+	{
+		PSDrawingGroup* group = [self.rootGroup topLevelSelectedChild];
+		self.manipulator.center = [group currentOriginInWorldCoordinates];
+	}
+	else
+	{
+		self.manipulator.center = CGPointZero;
+	}
 }
 
 - (void)highlightButton:(UIButton*)b on:(BOOL)highlight
@@ -392,6 +404,9 @@
 		
 		PSDrawingGroup* newLineGroup = [PSDataModel newDrawingGroupWithParent:self.rootGroup];
 		PSDrawingLine* line = [PSDataModel newLineInGroup:newLineGroup withWeight:self.penWeight];
+		SRTPosition newPosition = SRTPositionZero();
+		newPosition.timeStamp = self.timelineSlider.value;
+		[newLineGroup addPosition:newPosition withInterpolation:NO];
 		line.color = [NSNumber numberWithUnsignedLongLong:self.currentColor];
 		return line;
 	}
@@ -440,24 +455,22 @@
 		self.selectionHelper.selectionLoupeLine = nil;
 		[self.selectionHelper finishSelection];
 		
-		[self.rootGroup printSelected:0];
-		
 		//Show the manipulator if it was worthwhile
-		
 		if(self.selectionHelper.selectedGroupCount == 0)
 		{
 			self.selectionHelper = nil;
-			
 		}
 		else
 		{
 			self.manipulator.hidden = NO;
 			[self.selectionOverlayButtons configureForSelection:self.selectionHelper];
+			[self refreshManipulatorLocation];
 		}
 	}
 	else
 	{
-		[PSDataModel save];
+		[line.group centerOnCurrentBoundingBox];
+		[line.group jumpToTime:self.timelineSlider.value];
 	}
 }
 
@@ -492,6 +505,7 @@
 		self.selectionHelper = tapSelection;
 		self.manipulator.hidden = NO;
 		[self.selectionOverlayButtons configureForSelection:self.selectionHelper];
+		[self refreshManipulatorLocation];
 	}
 	else
 	{
