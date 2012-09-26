@@ -27,6 +27,7 @@ typedef struct
 	float rotation; // About origin
 	GLKVector2 origin; // point in own coordinates that location is measured to
 	SRTKeyframeType keyframeType; // whether should be used to determine scope for interpolation
+	BOOL isVisible;
 } SRTPosition;
 
 
@@ -42,7 +43,8 @@ typedef struct
 
 static inline SRTPosition SRTPositionMake(int timeStamp, float x, float y,
 										  float scale, float rotation, 
-										  float originX, float originY, SRTKeyframeType keyframeType)
+										  float originX, float originY,
+										  SRTKeyframeType keyframeType, BOOL isVisible)
 {
 	SRTPosition p;
 	p.timeStamp = timeStamp;
@@ -53,6 +55,7 @@ static inline SRTPosition SRTPositionMake(int timeStamp, float x, float y,
 	p.origin.x = originX;
 	p.origin.y = originY;
 	p.keyframeType = keyframeType;
+	p.isVisible = isVisible;
 	return p;
 }
 
@@ -74,7 +77,7 @@ static inline SRTRate SRTRateZero()
 
 static inline SRTPosition SRTPositionZero()
 {
-	return SRTPositionMake(0, 0, 0, 1, 0, 0, 0, NO);
+	return SRTPositionMake(0, 0, 0, 1, 0, 0, 0, NO, YES);
 }
 
 static inline SRTKeyframeType SRTKeyframeTypeNone()
@@ -165,6 +168,11 @@ static inline SRTPosition SRTPositionInterpolate(float time, SRTPosition p1, SRT
 	pos.origin.x = (1 - pcnt) * p1.origin.y + pcnt * p2.origin.y;
 	pos.origin.y = (1 - pcnt) * p1.origin.y + pcnt * p2.origin.y;
 	pos.keyframeType = SRTKeyframeTypeNone();
+
+	// Visibility transitions are instantaneous
+	// So we copy the visibility from the frame with a time <= the current time
+	pos.isVisible = (p2.timeStamp < time) ? p1.isVisible : p2.isVisible;
+
 	return pos;
 }
 
@@ -249,7 +257,8 @@ static inline BOOL SRTPositionsEqual(SRTPosition p1, SRTPosition p2, BOOL ignore
 			p1.rotation == p2.rotation &&
 			p1.scale == p2.scale &&
 			p1.origin.x == p2.origin.x &&
-			p1.origin.y == p2.origin.y;
+			p1.origin.y == p2.origin.y &&
+			p1.isVisible == p2.isVisible;
 }
 
 static inline CGPoint CGPointFromGLKVector4(GLKVector4 v)

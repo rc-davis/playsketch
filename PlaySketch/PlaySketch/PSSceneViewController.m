@@ -437,7 +437,7 @@
 	{
 		// Clear any current selection
 		[PSSelectionHelper resetSelection];
-		[self refreshInterfaceAfterDataChange:NO selectionChange:NO];
+		[self refreshInterfaceAfterDataChange:NO selectionChange:YES];
 		return nil;
 	}
 	
