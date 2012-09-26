@@ -358,8 +358,8 @@
 	self.redoButton.hidden = ![PSDataModel canRedo];
 
 	// Hide/show the manipulator
-	BOOL shouldShow =	!self.timelineSlider.playing &&
-						[PSSelectionHelper selectedGroupCount] > 0;
+	BOOL shouldShow =	[PSSelectionHelper selectedGroupCount] > 0 &&
+						(!self.timelineSlider.playing || self.isRecording );
 	self.manipulator.hidden = !shouldShow;
 	
 
