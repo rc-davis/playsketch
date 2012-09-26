@@ -427,8 +427,14 @@
  */
 -(PSDrawingLine*)newLineToDrawTo:(id)drawingView
 {
-	// Clear any current selection
-	[PSSelectionHelper resetSelection];
+	// If the manipulator is visible, clear the current selection and don't start a line
+	if(!self.manipulator.hidden)
+	{
+		// Clear any current selection
+		[PSSelectionHelper resetSelection];
+		[self refreshInterfaceState];
+		return nil;
+	}
 	
 	// No line necessary if we are erasing
 	if (self.isErasing) return nil;
