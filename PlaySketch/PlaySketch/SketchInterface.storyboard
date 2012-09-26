@@ -549,7 +549,7 @@
                                 <rect key="frame" x="8" y="140" width="242" height="66"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" id="aaN-zO-IrC">
+                                    <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" id="aaN-zO-IrC">
                                         <rect key="frame" x="8" y="8" width="50" height="50"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
@@ -568,11 +568,11 @@
                                             <action selector="setWeight:" destination="L9U-3B-tSa" eventType="touchUpInside" id="lz7-QS-URD"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" id="CI9-Zh-iEI">
+                                    <button opaque="NO" tag="7" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" id="CI9-Zh-iEI">
                                         <rect key="frame" x="66" y="8" width="50" height="50"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                                        <accessibility key="accessibilityConfiguration" label="7">
+                                        <accessibility key="accessibilityConfiguration" label="">
                                             <bool key="isElement" value="NO"/>
                                         </accessibility>
                                         <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
@@ -587,7 +587,7 @@
                                             <action selector="setWeight:" destination="L9U-3B-tSa" eventType="touchUpInside" id="tBg-FC-WH9"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" id="esE-uq-jGh">
+                                    <button opaque="NO" tag="15" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" id="esE-uq-jGh">
                                         <rect key="frame" x="124" y="8" width="50" height="50"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
@@ -606,7 +606,7 @@
                                             <action selector="setWeight:" destination="L9U-3B-tSa" eventType="touchUpInside" id="lML-ce-g64"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" id="tY2-j3-YqG">
+                                    <button opaque="NO" tag="-1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" id="tY2-j3-YqG">
                                         <rect key="frame" x="182" y="8" width="50" height="50"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
@@ -663,8 +663,8 @@
         <image name="group.png" width="120" height="120"/>
         <image name="lasso.png" width="100" height="100"/>
         <image name="main_gradient.png" width="600" height="10"/>
-        <image name="new_drawing.png" width="400" height="400"/>
         <image name="more.png" width="100" height="100"/>
+        <image name="new_drawing.png" width="400" height="400"/>
         <image name="pen.png" width="100" height="100"/>
         <image name="pen_fountain.png" width="100" height="100"/>
         <image name="pen_medium.png" width="100" height="100"/>
