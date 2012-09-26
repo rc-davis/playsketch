@@ -13,21 +13,12 @@
 
 #import "PSMotionPathView.h"
 #import "PSDrawingGroup.h"
-
-@interface PSMotionPathView ()
-@property(nonatomic,retain) NSMutableDictionary* paths; // Group -> Bezier path
-@property(nonatomic,retain) NSMutableDictionary* keyframes; // Group -> Bezier path
-@end
+#import "PSAnimationRenderingController.h" // For SELECTION_PEN_COLOR
 
 @implementation PSMotionPathView
-@synthesize paths;
 
 - (void) awakeFromNib
 {
-	self.paths = [NSMutableDictionary dictionary];
-	self.keyframes = [NSMutableDictionary dictionary];
-	
-
 	// We need to correct the coordinate system of this view to match the others
 	// It should be centred on 0,0 (by offsetting its bounds)
 	self.bounds = CGRectMake(-self.bounds.size.width/2.0,
@@ -44,83 +35,65 @@
 
 }
 
+
 - (void)drawRect:(CGRect)rect
 {
-	// Draw all of our bezier paths
-	[[UIColor colorWithWhite:0.3 alpha:0.5] setStroke];
+	NSLog(@"Redrawing path view");
 	
-	for (NSManagedObjectID* key in self.paths)
-	{
-		[[self.paths objectForKey:key] stroke];
-	}
+	[[UIColor colorWithWhite:0.5 alpha:1.0] setStroke];
+	[SELECTION_PEN_COLOR setFill];
 
-	[[UIColor colorWithWhite:0.3 alpha:0.25] setFill];
-	for (NSManagedObjectID* key in self.keyframes)
-	{
-		[[self.keyframes objectForKey:key] fill];
-	}
-
-}
-
-
-- (void) addLineForGroup:(PSDrawingGroup*)group
-{
-	// Skip displaying paths for any groups that haven't been saved yet
-	if ( [group.objectID isTemporaryID])
-		return;
-
-	// Bail if we have a group with no positions!
-	if ( group.positionCount < 1 ) return;
-	
-	// Create a Bezier Path to represent the group
-	UIBezierPath* newPath = [UIBezierPath bezierPath];
-	CGFloat lineDash[] = { 10.0f, 5.0f };
-	[newPath setLineDash:lineDash count:2 phase:0];
-	[newPath setLineCapStyle:kCGLineCapRound];
-
-	// Create a Bezier Path for the keyframes
-	// Todo: probably only for debug
-	UIBezierPath* newKeyframes = [UIBezierPath bezierPath];
-	
-	
-	// Pick a point (in the group's co-ordinates) to tranform into the parent co-ords
-	CGPoint linePoint = CGPointMake(0,0);
 	
 
-	SRTPosition* positions = group.positions;
-	int positionCount = group.positionCount;
-
-	for (int i = 0; i < positionCount; i++)
-	{
-		CGAffineTransform transform = (SRTPositionToTransform(positions[i]));
-		CGPoint transformedPoint = CGPointApplyAffineTransform(linePoint, transform);
-
-		if( i == 0 )
-			[newPath moveToPoint:transformedPoint];
-		else
-			[newPath addLineToPoint:transformedPoint];
+	// Go through all the nodes that are selected and draw a path for them
+	// This isn't as terrible as this seems, since it is only called when something changes
+	// We could be more efficient at the cost of a lot of added complexity
+	[self.rootGroup applyToSelectedSubTrees:^(PSDrawingGroup *g) {
 		
-		// Add a keyframe
-		if(SRTKeyframeIsAny(positions[i].keyframeType))
+		// Create a Bezier Path to represent the group
+		UIBezierPath* newPath = [UIBezierPath bezierPath];
+		CGFloat lineDash[] = { 10.0f, 5.0f };
+		[newPath setLineDash:lineDash count:2 phase:0];
+		[newPath setLineCapStyle:kCGLineCapRound];
+		
+		// Pick a point (in the group's co-ordinates) to tranform into the parent co-ords
+		CGPoint linePoint = CGPointMake(0,0);
+		
+		
+		SRTPosition* positions = g.positions;
+		int positionCount = g.positionCount;
+		
+		for (int i = 0; i < positionCount; i++)
 		{
-			float PADDING = 10.0;
-			CGRect fixedRect = CGRectMake(transformedPoint.x - PADDING,
-										  transformedPoint.y - PADDING,
-										  2.0*PADDING, 2.0*PADDING);
-			[newKeyframes appendPath:[UIBezierPath bezierPathWithOvalInRect:fixedRect]];
+			CGAffineTransform transform = (SRTPositionToTransform(positions[i]));
+			CGPoint transformedPoint = CGPointApplyAffineTransform(linePoint, transform);
+			
+			if( i == 0 )
+				[newPath moveToPoint:transformedPoint];
+			else
+				[newPath addLineToPoint:transformedPoint];
+			
+			// Add a keyframe
+			if(SRTKeyframeIsAny(positions[i].keyframeType))
+			{
+				float PADDING = 10.0;
+				CGRect fixedRect = CGRectMake(transformedPoint.x - PADDING,
+											  transformedPoint.y - PADDING,
+											  2.0*PADDING, 2.0*PADDING);
+				[[UIBezierPath bezierPathWithOvalInRect:fixedRect] fill];
+			}
+			
 		}
-
-	}
+		[newPath stroke];
+	}];
 	
-	[self.paths setObject:newPath forKey:group.objectID];
-	[self.keyframes	setObject:newKeyframes forKey:group.objectID];
-	[self setNeedsDisplay];
+	
+
 }
 
-- (void) removeLineForGroup:(PSDrawingGroup*)group
+
+- (void)refreshSelected
 {
-	[self.paths removeObjectForKey:group.objectID];
-	[self.keyframes removeObjectForKey:group.objectID];
 	[self setNeedsDisplay];
 }
 

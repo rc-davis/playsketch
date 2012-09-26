@@ -15,8 +15,7 @@
 #import <UIKit/UIKit.h>
 @class PSDrawingGroup;
 
-
 @interface PSMotionPathView : UIView
-- (void) addLineForGroup:(PSDrawingGroup*)group;
-- (void) removeLineForGroup:(PSDrawingGroup*)group;
+@property(nonatomic,weak)PSDrawingGroup* rootGroup;
+- (void)refreshSelected;
 @end

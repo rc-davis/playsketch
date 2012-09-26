@@ -39,7 +39,7 @@
 @property(nonatomic) UInt64 currentColor; // the drawing color as an int
 @property(nonatomic) int penWeight;
 @property(nonatomic,retain) PSRecordingSession* recordingSession;
-- (void)refreshInterfaceState:(BOOL)dataMayHaveChanged;
+- (void)refreshInterfaceAfterDataChange:(BOOL)dataMayHaveChanged selectionChange:(BOOL)selectionMayHaveChanged;
 - (void)highlightButton:(UIButton*)b on:(BOOL)highlight;
 @end
 
@@ -87,10 +87,6 @@
 	// initialize our objects to the right time
 	[self.renderingController jumpToTime:self.timelineSlider.value];
 		
-	// Create motion paths to illustrate our objects
-	for (PSDrawingGroup* child in self.rootGroup.children)
-		[self.motionPathView addLineForGroup:child];
-	
 }
 
 
@@ -117,7 +113,9 @@
 	self.timelineSlider.maximumValue = [self.currentDocument.duration floatValue];
 	[self.keyframeView refreshAll];
 	
-	[self refreshInterfaceState:YES];
+	self.motionPathView.rootGroup = self.rootGroup;
+	
+	[self refreshInterfaceAfterDataChange:YES selectionChange:YES];
 }
 
 
@@ -165,7 +163,7 @@
 {
 	self.timelineSlider.playing = NO;
 	[self.renderingController jumpToTime:self.timelineSlider.value];
-	[self refreshInterfaceState:NO];
+	[self refreshInterfaceAfterDataChange:NO selectionChange:NO];
 }
 
 
@@ -239,7 +237,7 @@
 {
 	[self.rootGroup deleteSelectedChildren];
 	[PSSelectionHelper resetSelection];
-	[self refreshInterfaceState:YES];
+	[self refreshInterfaceAfterDataChange:YES selectionChange:YES];
 }
 
 - (IBAction)createGroupFromCurrentSelection:(id)sender
@@ -261,7 +259,7 @@
 	//Manually update our selection
 	[PSSelectionHelper manuallySetSelectedGroup:newGroup];
 	
-	[self refreshInterfaceState:YES];
+	[self refreshInterfaceAfterDataChange:YES selectionChange:YES];
 }
 
 
@@ -272,7 +270,7 @@
 	[PSHelpers assert:(topLevelGroup!=self.rootGroup) withMessage:@"Selected child can't be the root"];
 	[topLevelGroup breakUpGroupAndMergeIntoParent];
 	[PSSelectionHelper resetSelection];
-	[self refreshInterfaceState:YES];
+	[self refreshInterfaceAfterDataChange:YES selectionChange:YES];
 }
 
 
@@ -281,7 +279,7 @@
 	[PSDataModel undo];
 	[self.rootGroup jumpToTime:self.timelineSlider.value];
 	[PSSelectionHelper resetSelection];
-	[self refreshInterfaceState:YES];
+	[self refreshInterfaceAfterDataChange:YES selectionChange:YES];
 }
 
 - (IBAction)redo:(id)sender
@@ -289,7 +287,7 @@
 	[PSDataModel redo];
 	[self.rootGroup jumpToTime:self.timelineSlider.value];
 	[PSSelectionHelper resetSelection];
-	[self refreshInterfaceState:YES];
+	[self refreshInterfaceAfterDataChange:YES selectionChange:YES];
 }
 
 
@@ -311,7 +309,7 @@
 		self.timelineSlider.playing = YES;
 	}
 
-	[self refreshInterfaceState:NO];
+	[self refreshInterfaceAfterDataChange:NO selectionChange:NO];
 }
 
 
@@ -323,7 +321,7 @@
  ----------------------------------------------------------------------------
  */
 
-- (void)refreshInterfaceState:(BOOL)dataMayHaveChanged
+- (void)refreshInterfaceAfterDataChange:(BOOL)dataMayHaveChanged selectionChange:(BOOL)selectionMayHaveChanged
 {
 	//Refresh the undo/redo buttons
 	self.undoButton.hidden = ![PSDataModel canUndo];
@@ -350,11 +348,13 @@
 	[self.selectionOverlayButtons configureForSelectionCount:[PSSelectionHelper selectedGroupCount]
 												isLeafObject:[PSSelectionHelper isSingleLeafOnlySelected]];
 	
-	// Motion Paths
-	self.motionPathView.hidden = self.timelineSlider.playing;
-	
 	if(dataMayHaveChanged)
 		[self.keyframeView refreshAll];
+	
+	// Motion paths
+	self.motionPathView.hidden = self.timelineSlider.playing;
+	if(selectionMayHaveChanged)
+		[self.motionPathView refreshSelected];
 }
 
 - (void)highlightButton:(UIButton*)b on:(BOOL)highlight
@@ -436,7 +436,7 @@
 	{
 		// Clear any current selection
 		[PSSelectionHelper resetSelection];
-		[self refreshInterfaceState:NO];
+		[self refreshInterfaceAfterDataChange:NO selectionChange:NO];
 		return nil;
 	}
 	
@@ -508,7 +508,7 @@
 	}
 	
 	self.renderingController.currentLine = nil;
-	[self refreshInterfaceState:YES];
+	[self refreshInterfaceAfterDataChange:YES selectionChange:NO];
 }
 
 
@@ -544,7 +544,7 @@
 	}
 	
 	self.renderingController.currentLine = nil;
-	[self refreshInterfaceState:YES];
+	[self refreshInterfaceAfterDataChange:YES selectionChange:YES];
 }
 
 /*
@@ -656,7 +656,7 @@
 	[self.rootGroup applyToSelectedSubTrees:^(PSDrawingGroup *g) {[g doneMutatingPositions];}];
 	[PSDataModel save];
 	
-	[self refreshInterfaceState:YES];
+	[self refreshInterfaceAfterDataChange:YES selectionChange:YES];
 }
 
 
