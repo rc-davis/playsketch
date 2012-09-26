@@ -15,9 +15,7 @@
 #import "PSDrawingEventsView.h"
 #import "PSSRTManipulator.h"
 #import "PSPenColorViewController.h"
-@class PSAnimationRenderingController, PSDrawingDocument, PSTimelineSlider, PSGroupOverlayButtons, PSMotionPathView;
-
-
+@class PSAnimationRenderingController, PSDrawingDocument, PSTimelineSlider, PSGroupOverlayButtons, PSMotionPathView, PSKeyframeView;
 
 @interface PSSceneViewController : UIViewController <PSDrawingEventsViewDrawingDelegate, 
 														PSSRTManipulatoDelegate,
@@ -27,6 +25,7 @@
 @property(nonatomic,retain) IBOutlet PSDrawingEventsView* drawingTouchView;
 @property(nonatomic,retain) IBOutlet UIButton* playButton;
 @property(nonatomic,retain) IBOutlet PSTimelineSlider* timelineSlider;
+@property(nonatomic,retain) IBOutlet PSKeyframeView* keyframeView;
 @property(nonatomic,retain) IBOutlet PSGroupOverlayButtons* selectionOverlayButtons;
 @property(nonatomic,retain) IBOutlet PSMotionPathView* motionPathView;
 @property(nonatomic,retain) IBOutlet PSSRTManipulator* manipulator;

@@ -23,10 +23,9 @@
 #import "PSVideoExportControllerViewController.h"
 #import "PSMotionPathView.h"
 #import "PSRecordingSession.h"
+#import "PSKeyframeView.h"
 #import <QuartzCore/QuartzCore.h>
 
-#define SELECTION_PEN_COLOR ([PSHelpers colorToInt64:[UIColor colorWithRed:1.0 green:0.0 blue:0.5 alpha:1.0]])
-#define SELECTION_PEN_WEIGHT 2
 
 
 
@@ -40,7 +39,7 @@
 @property(nonatomic) UInt64 currentColor; // the drawing color as an int
 @property(nonatomic) int penWeight;
 @property(nonatomic,retain) PSRecordingSession* recordingSession;
-- (void)refreshInterfaceState;
+- (void)refreshInterfaceState:(BOOL)dataMayHaveChanged;
 - (void)highlightButton:(UIButton*)b on:(BOOL)highlight;
 @end
 
@@ -113,7 +112,9 @@
 	// Don't let us undo past this point
 	[PSDataModel clearUndoStack];
 	
-	[self refreshInterfaceState];
+	self.keyframeView.rootGroup = self.rootGroup;
+	
+	[self refreshInterfaceState:YES];
 }
 
 
@@ -122,18 +123,14 @@
 	// Save a preview image of our drawing before going away!
 	// First we snapshot the contents of our rendering view,
 	// Then we convert that to a format that will fit in our data store
-	// TODO: the last line of this seems to take a while....
-	// TODO: downsample?
-	// Only do this is if we are the root group for the document
-	if (self.currentDocument.rootGroup == self.rootGroup)
-	{
-		GLKView* view = (GLKView*)self.renderingController.view;
-		UIImage* previewImg = [view snapshot];
-		UIImage* previewImgSmall = [PSHelpers imageWithImage:previewImg scaledToSize:CGSizeMake(462, 300)];
-		self.currentDocument.previewImage = UIImagePNGRepresentation(previewImgSmall);
-		[PSDataModel save];
-	}
-	
+	// TODO: the last line of this seems to take a while: downsample before snapshot?
+	[PSSelectionHelper resetSelection];
+	GLKView* view = (GLKView*)self.renderingController.view;
+	UIImage* previewImg = [view snapshot];
+	UIImage* previewImgSmall = [PSHelpers imageWithImage:previewImg scaledToSize:CGSizeMake(462, 300)];
+	self.currentDocument.previewImage = UIImagePNGRepresentation(previewImgSmall);
+	[PSDataModel save];
+
 	// Don't let us undo past this point
 	[PSDataModel clearUndoStack];
 }
@@ -165,7 +162,7 @@
 {
 	self.timelineSlider.playing = NO;
 	[self.renderingController jumpToTime:self.timelineSlider.value];
-	[self refreshInterfaceState];
+	[self refreshInterfaceState:NO];
 }
 
 
@@ -239,7 +236,7 @@
 {
 	[self.rootGroup deleteSelectedChildren];
 	[PSSelectionHelper resetSelection];
-	[self refreshInterfaceState];
+	[self refreshInterfaceState:YES];
 }
 
 - (IBAction)createGroupFromCurrentSelection:(id)sender
@@ -261,7 +258,7 @@
 	//Manually update our selection
 	[PSSelectionHelper manuallySetSelectedGroup:newGroup];
 	
-	[self refreshInterfaceState];
+	[self refreshInterfaceState:YES];
 }
 
 
@@ -272,7 +269,7 @@
 	[PSHelpers assert:(topLevelGroup!=self.rootGroup) withMessage:@"Selected child can't be the root"];
 	[topLevelGroup breakUpGroupAndMergeIntoParent];
 	[PSSelectionHelper resetSelection];
-	[self refreshInterfaceState];
+	[self refreshInterfaceState:YES];
 }
 
 
@@ -281,7 +278,7 @@
 	[PSDataModel undo];
 	[self.rootGroup jumpToTime:self.timelineSlider.value];
 	[PSSelectionHelper resetSelection];
-	[self refreshInterfaceState];
+	[self refreshInterfaceState:YES];
 }
 
 - (IBAction)redo:(id)sender
@@ -289,7 +286,7 @@
 	[PSDataModel redo];
 	[self.rootGroup jumpToTime:self.timelineSlider.value];
 	[PSSelectionHelper resetSelection];
-	[self refreshInterfaceState];
+	[self refreshInterfaceState:YES];
 }
 
 
@@ -311,7 +308,7 @@
 		self.timelineSlider.playing = YES;
 	}
 
-	[self refreshInterfaceState];
+	[self refreshInterfaceState:NO];
 }
 
 
@@ -323,7 +320,7 @@
  ----------------------------------------------------------------------------
  */
 
-- (void)refreshInterfaceState
+- (void)refreshInterfaceState:(BOOL)dataMayHaveChanged
 {
 	//Refresh the undo/redo buttons
 	self.undoButton.hidden = ![PSDataModel canUndo];
@@ -352,6 +349,9 @@
 	
 	// Motion Paths
 	self.motionPathView.hidden = self.timelineSlider.playing;
+	
+	if(dataMayHaveChanged)
+		[self.keyframeView refreshAll];
 }
 
 - (void)highlightButton:(UIButton*)b on:(BOOL)highlight
@@ -433,7 +433,7 @@
 	{
 		// Clear any current selection
 		[PSSelectionHelper resetSelection];
-		[self refreshInterfaceState];
+		[self refreshInterfaceState:NO];
 		return nil;
 	}
 	
@@ -444,7 +444,7 @@
 	// Read the comments on newTemporaryLineWithWeight:andColor: for an explanation
 	// of why this line has to be "temporary"
 	int weight = self.isSelecting ? SELECTION_PEN_WEIGHT : self.penWeight;
-	UInt64 color = self.isSelecting ? SELECTION_PEN_COLOR : self.currentColor;
+	UInt64 color = self.isSelecting ? [PSHelpers colorToInt64:SELECTION_PEN_COLOR] : self.currentColor;
 	PSDrawingLine* newLine = [PSDataModel newTemporaryLineWithWeight:weight andColor:color];
 	
 	// Start a new selection set helper to keep track of what's being selected
@@ -505,7 +505,7 @@
 	}
 	
 	self.renderingController.currentLine = nil;
-	[self refreshInterfaceState];
+	[self refreshInterfaceState:YES];
 }
 
 
@@ -541,7 +541,7 @@
 	}
 	
 	self.renderingController.currentLine = nil;
-	[self refreshInterfaceState];
+	[self refreshInterfaceState:YES];
 }
 
 /*
@@ -643,6 +643,8 @@
 	//TODO: this should only be called if something changed?
 	[self.rootGroup applyToSelectedSubTrees:^(PSDrawingGroup *g) {[g doneMutatingPositions];}];
 	[PSDataModel save];
+	
+	[self refreshInterfaceState:YES];
 }
 
 
