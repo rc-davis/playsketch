@@ -16,14 +16,16 @@
 #import "PSDataModel.h"
 
 @interface PSSelectionHelper : NSObject
-@property(nonatomic,retain) PSDrawingLine* selectionLoupeLine;
 @property(readonly) int selectedGroupCount;
 
-+ (PSSelectionHelper*)selectionWithLine:(PSDrawingLine*)line inRootGroup:(PSDrawingGroup*)rootGroup;
-+ (PSSelectionHelper*)selectionForTap:(CGPoint)tapPoint inRootGroup:(PSDrawingGroup*)rootGroup;
-- (void)addLineFrom:(CGPoint)from to:(CGPoint)to;
-- (void)addLineFromDict:(NSDictionary*)pointsDict;
-- (void)finishSelection;
-- (BOOL)singleLeafOnlySelected;
++ (void)setRootGroup:(PSDrawingGroup*)group;
++ (void)resetSelection;
++ (BOOL)findSelectionForTap:(CGPoint)tapPoint;
++ (void)addSelectionLineFrom:(CGPoint)from to:(CGPoint)to;
++ (void)addSelectionLineFromDict:(NSDictionary*)pointsDict;
++ (void)finishLassoSelection;
++ (BOOL)isSingleLeafOnlySelected;
++ (int)selectedGroupCount;
++ (void)manuallySetSelectedGroup:(PSDrawingGroup*)g;
 
 @end

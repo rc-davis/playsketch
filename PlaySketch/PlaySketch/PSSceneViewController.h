@@ -33,6 +33,8 @@
 @property(nonatomic,retain) IBOutlet UIButton* startSelectingButton;
 @property(nonatomic,retain) IBOutlet UIButton* startDrawingButton;
 @property(nonatomic,retain) IBOutlet UIButton* startErasingButton;
+@property(nonatomic,retain) IBOutlet UIButton* undoButton;
+@property(nonatomic,retain) IBOutlet UIButton* redoButton;
 @property(nonatomic,retain) PSDrawingDocument* currentDocument;
 @property(nonatomic,retain) PSDrawingGroup* rootGroup;
 
@@ -50,6 +52,8 @@
 - (IBAction)deleteCurrentSelection:(id)sender;
 - (IBAction)createGroupFromCurrentSelection:(id)sender;
 - (IBAction)ungroupFromCurrentSelection:(id)sender;
+- (IBAction)undo:(id)sender;
+- (IBAction)redo:(id)sender;
 - (void)setPlaying:(BOOL)playing;
 
 @end

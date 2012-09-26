@@ -78,6 +78,33 @@
 }
 
 
++(PSDrawingLine*)newTemporaryLineWithWeight:(int)weight andColor:(UInt64)color
+{
+	// Note: Something funny is happening here!
+	// When we create an object normally, it is created with a specific "managedObjectContext",
+	// which is basically like a specific CoreData database.
+	// This gets you a bunch of default functionality, like being persisted automatically,
+	// and getting added to the undo/redo stack
+	// We don't always want that, like when the line is still tentative, or not not intended to be
+	// permanent, like the selection lasso.
+	// By creating the object with a nil managedObjectContext we avoid all of that.
+	// There is an important catch:
+	// Since it doesn't belong to the same database, it cannot have relationships
+	// (parent/child/etc) with other objects that do have a managedObjectContext
+	// Before setting any of those relationships, call makeTemporaryLinePermanent:
+	// to insert it into the database
+	
+	NSEntityDescription *entity = [NSEntityDescription entityForName:@"PSDrawingLine"
+											  inManagedObjectContext:[PSDataModel context]];
+	
+	PSDrawingLine* newLine = (PSDrawingLine*)[[NSManagedObject alloc] initWithEntity:entity
+													  insertIntoManagedObjectContext:nil];
+	newLine.penWeight = weight;
+	newLine.color = [NSNumber numberWithUnsignedLongLong:color];
+	return newLine;
+}
+
+
 +(void)deleteDrawingDocument:(PSDrawingDocument*)doc
 {
 	
@@ -89,10 +116,7 @@
 
 +(void)deleteDrawingGroup:(PSDrawingGroup*)group
 {
-
 	[[PSDataModel context] deleteObject:group];
-	[PSDataModel save];
-
 }
 
 
@@ -100,8 +124,37 @@
 {
 
 	[[PSDataModel context] deleteObject:line];
-	[PSDataModel save];
-	
+}
+
+
++ (BOOL)canUndo
+{
+	return [[PSDataModel context].undoManager canUndo];
+}
+
++ (BOOL)canRedo
+{
+	return [[PSDataModel context].undoManager canRedo];
+}
+
++ (void)undo
+{
+	[[PSDataModel context] undo];
+}
+
++ (void)redo
+{
+	[[PSDataModel context] redo];
+}
+
++ (void)clearUndoStack
+{
+	[[PSDataModel context].undoManager removeAllActions];
+}
+
++ (void)makeTemporaryLinePermanent:(PSDrawingLine*)line
+{
+	[[PSDataModel context] insertObject:line];
 }
 
 
