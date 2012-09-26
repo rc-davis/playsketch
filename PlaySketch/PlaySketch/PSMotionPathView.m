@@ -38,12 +38,8 @@
 
 - (void)drawRect:(CGRect)rect
 {
-	NSLog(@"Redrawing path view");
-	
 	[[UIColor colorWithWhite:0.5 alpha:1.0] setStroke];
 	[SELECTION_PEN_COLOR setFill];
-
-	
 
 	// Go through all the nodes that are selected and draw a path for them
 	// This isn't as terrible as this seems, since it is only called when something changes
