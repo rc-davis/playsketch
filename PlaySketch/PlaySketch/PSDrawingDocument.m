@@ -18,6 +18,7 @@
 @implementation PSDrawingDocument
 
 @dynamic name;
+@dynamic duration;
 @dynamic rootGroup;
 @dynamic previewImage;
 

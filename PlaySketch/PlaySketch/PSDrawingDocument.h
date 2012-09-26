@@ -19,6 +19,7 @@
 @interface PSDrawingDocument : NSManagedObject
 
 @property (nonatomic, retain) NSString * name;
+@property (nonatomic, retain) NSNumber* duration;
 @property (nonatomic, retain) PSDrawingGroup *rootGroup;
 @property (nonatomic, retain) NSData* previewImage;
 

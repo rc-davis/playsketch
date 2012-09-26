@@ -63,8 +63,23 @@
 	return imgWidth/2.0 + pcnt*(self.frame.size.width - imgWidth);
 }
 
+- (BOOL)nearEndOfTimeline:(float)time
+{
+	return (self.maximumValue - time) < 2.0;
+}
 
 
+- (void)expandTimeline
+{
+	self.maximumValue += 5.0;
+}
+
+- (void)setMaximumValue:(float)maximumValue
+{
+	[super setMaximumValue:maximumValue];
+	[self.labelView setLabelsForTimelineSlider:self];
+	
+}
 
 
 

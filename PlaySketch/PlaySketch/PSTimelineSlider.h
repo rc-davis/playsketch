@@ -19,4 +19,6 @@
 @property(nonatomic) BOOL playing; //starts and stops animation
 @property(nonatomic,retain)IBOutlet PSTimelineLabelView* labelView;
 - (float)xOffsetForTime:(float)time;
+- (BOOL)nearEndOfTimeline:(float)time;
+- (void)expandTimeline;
 @end

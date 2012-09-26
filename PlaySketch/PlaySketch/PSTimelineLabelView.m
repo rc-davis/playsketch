@@ -30,9 +30,12 @@
 	CGRect r = CGRectMake(0, 0, WIDTH, self.frame.size.height);
 	
 	int stepSize = 1;
-	if(maxSecond >= 30) stepSize = 5;
-	else if(maxSecond >= 60) stepSize = 10;
-	else if(maxSecond >= 120) stepSize = 15;
+	if (maxSecond <= 5) stepSize = 1;
+	else if(maxSecond <= 20) stepSize = 2;
+	else if(maxSecond <= 40) stepSize = 5;
+	else if(maxSecond <= 75) stepSize = 10;
+	else if(maxSecond <= 120) stepSize = 15;
+	else stepSize = 30;
 
 	for(int i = 0; i <= maxSecond; i += stepSize)
 	{

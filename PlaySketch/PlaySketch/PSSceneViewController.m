@@ -114,6 +114,9 @@
 	
 	self.keyframeView.rootGroup = self.rootGroup;
 	
+	self.timelineSlider.maximumValue = [self.currentDocument.duration floatValue];
+	[self.keyframeView refreshAll];
+	
 	[self refreshInterfaceState:YES];
 }
 
@@ -587,6 +590,15 @@
 	  timeDuration:(float)duration
 {
 
+	// Check if we need to expand the timeline
+	if([self.timelineSlider nearEndOfTimeline:self.timelineSlider.value])
+	{
+		[self.timelineSlider expandTimeline];
+		[self.keyframeView refreshAll];
+		self.currentDocument.duration = [NSNumber numberWithFloat:self.timelineSlider.maximumValue];
+	}
+	
+	
 	if (self.isRecording)
 	{
 		[self.recordingSession transformAllGroupsByX:dX
