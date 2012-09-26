@@ -238,6 +238,7 @@
 - (IBAction)deleteCurrentSelection:(id)sender
 {
 	[self.rootGroup deleteSelectedChildren];
+	[PSSelectionHelper resetSelection];
 	[self refreshInterfaceState];
 }
 
