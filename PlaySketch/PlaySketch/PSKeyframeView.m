@@ -42,7 +42,7 @@
 			SRTPosition p = g.positions[i];
 			if(SRTKeyframeIsAny(p.keyframeType))
 			{
-				float xVal = [self.infoProvider xOffsetForTime:p.timeStamp];
+				float xVal = [self.slider xOffsetForTime:p.timeStamp];
 				if(subtreeSelected)
 					[xOffsetsSelected addObject:[NSNumber numberWithFloat:xVal]];
 				else
@@ -62,7 +62,8 @@
 {
 	CGContextRef context = UIGraphicsGetCurrentContext();
 	CGContextSetFillColorWithColor(context, color.CGColor);
-	CGRect r = CGRectMake(0, 0, 10, self.frame.size.height);
+	float keyframeWidth = 0.9*(self.frame.size.width)/(self.slider.maximumValue*POSITION_FPS);
+	CGRect r = CGRectMake(0, 0, keyframeWidth, self.frame.size.height);
 	for (NSNumber* x in xOffsets)
 	{
 		r.origin.x = x.floatValue - r.size.width/2.0;

@@ -12,17 +12,13 @@
  */
 
 #import <Foundation/Foundation.h>
-
-@protocol PSKeyframeTimelineInfoProvider
-- (float)xOffsetForTime:(float)time;
-@end
-
+#import "PSTimelineSlider.h"
 
 @class PSDrawingGroup;
 
 @interface PSKeyframeView : UIView
 @property(nonatomic,weak)PSDrawingGroup* rootGroup;
-@property(nonatomic,weak)IBOutlet id<PSKeyframeTimelineInfoProvider> infoProvider;
+@property(nonatomic,weak)IBOutlet PSTimelineSlider* slider;
 
 - (void)refreshAll;
 @end
