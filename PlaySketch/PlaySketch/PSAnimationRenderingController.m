@@ -398,6 +398,9 @@ enum
 
 - (void)renderGroupWithMatrix:(GLKMatrix4)parentModelMatrix uniforms:(GLint*)uniforms overrideColor:(BOOL)overrideColor
 {
+	// If we are not currently visible, quit now and don't do any work
+	if (!currentSRTPosition.isVisible) return;
+	
 	//Push Matrix
 	GLKMatrix4 ownModelMatrix = GLKMatrix4Multiply(parentModelMatrix, currentModelViewMatrix);
 	glUniformMatrix4fv(uniforms[UNIFORMS_MODELMATRIX], 1, 0, ownModelMatrix.m);
