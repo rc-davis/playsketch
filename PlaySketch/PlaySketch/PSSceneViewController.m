@@ -240,7 +240,7 @@
 		  withMessage:@"Need more than one existing group to create a new one"];
 	
 	PSDrawingGroup* newGroup = [self.rootGroup mergeSelectedChildrenIntoNewGroup];
-
+	
 	// Insert new keyframe
 	SRTPosition newPosition = SRTPositionZero();
 	newPosition.timeStamp = self.timelineSlider.value;
@@ -514,15 +514,18 @@
 -(void)whileDrawingLine:(PSDrawingLine *)line tappedAt:(CGPoint)p tapCount:(int)tapCount inDrawingView:(id)drawingView
 {
 	// Look to see if we tapped on an object!
+	self.selectionHelper = nil;
+	
 	PSSelectionHelper* tapSelection = [PSSelectionHelper selectionForTap:p inRootGroup:self.rootGroup];
 	if(tapCount == 1 && tapSelection.selectedGroupCount > 0)
 	{
 		// Treat this like a selection!
-		self.renderingController.currentLine = nil;
+		// Save the selection Helper and configure the interface
 		self.selectionHelper = tapSelection;
 		self.manipulator.hidden = NO;
 		[self.selectionOverlayButtons configureForSelection:self.selectionHelper];
 		[self refreshManipulatorLocation];
+		self.renderingController.currentLine = nil;
 	}
 	else
 	{
@@ -530,7 +533,6 @@
 		// Just treat it like a normal line that finished
 		[self finishedDrawingLine:line inDrawingView:drawingView];
 	}
-
 
 }
 
