@@ -643,6 +643,7 @@
 	
 	//TODO: this should only be called if something changed?
 	[self.rootGroup applyToSelectedSubTrees:^(PSDrawingGroup *g) {[g doneMutatingPositions];}];
+	[PSDataModel save];
 }
 
 
