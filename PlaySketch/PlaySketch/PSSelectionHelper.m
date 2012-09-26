@@ -243,4 +243,12 @@ int __helperSelectedGroupCount;
 	
 }
 
++ (PSDrawingGroup*)leafGroup
+{
+	if(__helperSelectedGroupCount== 1)
+		return [__helperRootGroup topLevelSelectedChild];
+	else
+		return nil;
+}
+
 @end

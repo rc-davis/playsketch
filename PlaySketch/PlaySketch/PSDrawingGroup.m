@@ -561,6 +561,7 @@
 						 andY:(float)dY
 					 rotation:(float)dRotation
 						scale:(float)dScale
+				   visibility:(BOOL)makeVisible
 					   atTime:(float)time
 			   addingKeyframe:(SRTKeyframeType)keyframeType
 		   usingInterpolation:(BOOL)interpolate
@@ -575,6 +576,7 @@
 		position.scale *= dScale;
 		position.timeStamp = time;
 		position.keyframeType = keyframeType;
+		position.isVisible = makeVisible;
 		
 		//Store the position at the current time and refresh the cache
 		[g addPosition:position withInterpolation:interpolate];

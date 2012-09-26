@@ -92,6 +92,7 @@
 						 andY:(float)dY
 					 rotation:(float)dRotation
 						scale:(float)dScale
+				   visibility:(BOOL)makeVisible
 					   atTime:(float)time
 			   addingKeyframe:(SRTKeyframeType)keyframeType
 		   usingInterpolation:(BOOL)interpolate;

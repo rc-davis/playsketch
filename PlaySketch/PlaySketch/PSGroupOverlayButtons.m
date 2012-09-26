@@ -16,18 +16,22 @@
 
 @implementation PSGroupOverlayButtons
 
-- (void)configureForSelectionCount:(int)count isLeafObject:(BOOL)isLeaf
+- (void)configureForSelectionCount:(int)count isLeafObject:(BOOL)isLeaf isVisible:(BOOL)isVisible
 {
 	// Decide what buttons to show
 	self.recordingButton.hidden = NO;
 	self.createGroupButton.hidden = (count == 1);
 	self.disbandGroupButton.hidden = (count > 1) || isLeaf;
+	self.visibilityOffButton.hidden = !isVisible;
+	self.visibilityOnButton.hidden = isVisible;
 	self.deleteGroupButton.hidden = NO;
 	
 	//Lay them out dynamically
 	NSArray* allButtons = [NSArray arrayWithObjects:self.recordingButton,
 													self.createGroupButton,
 													self.disbandGroupButton,
+													self.visibilityOnButton,
+													self.visibilityOffButton,
 													self.deleteGroupButton,
 													nil];
 	CGFloat yOffset = 0;
@@ -37,7 +41,7 @@
 		CGRect f = b.frame;
 		f.origin.y = yOffset;
 		b.frame = f;
-		yOffset += f.size.height;
+		yOffset += f.size.height + 10.0;
 	}
 	
 }

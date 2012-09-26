@@ -27,5 +27,6 @@
 + (BOOL)isSingleLeafOnlySelected;
 + (int)selectedGroupCount;
 + (void)manuallySetSelectedGroup:(PSDrawingGroup*)g;
++ (PSDrawingGroup*)leafGroup;
 
 @end

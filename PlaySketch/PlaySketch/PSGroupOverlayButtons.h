@@ -20,10 +20,12 @@
 @property(nonatomic,retain)IBOutlet UIButton* recordingButton;
 @property(nonatomic,retain)IBOutlet UIButton* createGroupButton;
 @property(nonatomic,retain)IBOutlet UIButton* disbandGroupButton;
+@property(nonatomic,retain)IBOutlet UIButton* visibilityOffButton;
+@property(nonatomic,retain)IBOutlet UIButton* visibilityOnButton;
 @property(nonatomic,retain)IBOutlet UIButton* deleteGroupButton;
 @property(nonatomic) BOOL recordPulsing;
 
-- (void)configureForSelectionCount:(int)count isLeafObject:(BOOL)isLeaf;
+- (void)configureForSelectionCount:(int)count isLeafObject:(BOOL)isLeaf isVisible:(BOOL)isVisible;
 - (void)startRecordingMode;
 - (void)stopRecordingMode;
 

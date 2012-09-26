@@ -57,9 +57,11 @@
 	// Add a keyframe for the start position based on our current position
 	SRTPosition currentPos = g.currentCachedPosition;
 	currentPos.timeStamp = self.currentTime;
+	currentPos.isVisible = YES;
 	currentPos.keyframeType = SRTKeyframeMake(self.overwriteScale,
 											  self.overwriteRotation,
-											  self.overwriteTranslation);
+											  self.overwriteTranslation,
+											  YES);
 	int currentIndex = [g addPosition:currentPos withInterpolation:NO];
 
 
@@ -99,6 +101,7 @@
 			newFrame.scale = lastFrame.scale * dScale;
 		
 		newFrame.timeStamp = time;
+		newFrame.isVisible = YES;
 		newFrame.keyframeType = SRTKeyframeTypeNone();
 
 		int nextIndex = [g addPosition:newFrame withInterpolation:NO];
@@ -108,6 +111,7 @@
 		for(int j = lastIndex + 1; j < nextIndex; j++)
 		{
 			SRTPosition newP = [self maskedCopyFrom:positions[lastIndex] to:positions[j]];
+			newP.isVisible = YES;
 			[g setPosition:newP atIndex:j];
 		}
 
@@ -143,7 +147,7 @@
 		SRTPosition newP = positions[lastIndex];
 		newP.keyframeType = SRTKeyframeMake(self.overwriteScale,
 											self.overwriteRotation,
-											self.overwriteTranslation);
+											self.overwriteTranslation, YES);
 		[g setPosition:newP atIndex:lastIndex];
 
 	}

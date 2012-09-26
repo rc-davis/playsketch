@@ -85,17 +85,18 @@ static inline SRTKeyframeType SRTKeyframeTypeNone()
 	return 0;
 }
 
-static inline SRTKeyframeType SRTKeyframeAdd(SRTKeyframeType keyframe, BOOL scale, BOOL rotate, BOOL translate)
+static inline SRTKeyframeType SRTKeyframeAdd(SRTKeyframeType keyframe, BOOL scale, BOOL rotate, BOOL translate, BOOL visibility)
 {
 	if(scale) keyframe = keyframe | 1;
 	if(rotate) keyframe = keyframe | 2;
 	if(translate) keyframe = keyframe | 4;
+	if(visibility) keyframe = keyframe | 8;
 	return keyframe;
 }
 
-static inline SRTKeyframeType SRTKeyframeMake(BOOL scale, BOOL rotate, BOOL translate)
+static inline SRTKeyframeType SRTKeyframeMake(BOOL scale, BOOL rotate, BOOL translate, BOOL visibility)
 {
-	return SRTKeyframeAdd(SRTKeyframeTypeNone(), scale, rotate, translate);
+	return SRTKeyframeAdd(SRTKeyframeTypeNone(), scale, rotate, translate, visibility);
 }
 
 static inline BOOL SRTKeyframeIsAny(SRTKeyframeType keyframe)
@@ -118,6 +119,11 @@ static inline BOOL SRTKeyframeIsTranslate(SRTKeyframeType keyframe)
 	return (keyframe & 4 ) != 0;
 }
 
+static inline BOOL SRTKeyframeIsVisibility(SRTKeyframeType keyframe)
+{
+	return (keyframe & 8 ) != 0;
+}
+
 static inline BOOL SRTKeyframeIsOnlyScale(SRTKeyframeType keyframe)
 {
 	return keyframe == 1;
@@ -133,11 +139,18 @@ static inline BOOL SRTKeyframeIsOnlyTranslate(SRTKeyframeType keyframe)
 	return keyframe == 4;
 }
 
-static inline SRTKeyframeType SRTKeyframeRemove(SRTKeyframeType keyframe, BOOL scale, BOOL rotate, BOOL translate)
+static inline BOOL SRTKeyframeIsOnlyVisibility(SRTKeyframeType keyframe)
+{
+	return keyframe == 8;
+}
+
+
+static inline SRTKeyframeType SRTKeyframeRemove(SRTKeyframeType keyframe, BOOL scale, BOOL rotate, BOOL translate, BOOL visibility)
 {
 	return SRTKeyframeMake(!scale && SRTKeyframeIsScale(keyframe),
 							   !rotate && SRTKeyframeIsRotation(keyframe),
-							   !translate && SRTKeyframeIsTranslate(keyframe));
+							   !translate && SRTKeyframeIsTranslate(keyframe),
+							   !visibility && SRTKeyframeIsVisibility(keyframe));
 }
 
 
@@ -146,7 +159,8 @@ static inline SRTKeyframeType SRTKeyframeAdd2(SRTKeyframeType keyframe1, SRTKeyf
 	return SRTKeyframeAdd(keyframe1,
 						  SRTKeyframeIsScale(keyframe2),
 						  SRTKeyframeIsRotation(keyframe2),
-						  SRTKeyframeIsTranslate(keyframe2));
+						  SRTKeyframeIsTranslate(keyframe2),
+						  SRTKeyframeIsVisibility(keyframe2));
 }
 
 static inline SRTPosition SRTPositionInterpolate(float time, SRTPosition p1, SRTPosition p2)
@@ -171,7 +185,7 @@ static inline SRTPosition SRTPositionInterpolate(float time, SRTPosition p1, SRT
 
 	// Visibility transitions are instantaneous
 	// So we copy the visibility from the frame with a time <= the current time
-	pos.isVisible = (p2.timeStamp < time) ? p1.isVisible : p2.isVisible;
+	pos.isVisible = (p2.timeStamp > time) ? p1.isVisible : p2.isVisible;
 
 	return pos;
 }

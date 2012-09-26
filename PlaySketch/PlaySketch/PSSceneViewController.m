@@ -275,6 +275,35 @@
 }
 
 
+- (IBAction)markCurrentSelectionVisible:(id)sender
+{
+	[self.rootGroup transformSelectionByX:0
+									 andY:0
+								 rotation:0
+									scale:1
+							   visibility:YES
+								   atTime:self.timelineSlider.value
+						   addingKeyframe:SRTKeyframeMake(NO, NO, NO, YES)
+					   usingInterpolation:YES];
+
+	[self refreshInterfaceAfterDataChange:YES selectionChange:YES];
+}
+
+- (IBAction)markCurrentSelectionNotVisible:(id)sender
+{
+	[self.rootGroup transformSelectionByX:0
+									 andY:0
+								 rotation:0
+									scale:1
+							   visibility:NO
+								   atTime:self.timelineSlider.value
+						   addingKeyframe:SRTKeyframeMake(NO, NO, NO, YES)
+					   usingInterpolation:YES];
+	
+	[self refreshInterfaceAfterDataChange:YES selectionChange:YES];
+}
+
+
 - (IBAction)undo:(id)sender
 {
 	[PSDataModel undo];
@@ -346,8 +375,11 @@
 	}
 	
 	// Update the buttons attached to the manipulator
+	BOOL currentlyVisible = ![PSSelectionHelper isSingleLeafOnlySelected] ||
+							 [PSSelectionHelper leafGroup].currentCachedPosition.isVisible;
 	[self.selectionOverlayButtons configureForSelectionCount:[PSSelectionHelper selectedGroupCount]
-												isLeafObject:[PSSelectionHelper isSingleLeafOnlySelected]];
+												isLeafObject:[PSSelectionHelper isSingleLeafOnlySelected]
+												   isVisible:currentlyVisible];
 	
 	if(dataMayHaveChanged)
 		[self.keyframeView refreshAll];
@@ -617,12 +649,13 @@
 
 		SRTKeyframeType keyframeType =  self.isRecording ?
 											SRTKeyframeTypeNone() :
-											SRTKeyframeMake(isScaling, isRotating, isTranslating);
+											SRTKeyframeMake(isScaling, isRotating, isTranslating, YES);
 
 		[self.rootGroup transformSelectionByX:dX
 										 andY:dY
 									 rotation:dRotation
 										scale:dScale
+								   visibility:YES
 									   atTime:self.timelineSlider.value
 							   addingKeyframe:keyframeType
 						   usingInterpolation:YES];

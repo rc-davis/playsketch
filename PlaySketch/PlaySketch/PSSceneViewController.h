@@ -51,6 +51,8 @@
 - (IBAction)deleteCurrentSelection:(id)sender;
 - (IBAction)createGroupFromCurrentSelection:(id)sender;
 - (IBAction)ungroupFromCurrentSelection:(id)sender;
+- (IBAction)markCurrentSelectionVisible:(id)sender;
+- (IBAction)markCurrentSelectionNotVisible:(id)sender;
 - (IBAction)undo:(id)sender;
 - (IBAction)redo:(id)sender;
 - (void)setPlaying:(BOOL)playing;
