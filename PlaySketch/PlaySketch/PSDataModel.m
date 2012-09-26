@@ -129,23 +129,21 @@
 
 + (BOOL)canUndo
 {
-	return YES;
+	return [[PSDataModel context].undoManager canUndo];
 }
 
 + (BOOL)canRedo
 {
-	return YES;
+	return [[PSDataModel context].undoManager canRedo];
 }
 
 + (void)undo
 {
-	NSLog(@"undoing");
 	[[PSDataModel context] undo];
 }
 
 + (void)redo
 {
-	NSLog(@"redoing");	
 	[[PSDataModel context] redo];
 }
 

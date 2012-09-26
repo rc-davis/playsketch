@@ -37,10 +37,12 @@ int __helperSelectedGroupCount;
 	// Reset all of our per-object metadata
 	// Each group maintains a BOOL of whether it is selected
 	// Each line contains a list with an int for each point for selection crossing count
-	[__helperRootGroup applyToSelectedSubTrees:^(PSDrawingGroup *g) {
+	[__helperRootGroup applyToAllSubTrees:^(PSDrawingGroup *g) {
+		NSLog(@"resetting group");
 		g.isSelected = NO;
 		for (PSDrawingLine* l in g.drawingLines)
 		{
+			NSLog(@"resetting line");
 			if(l.selectionHitCounts)
 				free(l.selectionHitCounts);
 			l.selectionHitCounts = (int*)calloc(l.pointCount, sizeof(int));
@@ -233,6 +235,14 @@ int __helperSelectedGroupCount;
 + (int)selectedGroupCount
 {
 	return __helperSelectedGroupCount;
+}
+
++ (void)manuallySetSelectedGroup:(PSDrawingGroup*)g
+{
+	[PSSelectionHelper resetSelection];
+	g.isSelected = YES;
+	__helperSelectedGroupCount = 1;
+	
 }
 
 @end

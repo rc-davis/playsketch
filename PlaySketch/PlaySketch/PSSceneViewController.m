@@ -75,7 +75,6 @@
 	self.manipulator = [[PSSRTManipulator alloc] initAtLocation:CGPointZero];
 	[self.renderingController.view addSubview:self.manipulator];
 	self.manipulator.delegate = self;
-	self.manipulator.hidden = YES;
 	self.manipulator.groupButtons = self.selectionOverlayButtons;
 	
 	// Initialize to be drawing with an initial color
@@ -113,6 +112,8 @@
 {
 	// Don't let us undo past this point
 	[PSDataModel clearUndoStack];
+	
+	[self refreshInterfaceState];
 }
 
 
@@ -164,7 +165,7 @@
 {
 	self.timelineSlider.playing = NO;
 	[self.renderingController jumpToTime:self.timelineSlider.value];
-	self.motionPathView.hidden = NO;
+	[self refreshInterfaceState];
 }
 
 
@@ -237,7 +238,7 @@
 - (IBAction)deleteCurrentSelection:(id)sender
 {
 	[self.rootGroup deleteSelectedChildren];
-	self.manipulator.hidden = YES;
+	[self refreshInterfaceState];
 }
 
 - (IBAction)createGroupFromCurrentSelection:(id)sender
@@ -255,8 +256,11 @@
 	[newGroup centerOnCurrentBoundingBox];
 	[newGroup jumpToTime:self.timelineSlider.value];
 	
-	self.manipulator.hidden = YES;
 	
+	//Manually update our selection
+	[PSSelectionHelper manuallySetSelectedGroup:newGroup];
+	
+	[self refreshInterfaceState];
 }
 
 
@@ -266,6 +270,8 @@
 	[PSHelpers assert:(topLevelGroup!=nil) withMessage:@"Need a non-nil child"];
 	[PSHelpers assert:(topLevelGroup!=self.rootGroup) withMessage:@"Selected child can't be the root"];
 	[topLevelGroup breakUpGroupAndMergeIntoParent];
+	[PSSelectionHelper resetSelection];
+	[self refreshInterfaceState];
 }
 
 
@@ -273,12 +279,16 @@
 {
 	[PSDataModel undo];
 	[self.rootGroup jumpToTime:self.timelineSlider.value];
+	[PSSelectionHelper resetSelection];
+	[self refreshInterfaceState];
 }
 
 - (IBAction)redo:(id)sender
 {
 	[PSDataModel redo];
 	[self.rootGroup jumpToTime:self.timelineSlider.value];
+	[PSSelectionHelper resetSelection];
+	[self refreshInterfaceState];
 }
 
 
@@ -290,20 +300,17 @@
 		// PAUSE
 		[self.renderingController stopPlaying];
 		self.timelineSlider.playing = NO;
-		[self refreshInterfaceState];
-		self.motionPathView.hidden = NO;
 	}
 	else if(playing && !self.timelineSlider.playing)
 	{
 		// PLAY!
-		// TODO: unselect things
 		float time = self.timelineSlider.value;
 		[self.renderingController playFromTime:time];
 		self.timelineSlider.value = time;
 		self.timelineSlider.playing = YES;
-		if(!self.isRecording)
-			self.motionPathView.hidden = YES;
 	}
+
+	[self refreshInterfaceState];
 }
 
 
@@ -317,20 +324,33 @@
 
 - (void)refreshInterfaceState
 {
-	// Update the manipulator's location and visibility
+	//Refresh the undo/redo buttons
+	self.undoButton.hidden = ![PSDataModel canUndo];
+	self.redoButton.hidden = ![PSDataModel canRedo];
+
+	// Hide/show the manipulator
+	BOOL shouldShow =	!self.timelineSlider.playing &&
+						[PSSelectionHelper selectedGroupCount] > 0;
+	self.manipulator.hidden = !shouldShow;
 	
-	
-	
-	
-	if ([PSSelectionHelper selectedGroupCount] == 1)
+
+	// Update the manipulator's location
+	if(shouldShow && [PSSelectionHelper selectedGroupCount] == 1)
 	{
 		PSDrawingGroup* group = [self.rootGroup topLevelSelectedChild];
 		self.manipulator.center = [group currentOriginInWorldCoordinates];
 	}
-	else
+	else if(shouldShow)
 	{
 		self.manipulator.center = CGPointZero;
 	}
+	
+	// Update the buttons attached to the manipulator
+	[self.selectionOverlayButtons configureForSelectionCount:[PSSelectionHelper selectedGroupCount]
+												isLeafObject:[PSSelectionHelper isSingleLeafOnlySelected]];
+	
+	// Motion Paths
+	self.motionPathView.hidden = self.timelineSlider.playing;
 }
 
 - (void)highlightButton:(UIButton*)b on:(BOOL)highlight
@@ -455,20 +475,6 @@
 	if ( line && self.isSelecting )
 	{
 		[PSSelectionHelper finishLassoSelection];
-		
-		//Show the manipulator if it was worthwhile
-		if([PSSelectionHelper selectedGroupCount] == 0)
-		{
-			self.manipulator.hidden = YES;
-		}
-		else
-		{
-			self.manipulator.hidden = NO;
-			[self.selectionOverlayButtons configureForSelectionCount:[PSSelectionHelper selectedGroupCount]
-														isLeafObject:[PSSelectionHelper isSingleLeafOnlySelected]];
-			[self refreshInterfaceState];
-		}
-
 	}
 	else if( line && !self.isSelecting)
 	{
@@ -492,6 +498,7 @@
 	}
 	
 	self.renderingController.currentLine = nil;
+	[self refreshInterfaceState];
 }
 
 
@@ -516,23 +523,16 @@
 {
 	// Look to see if we tapped on an object!
 	BOOL touchedObject = [PSSelectionHelper findSelectionForTap:p];
-	if(tapCount == 1 && touchedObject)
+
+	// If we didn't hit anything, just treat it like a normal line that finished
+	// Otherwise our selectionHelper will have the info about our selection
+	if (!(tapCount == 1 && touchedObject))
 	{
-		// Treat this like a selection!
-		self.manipulator.hidden = NO;
-		[self.selectionOverlayButtons configureForSelectionCount:[PSSelectionHelper selectedGroupCount]
-													isLeafObject:[PSSelectionHelper isSingleLeafOnlySelected]];
-		self.renderingController.currentLine = nil;
-		[self refreshInterfaceState];
-		
-	}
-	else
-	{
-		// Didn't hit anything, so it's not a successful selection
-		// Just treat it like a normal line that finished
 		[self finishedDrawingLine:line inDrawingView:drawingView];
 	}
-
+	
+	self.renderingController.currentLine = nil;
+	[self refreshInterfaceState];
 }
 
 /*

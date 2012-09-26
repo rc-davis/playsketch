@@ -584,7 +584,7 @@
 	functionToApply(self);
 
 	for (PSDrawingGroup* c in self.children)
-		[c applyToSelectedSubTrees:functionToApply];
+		[c applyToAllSubTrees:functionToApply];
 }
 
 - (void)applyToSelectedSubTrees:( void ( ^ )( PSDrawingGroup* g ) )functionToApply
