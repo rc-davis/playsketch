@@ -93,9 +93,8 @@
 			newFrame.scale = lastFrame.scale * dScale;
 		
 		newFrame.timeStamp = time;
-		newFrame.keyframeType = SRTKeyframeMake(self.overwriteScale,
-												 self.overwriteRotation,
-												 self.overwriteTranslation);
+		newFrame.keyframeType = SRTKeyframeTypeNone();
+
 		int nextIndex = [g addPosition:newFrame withInterpolation:NO];
 		g.currentCachedPosition = newFrame;
 		
@@ -134,8 +133,13 @@
 		}
 		
 		// Add our ending keyframe
-		// TODO (need to base it on final location?
-		
+		// TODO: We should add a new keyframe here so it will be snapped to the right time
+		SRTPosition newP = positions[lastIndex];
+		newP.keyframeType = SRTKeyframeMake(self.overwriteScale,
+											self.overwriteRotation,
+											self.overwriteTranslation);
+		[g setPosition:newP atIndex:lastIndex];
+
 	}
 }
 
