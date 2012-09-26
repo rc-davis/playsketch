@@ -596,6 +596,10 @@
 	{
 		[self.timelineSlider expandTimeline];
 		[self.keyframeView refreshAll];
+		
+		// TODO: We are just setting the duration to the size of the canvas
+		// if we wanted to do this right, we'd probably set it to the time of the last keyframe
+		// in any group, but then we would have to do that more often
 		self.currentDocument.duration = [NSNumber numberWithFloat:self.timelineSlider.maximumValue];
 	}
 	
