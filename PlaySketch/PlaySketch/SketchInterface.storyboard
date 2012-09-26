@@ -399,12 +399,15 @@
                                 </connections>
                             </button>
                             <view contentMode="scaleToFill" id="8lX-SJ-F1I" customClass="PSKeyframeView">
-                                <rect key="frame" x="128" y="678" width="876" height="50"/>
+                                <rect key="frame" x="126" y="704" width="880" height="23"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                                <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                <connections>
+                                    <outlet property="infoProvider" destination="7Eo-kn-03o" id="mxC-Km-eBw"/>
+                                </connections>
                             </view>
                             <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="3" minValue="0.0" maxValue="10" id="7Eo-kn-03o" customClass="PSTimelineSlider">
-                                <rect key="frame" x="126" y="648" width="880" height="23"/>
+                                <rect key="frame" x="126" y="681" width="880" height="23"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="minimumTrackTintColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <color key="maximumTrackTintColor" red="0.7725490196" green="0.7725490196" blue="0.7725490196" alpha="1" colorSpace="calibratedRGB"/>
@@ -745,6 +748,9 @@
         </class>
         <class className="PSKeyframeView" superclassName="UIView">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/PSKeyframeView.h"/>
+            <relationships>
+                <relationship kind="outlet" name="infoProvider"/>
+            </relationships>
         </class>
         <class className="PSMotionPathView" superclassName="UIView">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/PSMotionPathView.h"/>

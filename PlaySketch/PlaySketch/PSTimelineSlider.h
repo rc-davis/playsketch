@@ -12,7 +12,8 @@
  */
 
 #import <UIKit/UIKit.h>
+#import "PSKeyframeView.h"
 
-@interface PSTimelineSlider : UISlider
+@interface PSTimelineSlider : UISlider <PSKeyframeTimelineInfoProvider>
 @property(nonatomic) BOOL playing; //starts and stops animation
 @end

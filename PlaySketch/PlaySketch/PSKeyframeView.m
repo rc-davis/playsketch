@@ -32,8 +32,6 @@
 
 - (void)drawRect:(CGRect)rect
 {
-	NSLog(@"drawing");
-	
 	// Collect all of the x-values for keyframes in a set to avoid duplicates
 	NSMutableSet* xOffsetsSelected = [NSMutableSet set];
 	NSMutableSet* xOffsetsUnselected = [NSMutableSet set];
@@ -44,11 +42,11 @@
 			SRTPosition p = g.positions[i];
 			if(SRTKeyframeIsAny(p.keyframeType))
 			{
-				int xVal = (int)((p.timeStamp/10.0) * self.frame.size.width);
+				float xVal = [self.infoProvider xOffsetForTime:p.timeStamp];
 				if(subtreeSelected)
-					[xOffsetsSelected addObject:[NSNumber numberWithInt:xVal]];
+					[xOffsetsSelected addObject:[NSNumber numberWithFloat:xVal]];
 				else
-					[xOffsetsUnselected addObject:[NSNumber numberWithInt:xVal]];
+					[xOffsetsUnselected addObject:[NSNumber numberWithFloat:xVal]];
 			}
 		}
 	}];
@@ -67,7 +65,7 @@
 	CGRect r = CGRectMake(0, 0, 10, self.frame.size.height);
 	for (NSNumber* x in xOffsets)
 	{
-		r.origin.x = x.intValue - r.size.width/2.0;
+		r.origin.x = x.floatValue - r.size.width/2.0;
 		CGContextFillRect (context, r);
 	}
 }

@@ -13,10 +13,16 @@
 
 #import <Foundation/Foundation.h>
 
+@protocol PSKeyframeTimelineInfoProvider
+- (float)xOffsetForTime:(float)time;
+@end
+
+
 @class PSDrawingGroup;
 
 @interface PSKeyframeView : UIView
 @property(nonatomic,weak)PSDrawingGroup* rootGroup;
+@property(nonatomic,weak)IBOutlet id<PSKeyframeTimelineInfoProvider> infoProvider;
 
 - (void)refreshAll;
 @end

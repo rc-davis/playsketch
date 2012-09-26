@@ -66,4 +66,16 @@
 		self.playing = NO;
 }
 
+- (float)xOffsetForTime:(float)time
+{
+	float imgWidth = self.currentThumbImage.size.width;
+	float pcnt = (time/self.maximumValue);
+	return imgWidth/2.0 + pcnt*(self.frame.size.width - imgWidth);
+}
+
+
+
+
+
+
 @end
