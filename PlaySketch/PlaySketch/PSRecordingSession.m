@@ -61,7 +61,7 @@
 	currentPos.keyframeType = SRTKeyframeMake(self.overwriteScale,
 											  self.overwriteRotation,
 											  self.overwriteTranslation,
-											  YES);
+											  NO);
 	int currentIndex = [g addPosition:currentPos withInterpolation:NO];
 
 
@@ -125,31 +125,31 @@
 
 - (void)finishAtTime:(float)time
 {
-
 	for (int i = 0; i < self.groups.count; i++)
 	{
 		PSDrawingGroup* g = self.groups[i];
-		int lastIndex = [self.groupIndexes[i] intValue];
-
-		[g unpauseAll];
-	
 		SRTPosition* positions = g.positions;
+
+		// 1. Retrieve the last position we inserted
+		int lastIndex = [self.groupIndexes[i] intValue];
+		SRTPosition lastPosition = positions[lastIndex];
 		
-		// Clean up from here to the end of the data
+		// 2. Insert it again at "time", because "time" will be snapped to a keyframe time boundary by now
+		lastPosition.timeStamp = time;
+		lastPosition.keyframeType = SRTKeyframeMake(self.overwriteScale,
+													self.overwriteRotation,
+													self.overwriteTranslation, NO);
+
+		int newLastIndex = [g addPosition:lastPosition withInterpolation:NO];
+
+		// 3. Clean up from here to the end of the data
 		for(int j = lastIndex + 1; j < g.positionCount; j++)
 		{
-			SRTPosition newP = [self maskedCopyFrom:positions[lastIndex] to:positions[j]];
+			SRTPosition newP = [self maskedCopyFrom:positions[newLastIndex] to:positions[j]];
 			[g setPosition:newP atIndex:j];
 		}
 		
-		// Add our ending keyframe
-		// TODO: We should add a new keyframe here so it will be snapped to the right time
-		SRTPosition newP = positions[lastIndex];
-		newP.keyframeType = SRTKeyframeMake(self.overwriteScale,
-											self.overwriteRotation,
-											self.overwriteTranslation, YES);
-		[g setPosition:newP atIndex:lastIndex];
-
+		[g unpauseAll];
 	}
 }
 
@@ -162,6 +162,9 @@
 		to.rotation = from.rotation;
 	if (self.overwriteScale)
 		to.scale = from.scale;
+	to.isVisible = YES;
+	to.keyframeType = SRTKeyframeRemove(to.keyframeType, self.overwriteScale, self.overwriteRotation, self.overwriteTranslation, YES);
+	
 	return  to;
 }
 
