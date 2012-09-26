@@ -149,6 +149,7 @@
 		}
 
 	}
+	
 	return newIndex;
 }
 
@@ -174,6 +175,14 @@
 
 }
 
+
+- (void)doneMutatingPositions
+{
+	// This will also mark the object as dirty
+	if(_mutablePositionsAsData)
+		self.positionsAsData = _mutablePositionsAsData;
+	
+}
 
 - (int)positionCount
 {
@@ -274,6 +283,7 @@
 	currentPositionIndex = 0;
 	currentModelViewMatrix = GLKMatrix4Identity;
 	isSelected = NO;
+	_mutablePositionsAsData = nil;
 	[self unpauseAll];
 }
 
@@ -290,6 +300,7 @@
 	currentPositionIndex = 0;
 	currentModelViewMatrix = GLKMatrix4Identity;
 	isSelected = NO;
+	_mutablePositionsAsData = nil;
 	[self unpauseAll];
 }
 
@@ -301,9 +312,9 @@
 - (void)awakeFromSnapshotEvents:(NSSnapshotEventType)flags
 {
 	[super awakeFromSnapshotEvents:flags];
-	[PSHelpers NYIWithmessage:@"drawinggroup awakeFromSnapshotEvents:"];
 	[self unpauseAll];
 	isSelected = NO;
+	_mutablePositionsAsData = nil;
 }
 
 
@@ -568,6 +579,13 @@
 	}];
 }
 
+- (void)applyToAllSubTrees:( void ( ^ )( PSDrawingGroup* g ) )functionToApply
+{
+	functionToApply(self);
+
+	for (PSDrawingGroup* c in self.children)
+		[c applyToAllSubTrees:functionToApply];
+}
 
 - (void)applyToSelectedSubTrees:( void ( ^ )( PSDrawingGroup* g ) )functionToApply
 {

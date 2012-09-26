@@ -47,6 +47,7 @@
 - (void)pauseUpdatesOfTranslation:(BOOL)translation rotation:(BOOL)rotation scale:(BOOL)scale;
 - (void)unpauseAll;
 - (SRTPosition*)positions;
+- (void)doneMutatingPositions;
 - (int)positionCount;
 - (void)getStateAtTime:(float)time
 			  position:(SRTPosition*)pPosition
@@ -83,7 +84,9 @@
 - (PSDrawingGroup*)topLevelSelectedChild;
 - (void)breakUpGroupAndMergeIntoParent;
 
+- (void)applyToAllSubTrees:( void ( ^ )( PSDrawingGroup* g ) )functionToApply;
 - (void)applyToSelectedSubTrees:( void ( ^ )( PSDrawingGroup* g ) )functionToApply;
+
 
 - (void)transformSelectionByX:(float)dX
 						 andY:(float)dY

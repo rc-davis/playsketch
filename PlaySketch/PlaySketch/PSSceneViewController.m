@@ -25,19 +25,22 @@
 #import "PSRecordingSession.h"
 #import <QuartzCore/QuartzCore.h>
 
+#define SELECTION_PEN_COLOR ([PSHelpers colorToInt64:[UIColor colorWithRed:1.0 green:0.0 blue:0.5 alpha:1.0]])
+#define SELECTION_PEN_WEIGHT 2
+
+
 
 @interface PSSceneViewController ()
 @property(nonatomic)BOOL isSelecting; // If we are selecting instead of drawing
 @property(nonatomic)BOOL isErasing;
 @property(nonatomic)BOOL isReadyToRecord; // If manipulations should be treated as recording
 @property(nonatomic)BOOL isRecording;
-@property(nonatomic,retain) PSSelectionHelper* selectionHelper;
 @property(nonatomic,retain) UIPopoverController* penPopoverController;
 @property(nonatomic,retain) PSPenColorViewController* penController;
 @property(nonatomic) UInt64 currentColor; // the drawing color as an int
 @property(nonatomic) int penWeight;
 @property(nonatomic,retain) PSRecordingSession* recordingSession;
-- (void)refreshManipulatorLocation;
+- (void)refreshInterfaceState;
 - (void)highlightButton:(UIButton*)b on:(BOOL)highlight;
 @end
 
@@ -72,7 +75,6 @@
 	self.manipulator = [[PSSRTManipulator alloc] initAtLocation:CGPointZero];
 	[self.renderingController.view addSubview:self.manipulator];
 	self.manipulator.delegate = self;
-	self.manipulator.hidden = YES;
 	self.manipulator.groupButtons = self.selectionOverlayButtons;
 	
 	// Initialize to be drawing with an initial color
@@ -89,7 +91,7 @@
 	// Create motion paths to illustrate our objects
 	for (PSDrawingGroup* child in self.rootGroup.children)
 		[self.motionPathView addLineForGroup:child];
-
+	
 }
 
 
@@ -104,6 +106,14 @@
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
 	return UIInterfaceOrientationIsLandscape(interfaceOrientation);
+}
+
+- (void) viewWillAppear:(BOOL)animated
+{
+	// Don't let us undo past this point
+	[PSDataModel clearUndoStack];
+	
+	[self refreshInterfaceState];
 }
 
 
@@ -123,6 +133,9 @@
 		self.currentDocument.previewImage = UIImagePNGRepresentation(previewImgSmall);
 		[PSDataModel save];
 	}
+	
+	// Don't let us undo past this point
+	[PSDataModel clearUndoStack];
 }
 
 
@@ -152,8 +165,7 @@
 {
 	self.timelineSlider.playing = NO;
 	[self.renderingController jumpToTime:self.timelineSlider.value];
-	[self refreshManipulatorLocation];
-	self.motionPathView.hidden = NO;
+	[self refreshInterfaceState];
 }
 
 
@@ -226,17 +238,17 @@
 - (IBAction)deleteCurrentSelection:(id)sender
 {
 	[self.rootGroup deleteSelectedChildren];
-	self.selectionHelper = nil;
-	self.manipulator.hidden = YES;
+	[PSSelectionHelper resetSelection];
+	[self refreshInterfaceState];
 }
 
 - (IBAction)createGroupFromCurrentSelection:(id)sender
 {
-	[PSHelpers assert:(self.selectionHelper.selectedGroupCount > 1)
+	[PSHelpers assert:([PSSelectionHelper selectedGroupCount] > 1)
 		  withMessage:@"Need more than one existing group to create a new one"];
 	
 	PSDrawingGroup* newGroup = [self.rootGroup mergeSelectedChildrenIntoNewGroup];
-
+	
 	// Insert new keyframe
 	SRTPosition newPosition = SRTPositionZero();
 	newPosition.timeStamp = self.timelineSlider.value;
@@ -245,9 +257,11 @@
 	[newGroup centerOnCurrentBoundingBox];
 	[newGroup jumpToTime:self.timelineSlider.value];
 	
-	self.selectionHelper = nil;
-	self.manipulator.hidden = YES;
 	
+	//Manually update our selection
+	[PSSelectionHelper manuallySetSelectedGroup:newGroup];
+	
+	[self refreshInterfaceState];
 }
 
 
@@ -257,7 +271,27 @@
 	[PSHelpers assert:(topLevelGroup!=nil) withMessage:@"Need a non-nil child"];
 	[PSHelpers assert:(topLevelGroup!=self.rootGroup) withMessage:@"Selected child can't be the root"];
 	[topLevelGroup breakUpGroupAndMergeIntoParent];
+	[PSSelectionHelper resetSelection];
+	[self refreshInterfaceState];
 }
+
+
+- (IBAction)undo:(id)sender
+{
+	[PSDataModel undo];
+	[self.rootGroup jumpToTime:self.timelineSlider.value];
+	[PSSelectionHelper resetSelection];
+	[self refreshInterfaceState];
+}
+
+- (IBAction)redo:(id)sender
+{
+	[PSDataModel redo];
+	[self.rootGroup jumpToTime:self.timelineSlider.value];
+	[PSSelectionHelper resetSelection];
+	[self refreshInterfaceState];
+}
+
 
 
 - (void)setPlaying:(BOOL)playing
@@ -267,20 +301,17 @@
 		// PAUSE
 		[self.renderingController stopPlaying];
 		self.timelineSlider.playing = NO;
-		[self refreshManipulatorLocation];
-		self.motionPathView.hidden = NO;
 	}
 	else if(playing && !self.timelineSlider.playing)
 	{
 		// PLAY!
-		// TODO: unselect things
 		float time = self.timelineSlider.value;
 		[self.renderingController playFromTime:time];
 		self.timelineSlider.value = time;
 		self.timelineSlider.playing = YES;
-		if(!self.isRecording)
-			self.motionPathView.hidden = YES;
 	}
+
+	[self refreshInterfaceState];
 }
 
 
@@ -292,17 +323,35 @@
  ----------------------------------------------------------------------------
  */
 
-- (void)refreshManipulatorLocation
+- (void)refreshInterfaceState
 {
-	if (self.selectionHelper.selectedGroupCount == 1)
+	//Refresh the undo/redo buttons
+	self.undoButton.hidden = ![PSDataModel canUndo];
+	self.redoButton.hidden = ![PSDataModel canRedo];
+
+	// Hide/show the manipulator
+	BOOL shouldShow =	!self.timelineSlider.playing &&
+						[PSSelectionHelper selectedGroupCount] > 0;
+	self.manipulator.hidden = !shouldShow;
+	
+
+	// Update the manipulator's location
+	if(shouldShow && [PSSelectionHelper selectedGroupCount] == 1)
 	{
 		PSDrawingGroup* group = [self.rootGroup topLevelSelectedChild];
 		self.manipulator.center = [group currentOriginInWorldCoordinates];
 	}
-	else
+	else if(shouldShow)
 	{
 		self.manipulator.center = CGPointZero;
 	}
+	
+	// Update the buttons attached to the manipulator
+	[self.selectionOverlayButtons configureForSelectionCount:[PSSelectionHelper selectedGroupCount]
+												isLeafObject:[PSSelectionHelper isSingleLeafOnlySelected]];
+	
+	// Motion Paths
+	self.motionPathView.hidden = self.timelineSlider.playing;
 }
 
 - (void)highlightButton:(UIButton*)b on:(BOOL)highlight
@@ -344,21 +393,8 @@
 	_rootGroup = rootGroup;
 	//Also tell the rendering controller about the group to render it
 	self.renderingController.rootGroup = rootGroup;
+	[PSSelectionHelper setRootGroup:rootGroup];
 }
-
-
--(void)setSelectionHelper:(PSSelectionHelper *)selectionHelper
-{
-	if(selectionHelper == nil)
-		self.manipulator.hidden = YES;
-	
-	//TODO: if the selection helper is going away, zero out its selections!
-	
-	_selectionHelper = selectionHelper;
-	//Also tell the rendering controller about the selection helper so it can draw the loupe and highlight objects
-	self.renderingController.selectionHelper = selectionHelper;
-}
-
 
 
 - (void)setIsReadyToRecord:(BOOL)isReadyToRecord
@@ -392,44 +428,38 @@
  */
 -(PSDrawingLine*)newLineToDrawTo:(id)drawingView
 {
-	//Clear out any old selection state
-	self.selectionHelper = nil;
+	// If the manipulator is visible, clear the current selection and don't start a line
+	if(!self.manipulator.hidden)
+	{
+		// Clear any current selection
+		[PSSelectionHelper resetSelection];
+		[self refreshInterfaceState];
+		return nil;
+	}
 	
+	// No line necessary if we are erasing
 	if (self.isErasing) return nil;
 	
-	if (! self.isSelecting)
-	{
-		// Creating a new line!
-		// Every line gets put into a new group of its own, directly under self.rootGroup
+	// Create a new TEMPORARY line with the current color and weight
+	// Read the comments on newTemporaryLineWithWeight:andColor: for an explanation
+	// of why this line has to be "temporary"
+	int weight = self.isSelecting ? SELECTION_PEN_WEIGHT : self.penWeight;
+	UInt64 color = self.isSelecting ? SELECTION_PEN_COLOR : self.currentColor;
+	PSDrawingLine* newLine = [PSDataModel newTemporaryLineWithWeight:weight andColor:color];
+	
+	// Start a new selection set helper to keep track of what's being selected
+	if (self.isSelecting) [PSSelectionHelper resetSelection];
 		
-		PSDrawingGroup* newLineGroup = [PSDataModel newDrawingGroupWithParent:self.rootGroup];
-		PSDrawingLine* line = [PSDataModel newLineInGroup:newLineGroup withWeight:self.penWeight];
-		SRTPosition newPosition = SRTPositionZero();
-		newPosition.timeStamp = self.timelineSlider.value;
-		[newLineGroup addPosition:newPosition withInterpolation:NO];
-		line.color = [NSNumber numberWithUnsignedLongLong:self.currentColor];
-		return line;
-	}
-	else
-	{
-		// Create a selection line to draw with
-		// TODO: this shouldn't be part of the model since it screws up the undo/redo
-		PSDrawingLine* selectionLine = [PSDataModel newLineInGroup:nil withWeight:2];
-		selectionLine.color = [NSNumber numberWithUnsignedLongLong:[PSHelpers colorToInt64:[UIColor redColor]]];
-		
-		// Start a new selection set helper
-		self.selectionHelper = [PSSelectionHelper selectionWithLine:selectionLine
-														inRootGroup:self.rootGroup];
-		return selectionLine;
-	}
-		
+	// Tell the rendering controller to draw this line specially, since it isn't added to the scene yet
+	self.renderingController.currentLine = newLine;
+
+	return newLine;
 }
 
 
 -(void)addedToLine:(PSDrawingLine*)line fromPoint:(CGPoint)from toPoint:(CGPoint)to inDrawingView:(id)drawingView
 {
-	
-	if ( line == self.selectionHelper.selectionLoupeLine )
+	if (self.isSelecting)
 	{
 		// Give this new line segment to the selection helper to update the selected set
 		
@@ -441,47 +471,48 @@
 		NSDictionary* pointsDict = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSValue valueWithCGPoint:from], @"from",
 									[NSValue valueWithCGPoint:to], @"to", nil];
-		[self.selectionHelper performSelectorInBackground:@selector(addLineFromDict:) withObject:pointsDict];
+		[PSSelectionHelper performSelectorInBackground:@selector(addSelectionLineFromDict:)
+											withObject:pointsDict];
 	}
 }
 
 
 -(void)finishedDrawingLine:(PSDrawingLine*)line inDrawingView:(id)drawingView
 {
-	if ( line && line == self.selectionHelper.selectionLoupeLine )
+	if ( line && self.isSelecting )
 	{
-		//Clean up selection state
-		[PSDataModel deleteDrawingLine:self.selectionHelper.selectionLoupeLine];
-		self.selectionHelper.selectionLoupeLine = nil;
-		[self.selectionHelper finishSelection];
-		
-		//Show the manipulator if it was worthwhile
-		if(self.selectionHelper.selectedGroupCount == 0)
-		{
-			self.selectionHelper = nil;
-		}
-		else
-		{
-			self.manipulator.hidden = NO;
-			[self.selectionOverlayButtons configureForSelection:self.selectionHelper];
-			[self refreshManipulatorLocation];
-		}
+		[PSSelectionHelper finishLassoSelection];
 	}
-	else
+	else if( line && !self.isSelecting)
 	{
+		// Create a new group for it
+		PSDrawingGroup* newLineGroup = [PSDataModel newDrawingGroupWithParent:self.rootGroup];
+		
+		[PSDataModel makeTemporaryLinePermanent:line];
+		line.group = newLineGroup;
+		
+		SRTPosition newPosition = SRTPositionZero();
+		newPosition.timeStamp = self.timelineSlider.value;
+		[newLineGroup addPosition:newPosition withInterpolation:NO];
+
+		// Center it
 		[line.group centerOnCurrentBoundingBox];
 		[line.group jumpToTime:self.timelineSlider.value];
+
+		// Save it
+		[PSDataModel save];
+	
 	}
+	
+	self.renderingController.currentLine = nil;
+	[self refreshInterfaceState];
 }
 
 
 -(void)cancelledDrawingLine:(PSDrawingLine*)line inDrawingView:(id)drawingView
 {
-	if(line != nil && line == self.selectionHelper.selectionLoupeLine)
-		[PSDataModel deleteDrawingLine:line];
-	else if (line != nil)
-		[PSDataModel deleteDrawingGroup:line.group];
-	if(self.selectionHelper) self.selectionHelper = nil;
+	self.renderingController.currentLine = nil;
+	[PSSelectionHelper resetSelection];
 }
 
 -(void)movedAt:(CGPoint)p inDrawingView:(id)drawingView
@@ -495,26 +526,20 @@
 }
 
 
--(void)tappedAt:(CGPoint)p tapCount:(int)tapCount inDrawingView:(id)drawingView
+-(void)whileDrawingLine:(PSDrawingLine *)line tappedAt:(CGPoint)p tapCount:(int)tapCount inDrawingView:(id)drawingView
 {
 	// Look to see if we tapped on an object!
-	PSSelectionHelper* tapSelection = [PSSelectionHelper selectionForTap:p inRootGroup:self.rootGroup];
-	if(tapCount == 1 && tapSelection.selectedGroupCount > 0)
-	{
-		// KEEP IT
-		self.selectionHelper = tapSelection;
-		self.manipulator.hidden = NO;
-		[self.selectionOverlayButtons configureForSelection:self.selectionHelper];
-		[self refreshManipulatorLocation];
-	}
-	else
-	{
-		self.selectionHelper = nil;
-		self.manipulator.hidden = YES;
-		
-	}
+	BOOL touchedObject = [PSSelectionHelper findSelectionForTap:p];
 
+	// If we didn't hit anything, just treat it like a normal line that finished
+	// Otherwise our selectionHelper will have the info about our selection
+	if (!(tapCount == 1 && touchedObject))
+	{
+		[self finishedDrawingLine:line inDrawingView:drawingView];
+	}
 	
+	self.renderingController.currentLine = nil;
+	[self refreshInterfaceState];
 }
 
 /*
@@ -612,6 +637,10 @@
 	// TODO: fix up motion paths!
 	//	[self.motionPathView addLineForGroup:manipulator.group];
 	self.motionPathView.hidden = NO;
+	
+	//TODO: this should only be called if something changed?
+	[self.rootGroup applyToSelectedSubTrees:^(PSDrawingGroup *g) {[g doneMutatingPositions];}];
+	[PSDataModel save];
 }
 
 

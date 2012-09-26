@@ -303,6 +303,36 @@
                                     <action selector="startSelecting:" destination="UPZ-Bt-XHw" eventType="touchUpInside" id="T4T-uK-Sm5"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="7Ua-m6-46Q">
+                                <rect key="frame" x="536" y="17" width="69" height="50"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="boldSystem" size="button"/>
+                                <state key="normal" title="UNDO">
+                                    <color key="titleColor" red="0.19607843137254902" green="0.30980392156862746" blue="0.52156862745098043" alpha="1" colorSpace="calibratedRGB"/>
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <state key="highlighted">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="undo:" destination="UPZ-Bt-XHw" eventType="touchUpInside" id="1w3-Fw-rEh"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="54F-6B-CHi">
+                                <rect key="frame" x="613" y="17" width="69" height="50"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="boldSystem" size="button"/>
+                                <state key="normal" title="REDO">
+                                    <color key="titleColor" red="0.19607843137254902" green="0.30980392156862746" blue="0.52156862745098043" alpha="1" colorSpace="calibratedRGB"/>
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <state key="highlighted">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="redo:" destination="UPZ-Bt-XHw" eventType="touchUpInside" id="a6e-0q-D9M"/>
+                                </connections>
+                            </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="5sc-oe-aTH">
                                 <rect key="frame" x="954" y="17" width="50" height="50"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -387,12 +417,14 @@
                         <outlet property="initialColorButton" destination="fAb-Pk-55R" id="gFY-4O-xND"/>
                         <outlet property="motionPathView" destination="fPv-RD-Gdt" id="bwQ-KB-ibx"/>
                         <outlet property="playButton" destination="7R9-rS-8Ys" id="hAU-yy-ZrF"/>
+                        <outlet property="redoButton" destination="54F-6B-CHi" id="IYW-Cs-fuc"/>
                         <outlet property="renderingController" destination="RgX-PA-EXf" id="MOH-b8-4Tp"/>
                         <outlet property="selectionOverlayButtons" destination="BT6-W8-XKK" id="FJn-fU-zZf"/>
                         <outlet property="startDrawingButton" destination="JUa-Bz-r1j" id="uKL-3Z-MYp"/>
                         <outlet property="startErasingButton" destination="5sc-oe-aTH" id="1Ld-6M-rBT"/>
                         <outlet property="startSelectingButton" destination="Ejk-xx-DMZ" id="hc0-3H-wAx"/>
                         <outlet property="timelineSlider" destination="7Eo-kn-03o" id="sJh-Jk-VPf"/>
+                        <outlet property="undoButton" destination="7Ua-m6-46Q" id="YQp-S5-AyR"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="X2d-Af-V45" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -729,6 +761,7 @@
                 <relationship kind="action" name="dismissSceneView:"/>
                 <relationship kind="action" name="exportAsVideo:"/>
                 <relationship kind="action" name="playPressed:"/>
+                <relationship kind="action" name="redo:"/>
                 <relationship kind="action" name="showPenPopover:"/>
                 <relationship kind="action" name="snapTimeline:"/>
                 <relationship kind="action" name="startDrawing:"/>
@@ -736,17 +769,20 @@
                 <relationship kind="action" name="startSelecting:"/>
                 <relationship kind="action" name="timelineScrubbed:"/>
                 <relationship kind="action" name="toggleRecording:"/>
+                <relationship kind="action" name="undo:"/>
                 <relationship kind="action" name="ungroupFromCurrentSelection:"/>
                 <relationship kind="outlet" name="drawingTouchView" candidateClass="PSDrawingEventsView"/>
                 <relationship kind="outlet" name="manipulator" candidateClass="PSSRTManipulator"/>
                 <relationship kind="outlet" name="motionPathView" candidateClass="PSMotionPathView"/>
                 <relationship kind="outlet" name="playButton" candidateClass="UIButton"/>
+                <relationship kind="outlet" name="redoButton" candidateClass="UIButton"/>
                 <relationship kind="outlet" name="renderingController" candidateClass="PSAnimationRenderingController"/>
                 <relationship kind="outlet" name="selectionOverlayButtons" candidateClass="PSGroupOverlayButtons"/>
                 <relationship kind="outlet" name="startDrawingButton" candidateClass="UIButton"/>
                 <relationship kind="outlet" name="startErasingButton" candidateClass="UIButton"/>
                 <relationship kind="outlet" name="startSelectingButton" candidateClass="UIButton"/>
                 <relationship kind="outlet" name="timelineSlider" candidateClass="PSTimelineSlider"/>
+                <relationship kind="outlet" name="undoButton" candidateClass="UIButton"/>
             </relationships>
         </class>
         <class className="PSTimelineSlider" superclassName="UISlider">
