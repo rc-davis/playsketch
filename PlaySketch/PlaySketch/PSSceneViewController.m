@@ -517,9 +517,20 @@
 		[PSDataModel makeTemporaryLinePermanent:line];
 		line.group = newLineGroup;
 		
-		SRTPosition newPosition = SRTPositionZero();
-		newPosition.timeStamp = self.timelineSlider.value;
-		[newLineGroup addPosition:newPosition withInterpolation:NO];
+		// Add a keyframe at time 0 to set the object as invisible:
+		SRTPosition newPosition1 = SRTPositionZero();
+		newPosition1.timeStamp = 0.0;
+		newPosition1.isVisible = NO;
+		newPosition1.keyframeType = SRTKeyframeMake(NO, NO, NO, NO);
+		[newLineGroup addPosition:newPosition1 withInterpolation:NO];
+		
+		// Then add the real visible keyframe at the current time
+		SRTPosition newPosition2 = SRTPositionZero();
+		newPosition2.timeStamp = self.timelineSlider.value;
+		newPosition2.isVisible = YES;
+		newPosition2.keyframeType = SRTKeyframeMake(YES,YES,YES,YES);
+		[newLineGroup addPosition:newPosition2 withInterpolation:NO];
+
 
 		// Center it
 		[line.group centerOnCurrentBoundingBox];
