@@ -33,6 +33,11 @@
 }
 
 
+- (void)awakeFromNib
+{
+	[self setThumbImage:[UIImage imageNamed:@"slider"] forState:UIControlStateNormal];
+}
+
 -(void)setPlaying:(BOOL)playing
 {
 	if (playing && !_playing)

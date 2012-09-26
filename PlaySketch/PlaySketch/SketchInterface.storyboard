@@ -271,7 +271,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="7R9-rS-8Ys">
-                                <rect key="frame" x="20" y="660" width="149" height="47"/>
+                                <rect key="frame" x="20" y="628" width="100" height="100"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
                                 <state key="normal" title="PLAY/PAUSE">
@@ -351,14 +351,6 @@
                                     <action selector="startErasing:" destination="UPZ-Bt-XHw" eventType="touchUpInside" id="QUf-wb-j12"/>
                                 </connections>
                             </button>
-                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="10" id="7Eo-kn-03o" customClass="PSTimelineSlider">
-                                <rect key="frame" x="175" y="673" width="831" height="23"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <connections>
-                                    <action selector="snapTimeline:" destination="UPZ-Bt-XHw" eventType="touchUpInside" id="yfK-C4-f7g"/>
-                                    <action selector="timelineScrubbed:" destination="UPZ-Bt-XHw" eventType="valueChanged" id="Mrr-ae-Q7V"/>
-                                </connections>
-                            </slider>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="tIA-Hh-S32">
                                 <rect key="frame" x="232" y="17" width="117" height="51"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -407,10 +399,20 @@
                                 </connections>
                             </button>
                             <view contentMode="scaleToFill" id="8lX-SJ-F1I" customClass="PSKeyframeView">
-                                <rect key="frame" x="177" y="703" width="831" height="30"/>
+                                <rect key="frame" x="128" y="678" width="876" height="50"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                             </view>
+                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="3" minValue="0.0" maxValue="10" id="7Eo-kn-03o" customClass="PSTimelineSlider">
+                                <rect key="frame" x="126" y="648" width="880" height="23"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="minimumTrackTintColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="maximumTrackTintColor" red="0.7725490196" green="0.7725490196" blue="0.7725490196" alpha="1" colorSpace="calibratedRGB"/>
+                                <connections>
+                                    <action selector="snapTimeline:" destination="UPZ-Bt-XHw" eventType="touchUpInside" id="yfK-C4-f7g"/>
+                                    <action selector="timelineScrubbed:" destination="UPZ-Bt-XHw" eventType="valueChanged" id="Mrr-ae-Q7V"/>
+                                </connections>
+                            </slider>
                         </subviews>
                         <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                         <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
