@@ -97,6 +97,7 @@
 		   usingInterpolation:(BOOL)interpolate;
 
 
+- (CGPoint)translatePointFromParentCoordinates:(CGPoint)p;
 
 - (PSRecordingSession*)startSelectedGroupsRecordingTranslation:(BOOL)isTranslating
 											rotation:(BOOL)isRotating

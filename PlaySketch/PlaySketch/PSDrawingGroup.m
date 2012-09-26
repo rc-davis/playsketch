@@ -446,32 +446,35 @@
 
 - (BOOL)eraseAtPoint:(CGPoint)p
 {
-	//TODO: apply the transform to the point!
+	// Bring it into our coordinates
+	CGPoint fixedP = [self translatePointFromParentCoordinates:p];
 	
 	for (PSDrawingLine* l in [self.drawingLines allObjects])
-		if([l eraseAtPoint:p])
+		if([l eraseAtPoint:fixedP])
 			[PSDataModel deleteDrawingLine:l];
 	
 	for (PSDrawingGroup* g in [self.children allObjects])
-		if([g eraseAtPoint:p])
+		if([g eraseAtPoint:fixedP])
 			[PSDataModel deleteDrawingGroup:g];
 	
 	
 	return (self.drawingLines.count == 0 && self.children.count == 0);
 }
 
-- (BOOL)hitsPoint:(CGPoint)p
+- (CGPoint)translatePointFromParentCoordinates:(CGPoint)p
 {
-	// return true if any line in this group or its children is hit
-	// p is assumed to be in this group's parent's coordinate system
-		
-	//translate p into our coordinate system
 	bool isInvertable;
 	GLKMatrix4 selfInverted = GLKMatrix4Invert(currentModelViewMatrix, &isInvertable);
 	if(!isInvertable) NSLog(@"!!!! SHOULD ALWAYS BE INVERTABLE!!!");
 	GLKVector4 v4 = GLKMatrix4MultiplyVector4(selfInverted, GLKVector4FromCGPoint(p));
-	CGPoint fixedP = CGPointFromGLKVector4(v4);
+	return CGPointFromGLKVector4(v4);
+}
 
+- (BOOL)hitsPoint:(CGPoint)p
+{
+	// return true if any line in this group or its children is hit
+	// p is assumed to be in this group's parent's coordinate system
+	CGPoint fixedP = [self translatePointFromParentCoordinates:p];
 	
 	for (PSDrawingLine* l in self.drawingLines)
 		if ([l hitsPoint:fixedP])

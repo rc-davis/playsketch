@@ -528,6 +528,8 @@
 
 -(void)whileDrawingLine:(PSDrawingLine *)line tappedAt:(CGPoint)p tapCount:(int)tapCount inDrawingView:(id)drawingView
 {
+	if (self.isErasing ) return; // No need for any selection while erasing
+
 	// Look to see if we tapped on an object!
 	BOOL touchedObject = [PSSelectionHelper findSelectionForTap:p];
 

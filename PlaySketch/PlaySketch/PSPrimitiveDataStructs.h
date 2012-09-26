@@ -285,4 +285,12 @@ static inline CGPoint CGRectGetCenter(CGRect r)
 	return CGPointMake(CGRectGetMidX(r), CGRectGetMidY(r));
 }
 
+
+static inline CGPoint GLKMatrix4AppliedToCGPoint(GLKMatrix4 m, CGPoint p)
+{
+	GLKVector4 v = GLKVector4FromCGPoint(p);
+	GLKVector4 fixedv = GLKMatrix4MultiplyVector4(m, v);
+	return CGPointFromGLKVector4(fixedv);	
+}
+
 #endif
