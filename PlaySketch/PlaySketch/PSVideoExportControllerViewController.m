@@ -69,7 +69,7 @@
 
 	// Step through all of our frames and add them to the movie
 	int frameNumber = 0;
-	int totalFrames = 30*10; // TODO: GRAB THIS PROPERLY FROM THE RENDERING CONTROLLER
+	int totalFrames = (int)([self.document.duration floatValue] * 30);
 
 	while (frameNumber < totalFrames)
 	{

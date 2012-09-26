@@ -13,13 +13,14 @@
 
 
 #import <UIKit/UIKit.h>
-@class PSAnimationRenderingController;
+@class PSAnimationRenderingController, PSDrawingDocument;
 
 @interface PSVideoExportControllerViewController : UIViewController
 @property(nonatomic,retain)IBOutlet UIProgressView* progressIndicator;
 @property(nonatomic,retain)IBOutlet UILabel* completionLabel;
 @property(nonatomic,retain)IBOutlet UIButton* completionButton;
 @property(nonatomic,retain)PSAnimationRenderingController* renderingController;
+@property(nonatomic,retain)PSDrawingDocument* document;
 
 - (IBAction)dismiss:(id)sender;
 

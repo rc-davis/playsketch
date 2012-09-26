@@ -178,6 +178,7 @@
 	UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"SketchInterface" bundle:nil];
 	PSVideoExportControllerViewController *vc = [storyboard instantiateViewControllerWithIdentifier:@"VideoExportViewController"];
 	vc.renderingController = self.renderingController;
+	vc.document = self.currentDocument;
 	[vc setModalPresentationStyle:UIModalPresentationFormSheet];
 	[self presentModalViewController:vc animated:YES];
 
