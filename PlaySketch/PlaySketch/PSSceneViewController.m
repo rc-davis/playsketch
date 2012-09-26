@@ -260,6 +260,20 @@
 }
 
 
+- (IBAction)undo:(id)sender
+{
+
+	
+}
+
+- (IBAction)redo:(id)sender
+{
+	
+	
+}
+
+
+
 - (void)setPlaying:(BOOL)playing
 {
 	if(!playing && self.timelineSlider.playing)
