@@ -582,12 +582,17 @@
 	}];
 }
 
-- (void)applyToAllSubTrees:( void ( ^ )( PSDrawingGroup* g ) )functionToApply
+- (void)applyToAllSubTrees:( void ( ^ )( PSDrawingGroup*, BOOL) )functionToApply
 {
-	functionToApply(self);
+	[self applyToAllSubTrees:functionToApply parentIsSelected:self.isSelected];
+}
+
+- (void)applyToAllSubTrees:(void (^)(PSDrawingGroup *, BOOL))functionToApply parentIsSelected:(BOOL)parentSelected
+{
+	functionToApply(self, self.isSelected || parentSelected);
 
 	for (PSDrawingGroup* c in self.children)
-		[c applyToAllSubTrees:functionToApply];
+		[c applyToAllSubTrees:functionToApply parentIsSelected:self.isSelected || parentSelected];
 }
 
 - (void)applyToSelectedSubTrees:( void ( ^ )( PSDrawingGroup* g ) )functionToApply

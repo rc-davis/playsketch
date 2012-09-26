@@ -37,7 +37,7 @@ int __helperSelectedGroupCount;
 	// Reset all of our per-object metadata
 	// Each group maintains a BOOL of whether it is selected
 	// Each line contains a list with an int for each point for selection crossing count
-	[__helperRootGroup applyToAllSubTrees:^(PSDrawingGroup *g) {
+	[__helperRootGroup applyToAllSubTrees:^(PSDrawingGroup *g, BOOL subtreeSelected) {
 		g.isSelected = NO;
 		for (PSDrawingLine* l in g.drawingLines)
 		{
