@@ -13,10 +13,8 @@
 
 #import <UIKit/UIKit.h>
 
-@class PSTimelineLabelView;
+@class PSTimelineSlider;
 
-@interface PSTimelineSlider : UISlider
-@property(nonatomic) BOOL playing; //starts and stops animation
-@property(nonatomic,retain)IBOutlet PSTimelineLabelView* labelView;
-- (float)xOffsetForTime:(float)time;
+@interface PSTimelineLabelView : UIView
+-(void)setLabelsForTimelineSlider:(PSTimelineSlider*)slider;
 @end

@@ -13,29 +13,19 @@
 
 
 #import "PSTimelineSlider.h"
+#import "PSTimelineLabelView.h"
+
 @interface PSTimelineSlider ()
 @property(nonatomic,retain)NSTimer* timer;
 @end
 
 
 @implementation PSTimelineSlider
-@synthesize playing = _playing;
-@synthesize timer = _timer;
-
-- (id)initWithFrame:(CGRect)frame
-{
-    self = [super initWithFrame:frame];
-    if (self)
-	{
-
-    }
-    return self;
-}
-
 
 - (void)awakeFromNib
 {
 	[self setThumbImage:[UIImage imageNamed:@"slider"] forState:UIControlStateNormal];
+	[self.labelView setLabelsForTimelineSlider:self];
 }
 
 -(void)setPlaying:(BOOL)playing

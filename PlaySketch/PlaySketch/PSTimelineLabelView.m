@@ -1,0 +1,51 @@
+/*
+ 
+ --------------
+ Copyright 2012 Singapore Management University
+ 
+ This Source Code Form is subject to the terms of the
+ Mozilla Public License, v. 2.0. If a copy of the MPL was
+ not distributed with this file, You can obtain one at
+ http://mozilla.org/MPL/2.0/.
+ --------------
+ 
+ */
+
+#import "PSTimelineLabelView.h"
+#import "PSTimelineSlider.h"
+
+
+@implementation PSTimelineLabelView
+
+
+-(void)setLabelsForTimelineSlider:(PSTimelineSlider*)slider
+{
+	// Get rid of the old labels
+	for (UIView* v in self.subviews)
+		[v removeFromSuperview];
+
+	// Add some new ones
+	int maxSecond = floor(slider.maximumValue);
+	float WIDTH = 20.0;
+	CGRect r = CGRectMake(0, 0, WIDTH, self.frame.size.height);
+	
+	int stepSize = 1;
+	if(maxSecond >= 30) stepSize = 5;
+	else if(maxSecond >= 60) stepSize = 10;
+	else if(maxSecond >= 120) stepSize = 15;
+
+	for(int i = 0; i <= maxSecond; i += stepSize)
+	{
+		r.origin.x = [slider xOffsetForTime:(float)i] - WIDTH/2.0;
+		UILabel* label = [[UILabel alloc] initWithFrame:r];
+		label.text = [NSString stringWithFormat:@"%d", i];
+		label.textAlignment = NSTextAlignmentCenter;
+		label.textColor = [UIColor lightGrayColor];
+		label.backgroundColor = [UIColor darkGrayColor];
+		[self addSubview:label];
+	}
+
+}
+
+
+@end

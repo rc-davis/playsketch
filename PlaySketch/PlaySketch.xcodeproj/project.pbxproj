@@ -46,6 +46,7 @@
 		46CF79031612D8EA00A287B9 /* PSKeyframeView.m in Sources */ = {isa = PBXBuildFile; fileRef = 46CF79021612D8E900A287B9 /* PSKeyframeView.m */; };
 		46CF79131612FD5500A287B9 /* slider@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 46CF79121612FD5500A287B9 /* slider@2x.png */; };
 		46CF79151612FD6900A287B9 /* slider.png in Resources */ = {isa = PBXBuildFile; fileRef = 46CF79141612FD6900A287B9 /* slider.png */; };
+		46CF791B1613055A00A287B9 /* PSTimelineLabelView.m in Sources */ = {isa = PBXBuildFile; fileRef = 46CF791A1613055A00A287B9 /* PSTimelineLabelView.m */; };
 		46DB9591161018D600CCC5C2 /* new_drawing.png in Resources */ = {isa = PBXBuildFile; fileRef = 46DB9590161018D600CCC5C2 /* new_drawing.png */; };
 		46DB959516101B4600CCC5C2 /* main_gradient.png in Resources */ = {isa = PBXBuildFile; fileRef = 46DB959416101B4600CCC5C2 /* main_gradient.png */; };
 		46EAA0861610730B009D73DD /* group.png in Resources */ = {isa = PBXBuildFile; fileRef = 46EAA0841610730B009D73DD /* group.png */; };
@@ -141,6 +142,8 @@
 		46CF79021612D8E900A287B9 /* PSKeyframeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PSKeyframeView.m; path = PlaySketch/PSKeyframeView.m; sourceTree = "<group>"; };
 		46CF79121612FD5500A287B9 /* slider@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "slider@2x.png"; sourceTree = "<group>"; };
 		46CF79141612FD6900A287B9 /* slider.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = slider.png; sourceTree = "<group>"; };
+		46CF79191613055A00A287B9 /* PSTimelineLabelView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PSTimelineLabelView.h; path = PlaySketch/PSTimelineLabelView.h; sourceTree = "<group>"; };
+		46CF791A1613055A00A287B9 /* PSTimelineLabelView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PSTimelineLabelView.m; path = PlaySketch/PSTimelineLabelView.m; sourceTree = "<group>"; };
 		46DB9590161018D600CCC5C2 /* new_drawing.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = new_drawing.png; sourceTree = "<group>"; };
 		46DB959416101B4600CCC5C2 /* main_gradient.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = main_gradient.png; sourceTree = "<group>"; };
 		46EAA0841610730B009D73DD /* group.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = group.png; sourceTree = "<group>"; };
@@ -286,6 +289,8 @@
 				46973BE715C103170092D236 /* PSTimelineSlider.m */,
 				46CF79011612D8E900A287B9 /* PSKeyframeView.h */,
 				46CF79021612D8E900A287B9 /* PSKeyframeView.m */,
+				46CF79191613055A00A287B9 /* PSTimelineLabelView.h */,
+				46CF791A1613055A00A287B9 /* PSTimelineLabelView.m */,
 				468E2A2B15C61C0600AA20D2 /* PSGroupOverlayButtons.h */,
 				468E2A2C15C61C0600AA20D2 /* PSGroupOverlayButtons.m */,
 				464A4F3B15DCAFD4008A59DF /* PSMotionPathView.h */,
@@ -561,6 +566,7 @@
 				4649EE90160D5FDB00FAE620 /* PSPenColorViewController.m in Sources */,
 				464AF3861611600C009090D0 /* PSRecordingSession.m in Sources */,
 				46CF79031612D8EA00A287B9 /* PSKeyframeView.m in Sources */,
+				46CF791B1613055A00A287B9 /* PSTimelineLabelView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
