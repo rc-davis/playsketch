@@ -15,71 +15,73 @@
 #import "PSSelectionHelper.h"
 
 
-@interface PSSelectionHelper ()
-@property(nonatomic)CGPoint firstPoint;
-@property(nonatomic)BOOL haveFirstPoint;
-@property(nonatomic)PSDrawingGroup* rootGroup;
-@property(readwrite)int selectedGroupCount;
-- (void) prepareForSelection:(PSDrawingGroup*)g;
-- (void)selectAtTap:(CGPoint)tap;
-@end
-
+CGPoint __helperFirstPoint;
+BOOL __helperHaveFirstPoint;
+PSDrawingGroup* __helperRootGroup;
+int __helperSelectedGroupCount;
 
 @implementation PSSelectionHelper
 
-
-+(PSSelectionHelper*)selectionWithRootGroup:(PSDrawingGroup*)rootGroup
++ (void)setRootGroup:(PSDrawingGroup*)group
 {
-	PSSelectionHelper* h = [[PSSelectionHelper alloc] init];
-	h.rootGroup = rootGroup;
-	h.haveFirstPoint = NO;
-	
-	// Reset the selection information for all of these objects
-	// Each group maintains a BOOL of whether it is selected
-	// Each line contains a list with an int for each point for selection crossing count
-	h.selectedGroupCount = 0;
-	[h prepareForSelection:rootGroup];
-	
-	return h;
+	__helperRootGroup = group;
 }
 
-+(PSSelectionHelper*)selectionForTap:(CGPoint)tapPoint inRootGroup:(PSDrawingGroup*)rootGroup
++ (void)resetSelection
 {
-	PSSelectionHelper* h = [[PSSelectionHelper alloc] init];
-	h.rootGroup = rootGroup;
-	h.haveFirstPoint = NO;
+	[PSHelpers assert:(__helperRootGroup != nil) withMessage:@"Need a root group for the selection helper"];
+
+	__helperSelectedGroupCount = 0;
+	__helperHaveFirstPoint = NO;
 	
-	// Reset the selection information for all of these objects
+	// Reset all of our per-object metadata
 	// Each group maintains a BOOL of whether it is selected
 	// Each line contains a list with an int for each point for selection crossing count
-	h.selectedGroupCount = 0;
-	[h prepareForSelection:rootGroup];
-
-	[h selectAtTap:tapPoint];
-	
-	return h;
-}
-
--(void)dealloc
-{
-	[self.rootGroup applyToSelectedSubTrees:^(PSDrawingGroup *g) {
+	[__helperRootGroup applyToSelectedSubTrees:^(PSDrawingGroup *g) {
 		g.isSelected = NO;
+		for (PSDrawingLine* l in g.drawingLines)
+		{
+			if(l.selectionHitCounts)
+				free(l.selectionHitCounts);
+			l.selectionHitCounts = (int*)calloc(l.pointCount, sizeof(int));
+		}
 	}];
 }
 
++ (BOOL)findSelectionForTap:(CGPoint)tapPoint
+{
+	[PSSelectionHelper resetSelection];
+	
+	/*
+	 If any of our childGroups hits the point it as selected and return YES.
+	 Only top-level children will be selected
+	 */
+	
+	for (PSDrawingGroup* g in __helperRootGroup.children)
+	{
+		if([g hitsPoint:tapPoint])
+		{
+			g.isSelected = YES;
+			__helperSelectedGroupCount = 1;
+			return YES;
+		 }
+	}
+	return NO;
+}
 
--(void)addLineFrom:(CGPoint)from to:(CGPoint)to
+
++ (void)addSelectionLineFrom:(CGPoint)from to:(CGPoint)to
 {
 	// Save this as our first point if we don't have one already
-	if (! _haveFirstPoint )
+	if (! __helperHaveFirstPoint )
 	{
-		self.firstPoint = from;
-		self.haveFirstPoint = YES;
+		__helperFirstPoint = from;
+		__helperHaveFirstPoint = YES;
 	}
 	
 	// Perturb our number by a sub-pixel to avoid infinities
 	BOOL degenerateForward = ( to.x == from.x );
-	BOOL degenerateReverse = ( to.x == _firstPoint.x );
+	BOOL degenerateReverse = ( to.x == __helperFirstPoint.x );
 
 	// Calculate m,b for y = mx+b between the two points
 	CGFloat mForward = (!degenerateForward) ? ( to.y - from.y ) / ( to.x - from.x ) : 1e99;
@@ -88,27 +90,29 @@
 	CGFloat maxXForward = MAX(from.x, to.x);
 
 	// Calculate m,b for the line back to the first point (closing the loop)
-	CGFloat mReverse = (!degenerateReverse) ? ( to.y - _firstPoint.y ) / ( to.x - _firstPoint.x ) : 1e99;
-	CGFloat bReverse = _firstPoint.y - mReverse * _firstPoint.x;
-	CGFloat minXReverse = MIN(_firstPoint.x, to.x);
-	CGFloat maxXReverse = MAX(_firstPoint.x, to.x);
+	CGFloat mReverse = (!degenerateReverse) ?	( to.y - __helperFirstPoint.y ) /
+												( to.x - __helperFirstPoint.x ) : 1e99;
+	CGFloat bReverse = __helperFirstPoint.y - mReverse * __helperFirstPoint.x;
+	CGFloat minXReverse = MIN(__helperFirstPoint.x, to.x);
+	CGFloat maxXReverse = MAX(__helperFirstPoint.x, to.x);
 		
 	
 	// Recurse on the root group looking for crossings
-	[self updateSelectionOnGroup:self.rootGroup
-					 forwardMinX:minXForward
-					 forwardMaxX:maxXForward
-						forwardB:bForward
-						forwardM:mForward
-					 reverseMinX:minXReverse
-					 reverseMaxX:maxXReverse
-						reverseB:bReverse
-						reverseM:mReverse
-					  withMatrix:GLKMatrix4Identity];
+	[PSSelectionHelper updateSelectionOnGroup:__helperRootGroup
+								  forwardMinX:minXForward
+								  forwardMaxX:maxXForward
+									 forwardB:bForward
+									 forwardM:mForward
+								  reverseMinX:minXReverse
+								  reverseMaxX:maxXReverse
+									 reverseB:bReverse
+									 reverseM:mReverse
+								   withMatrix:GLKMatrix4Identity];
 	
 }
 
-- (void) updateSelectionOnGroup:(PSDrawingGroup*)group
+
++ (void) updateSelectionOnGroup:(PSDrawingGroup*)group
 					forwardMinX:(CGFloat)minXForward
 					forwardMaxX:(CGFloat)maxXForward
 					   forwardB:(CGFloat)bForward
@@ -190,64 +194,32 @@
  (Data can only be passed from the foreground to the background thread on the heap,
  so it needs to be an object)
  */
--(void)addLineFromDict:(NSDictionary*)pointsDict
++ (void)addSelectionLineFromDict:(NSDictionary*)pointsDict
 {
 	CGPoint from = [[pointsDict objectForKey:@"from"] CGPointValue];
 	CGPoint to = [[pointsDict objectForKey:@"to"] CGPointValue];
-	[self addLineFrom:from to:to];
+	[PSSelectionHelper addSelectionLineFrom:from to:to];
 }
 
 
-- (void) prepareForSelection:(PSDrawingGroup*)g
++ (void)finishLassoSelection
 {
-	
-	/*
-	 reset all of the selection metadata we're tracking in the objects
-	*/
-	g.isSelected = NO;
-	for (PSDrawingLine* l in g.drawingLines)
-		[l prepareForSelection];
-	for (PSDrawingGroup* c in g.children)
-		[self prepareForSelection:c];
+	__helperSelectedGroupCount = [PSSelectionHelper countSelectedGroups:__helperRootGroup];
+	__helperRootGroup.isSelected = NO; // Make sure we are never selecting the root!
 }
 
-- (void)finishSelection
++ (BOOL)isSingleLeafOnlySelected
 {
-	self.selectedGroupCount = [self countSelectedGroups:self.rootGroup];
-	self.rootGroup.isSelected = NO; // Make sure we are never selecting the root!
-}
-
-/* 
-	If any line in this group or its child groups hits the point, 
-	mark this group as selected and return YES.
-	The isSelected flag is not guaranteed to be selected on any children of the top-most selected group.
-	This selects a single group as a result
-*/
--(void)selectAtTap:(CGPoint)tap
-{
-	for (PSDrawingGroup* g in self.rootGroup.children)
+	if(__helperSelectedGroupCount== 1)
 	{
-		if([g hitsPoint:tap])
-		{
-			g.isSelected = YES;
-			self.selectedGroupCount = 1;
-			return;
-		}
-	}
-}
-
-- (BOOL)singleLeafOnlySelected
-{
-	if(self.selectedGroupCount == 1)
-	{
-		PSDrawingGroup* selectedGroup = [self.rootGroup topLevelSelectedChild];
+		PSDrawingGroup* selectedGroup = [__helperRootGroup topLevelSelectedChild];
 		if(selectedGroup.children.count == 0 && selectedGroup.drawingLines.count > 0)
 			return YES;
 	}
 	return NO;
 }
 
-- (int)countSelectedGroups:(PSDrawingGroup*)root
++ (int)countSelectedGroups:(PSDrawingGroup*)root
 {
 	int count = 0;
 	for (PSDrawingGroup* g in root.children)
@@ -256,6 +228,11 @@
 		else
 			count += [self countSelectedGroups:g];
 	return count;
+}
+
++ (int)selectedGroupCount
+{
+	return __helperSelectedGroupCount;
 }
 
 @end

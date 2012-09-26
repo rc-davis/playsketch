@@ -18,11 +18,13 @@
 @interface PSSelectionHelper : NSObject
 @property(readonly) int selectedGroupCount;
 
-+(PSSelectionHelper*)selectionWithRootGroup:(PSDrawingGroup*)rootGroup;
-+ (PSSelectionHelper*)selectionForTap:(CGPoint)tapPoint inRootGroup:(PSDrawingGroup*)rootGroup;
-- (void)addLineFrom:(CGPoint)from to:(CGPoint)to;
-- (void)addLineFromDict:(NSDictionary*)pointsDict;
-- (void)finishSelection;
-- (BOOL)singleLeafOnlySelected;
++ (void)setRootGroup:(PSDrawingGroup*)group;
++ (void)resetSelection;
++ (BOOL)findSelectionForTap:(CGPoint)tapPoint;
++ (void)addSelectionLineFrom:(CGPoint)from to:(CGPoint)to;
++ (void)addSelectionLineFromDict:(NSDictionary*)pointsDict;
++ (void)finishLassoSelection;
++ (BOOL)isSingleLeafOnlySelected;
++ (int)selectedGroupCount;
 
 @end

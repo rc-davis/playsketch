@@ -16,14 +16,12 @@
 
 @implementation PSGroupOverlayButtons
 
-- (void)configureForSelection:(PSSelectionHelper*)helper
+- (void)configureForSelectionCount:(int)count isLeafObject:(BOOL)isLeaf
 {
-	BOOL singleLeafOnlySelected = [helper singleLeafOnlySelected];
-	
 	// Decide what buttons to show
 	self.recordingButton.hidden = NO;
-	self.createGroupButton.hidden = (helper.selectedGroupCount == 1);
-	self.disbandGroupButton.hidden = (helper.selectedGroupCount > 1) || singleLeafOnlySelected;
+	self.createGroupButton.hidden = (count == 1);
+	self.disbandGroupButton.hidden = (count > 1) || isLeaf;
 	self.deleteGroupButton.hidden = NO;
 	
 	//Lay them out dynamically

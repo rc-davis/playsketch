@@ -35,13 +35,12 @@
 @property(nonatomic)BOOL isErasing;
 @property(nonatomic)BOOL isReadyToRecord; // If manipulations should be treated as recording
 @property(nonatomic)BOOL isRecording;
-@property(nonatomic,retain) PSSelectionHelper* selectionHelper;
 @property(nonatomic,retain) UIPopoverController* penPopoverController;
 @property(nonatomic,retain) PSPenColorViewController* penController;
 @property(nonatomic) UInt64 currentColor; // the drawing color as an int
 @property(nonatomic) int penWeight;
 @property(nonatomic,retain) PSRecordingSession* recordingSession;
-- (void)refreshManipulatorLocation;
+- (void)refreshInterfaceState;
 - (void)highlightButton:(UIButton*)b on:(BOOL)highlight;
 @end
 
@@ -165,7 +164,6 @@
 {
 	self.timelineSlider.playing = NO;
 	[self.renderingController jumpToTime:self.timelineSlider.value];
-	[self refreshManipulatorLocation];
 	self.motionPathView.hidden = NO;
 }
 
@@ -239,13 +237,12 @@
 - (IBAction)deleteCurrentSelection:(id)sender
 {
 	[self.rootGroup deleteSelectedChildren];
-	self.selectionHelper = nil;
 	self.manipulator.hidden = YES;
 }
 
 - (IBAction)createGroupFromCurrentSelection:(id)sender
 {
-	[PSHelpers assert:(self.selectionHelper.selectedGroupCount > 1)
+	[PSHelpers assert:([PSSelectionHelper selectedGroupCount] > 1)
 		  withMessage:@"Need more than one existing group to create a new one"];
 	
 	PSDrawingGroup* newGroup = [self.rootGroup mergeSelectedChildrenIntoNewGroup];
@@ -258,7 +255,6 @@
 	[newGroup centerOnCurrentBoundingBox];
 	[newGroup jumpToTime:self.timelineSlider.value];
 	
-	self.selectionHelper = nil;
 	self.manipulator.hidden = YES;
 	
 }
@@ -294,7 +290,7 @@
 		// PAUSE
 		[self.renderingController stopPlaying];
 		self.timelineSlider.playing = NO;
-		[self refreshManipulatorLocation];
+		[self refreshInterfaceState];
 		self.motionPathView.hidden = NO;
 	}
 	else if(playing && !self.timelineSlider.playing)
@@ -319,9 +315,14 @@
  ----------------------------------------------------------------------------
  */
 
-- (void)refreshManipulatorLocation
+- (void)refreshInterfaceState
 {
-	if (self.selectionHelper.selectedGroupCount == 1)
+	// Update the manipulator's location and visibility
+	
+	
+	
+	
+	if ([PSSelectionHelper selectedGroupCount] == 1)
 	{
 		PSDrawingGroup* group = [self.rootGroup topLevelSelectedChild];
 		self.manipulator.center = [group currentOriginInWorldCoordinates];
@@ -371,18 +372,8 @@
 	_rootGroup = rootGroup;
 	//Also tell the rendering controller about the group to render it
 	self.renderingController.rootGroup = rootGroup;
+	[PSSelectionHelper setRootGroup:rootGroup];
 }
-
-
--(void)setSelectionHelper:(PSSelectionHelper *)selectionHelper
-{
-	if(selectionHelper == nil)
-		self.manipulator.hidden = YES;
-	
-	//TODO: if the selection helper is going away, zero out its selections!	
-	_selectionHelper = selectionHelper;
-}
-
 
 
 - (void)setIsReadyToRecord:(BOOL)isReadyToRecord
@@ -417,7 +408,7 @@
 -(PSDrawingLine*)newLineToDrawTo:(id)drawingView
 {
 	// Clear any current selection
-	self.selectionHelper = nil;
+	[PSSelectionHelper resetSelection];
 	
 	// No line necessary if we are erasing
 	if (self.isErasing) return nil;
@@ -430,8 +421,7 @@
 	PSDrawingLine* newLine = [PSDataModel newTemporaryLineWithWeight:weight andColor:color];
 	
 	// Start a new selection set helper to keep track of what's being selected
-	if (self.isSelecting)
-		self.selectionHelper = [PSSelectionHelper selectionWithRootGroup:self.rootGroup];
+	if (self.isSelecting) [PSSelectionHelper resetSelection];
 		
 	// Tell the rendering controller to draw this line specially, since it isn't added to the scene yet
 	self.renderingController.currentLine = newLine;
@@ -454,7 +444,8 @@
 		NSDictionary* pointsDict = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSValue valueWithCGPoint:from], @"from",
 									[NSValue valueWithCGPoint:to], @"to", nil];
-		[self.selectionHelper performSelectorInBackground:@selector(addLineFromDict:) withObject:pointsDict];
+		[PSSelectionHelper performSelectorInBackground:@selector(addSelectionLineFromDict:)
+											withObject:pointsDict];
 	}
 }
 
@@ -463,18 +454,19 @@
 {
 	if ( line && self.isSelecting )
 	{
-		[self.selectionHelper finishSelection];
+		[PSSelectionHelper finishLassoSelection];
 		
 		//Show the manipulator if it was worthwhile
-		if(self.selectionHelper.selectedGroupCount == 0)
+		if([PSSelectionHelper selectedGroupCount] == 0)
 		{
-			self.selectionHelper = nil;
+			self.manipulator.hidden = YES;
 		}
 		else
 		{
 			self.manipulator.hidden = NO;
-			[self.selectionOverlayButtons configureForSelection:self.selectionHelper];
-			[self refreshManipulatorLocation];
+			[self.selectionOverlayButtons configureForSelectionCount:[PSSelectionHelper selectedGroupCount]
+														isLeafObject:[PSSelectionHelper isSingleLeafOnlySelected]];
+			[self refreshInterfaceState];
 		}
 
 	}
@@ -506,7 +498,7 @@
 -(void)cancelledDrawingLine:(PSDrawingLine*)line inDrawingView:(id)drawingView
 {
 	self.renderingController.currentLine = nil;
-	if(self.selectionHelper) self.selectionHelper = nil;
+	[PSSelectionHelper resetSelection];
 }
 
 -(void)movedAt:(CGPoint)p inDrawingView:(id)drawingView
@@ -523,18 +515,16 @@
 -(void)whileDrawingLine:(PSDrawingLine *)line tappedAt:(CGPoint)p tapCount:(int)tapCount inDrawingView:(id)drawingView
 {
 	// Look to see if we tapped on an object!
-	self.selectionHelper = nil;
-	
-	PSSelectionHelper* tapSelection = [PSSelectionHelper selectionForTap:p inRootGroup:self.rootGroup];
-	if(tapCount == 1 && tapSelection.selectedGroupCount > 0)
+	BOOL touchedObject = [PSSelectionHelper findSelectionForTap:p];
+	if(tapCount == 1 && touchedObject)
 	{
 		// Treat this like a selection!
-		// Save the selection Helper and configure the interface
-		self.selectionHelper = tapSelection;
 		self.manipulator.hidden = NO;
-		[self.selectionOverlayButtons configureForSelection:self.selectionHelper];
-		[self refreshManipulatorLocation];
+		[self.selectionOverlayButtons configureForSelectionCount:[PSSelectionHelper selectedGroupCount]
+													isLeafObject:[PSSelectionHelper isSingleLeafOnlySelected]];
 		self.renderingController.currentLine = nil;
+		[self refreshInterfaceState];
+		
 	}
 	else
 	{

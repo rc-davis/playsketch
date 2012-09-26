@@ -84,7 +84,9 @@
 - (PSDrawingGroup*)topLevelSelectedChild;
 - (void)breakUpGroupAndMergeIntoParent;
 
+- (void)applyToAllSubTrees:( void ( ^ )( PSDrawingGroup* g ) )functionToApply;
 - (void)applyToSelectedSubTrees:( void ( ^ )( PSDrawingGroup* g ) )functionToApply;
+
 
 - (void)transformSelectionByX:(float)dX
 						 andY:(float)dY

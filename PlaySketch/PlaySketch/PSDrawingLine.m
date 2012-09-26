@@ -222,13 +222,6 @@
 	return CGRectMake(min.x, min.y, max.x - min.x, max.y - min.y);
 }
 
-- (void)prepareForSelection
-{
-	if(self.selectionHitCounts)
-		free(self.selectionHitCounts);
-	self.selectionHitCounts = (int*)calloc(self.pointCount, sizeof(int));
-}
-
 - (BOOL)eraseAtPoint:(CGPoint)p
 {
 	// Go through points and look for ones to erase

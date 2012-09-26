@@ -579,6 +579,13 @@
 	}];
 }
 
+- (void)applyToAllSubTrees:( void ( ^ )( PSDrawingGroup* g ) )functionToApply
+{
+	functionToApply(self);
+
+	for (PSDrawingGroup* c in self.children)
+		[c applyToSelectedSubTrees:functionToApply];
+}
 
 - (void)applyToSelectedSubTrees:( void ( ^ )( PSDrawingGroup* g ) )functionToApply
 {

@@ -23,7 +23,7 @@
 @property(nonatomic,retain)IBOutlet UIButton* deleteGroupButton;
 @property(nonatomic) BOOL recordPulsing;
 
-- (void)configureForSelection:(PSSelectionHelper*)helper;
+- (void)configureForSelectionCount:(int)count isLeafObject:(BOOL)isLeaf;
 - (void)startRecordingMode;
 - (void)stopRecordingMode;
 
