@@ -57,16 +57,6 @@
 - (SRTPosition)currentCachedPosition;
 - (void)setCurrentCachedPosition:(SRTPosition)position;
 
-- (void)addChildrenObject:(PSDrawingGroup *)value;
-- (void)removeChildrenObject:(PSDrawingGroup *)value;
-- (void)addChildren:(NSSet *)values;
-- (void)removeChildren:(NSSet *)values;
-
-- (void)addDrawingLinesObject:(PSDrawingLine *)value;
-- (void)removeDrawingLinesObject:(PSDrawingLine *)value;
-- (void)addDrawingLines:(NSSet *)values;
-- (void)removeDrawingLines:(NSSet *)values;
-
 
 - (void)centerOnCurrentBoundingBox;
 - (void)applyTransformToLines:(CGAffineTransform)transform;

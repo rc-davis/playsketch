@@ -494,35 +494,22 @@
 	}
 }
 
-
-- (void)getAllSelectedChildren:(NSMutableSet*)selected
-{
-	for (PSDrawingGroup* g in self.children)
-	{
-		if (g.isSelected)
-			[selected addObject:g];
-		else
-			[g getAllSelectedChildren:selected];
-	}
-}
-
-
 - (PSDrawingGroup*)mergeSelectedChildrenIntoNewGroup
 {
-
-	// 1. Recurse through the tree and get all of the selected roots of subtrees
-	NSMutableSet* selected = [NSMutableSet set];
-	[self getAllSelectedChildren:selected];
-	[PSHelpers assert:selected.count > 0 withMessage:@"Need some selected children to merge"];
-	
-	// 2. Create a new group and move all of them into it
+	// Create a new group to hold the children
 	PSDrawingGroup* newGroup = [PSDataModel newDrawingGroupWithParent:self];
+
+	// Collect the groups
+	NSMutableArray* selected = [NSMutableArray array];
+	[self applyToSelectedSubTrees:^(PSDrawingGroup *g) {
+		[selected addObject:g];
+	}];
+
+	// Add them to the new group
 	for (PSDrawingGroup* g in selected)
 		g.parent = newGroup;
+		// TODO: we probably should displace the selected groups to keep them from jumping around?
 
-	
-	//TODO: we probably should displace the selected groups to keep them from jumping around?
-	
 	return newGroup;
 }
 
@@ -666,8 +653,6 @@
 - (void)printSelected:(int)depth
 {
 	NSLog(@"%d:\t------------ %@", depth, (self.isSelected ? @"SELECTED" : @"NO!"));
-	
-	
 	for (PSDrawingGroup* g in self.children)
 		[g printSelected:depth+1];
 	
