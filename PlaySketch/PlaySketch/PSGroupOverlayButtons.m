@@ -42,9 +42,8 @@
 		CGRect f = b.frame;
 		f.origin.y = yOffset;
 		b.frame = f;
-		yOffset += f.size.height + 10.0;
+		yOffset += f.size.height;
 	}
-	
 }
 
 - (void)startRecordingMode
