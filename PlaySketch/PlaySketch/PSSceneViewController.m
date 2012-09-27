@@ -27,9 +27,7 @@
 #import "PSGraphicConstants.h"
 #import <QuartzCore/QuartzCore.h>
 
-
-
-
+/* Private properties and function */
 @interface PSSceneViewController ()
 @property(nonatomic)BOOL isSelecting; // If we are selecting instead of drawing
 @property(nonatomic)BOOL isErasing;
@@ -49,14 +47,13 @@
 
 @implementation PSSceneViewController
 
+
 /*
  ----------------------------------------------------------------------------
- UIViewController subclass methods
- These are part of the lifecycle of a viewcontroller and give us the 
- opportunity to do some logic each time we are loaded or unloaded for example
+ Standard View Controller Lifecycle Methods
+ (read the documentation for UIViewController to see when they are triggered)
  ----------------------------------------------------------------------------
  */
-
 
 - (void)viewDidLoad
 {
@@ -145,8 +142,6 @@
 }
 
 
-
-
 /*
  ----------------------------------------------------------------------------
  IBActions for the storyboard
@@ -155,11 +150,11 @@
  ----------------------------------------------------------------------------
  */
 
-
 -(IBAction)dismissSceneView:(id)sender
 {
 	[self dismissModalViewControllerAnimated:YES];
 }
+
 
 - (IBAction)playPressed:(id)sender
 {
@@ -179,6 +174,7 @@
 {
 	self.isReadyToRecord = ! self.isReadyToRecord;
 }
+
 
 - (IBAction)exportAsVideo:(id)sender
 {
@@ -205,6 +201,7 @@
 	}
 }
 
+
 - (IBAction)showPenPopover:(id)sender
 {
 	[self.penPopoverController presentPopoverFromRect:[sender frame]
@@ -213,6 +210,7 @@
 											 animated:YES];
 	
 }
+
 
 - (IBAction)startSelecting:(id)sender
 {
@@ -223,6 +221,7 @@
 	self.isErasing = NO;	
 }
 
+
 - (IBAction)startDrawing:(id)sender
 {
 	[self highlightButton:self.startSelectingButton on:NO];
@@ -231,6 +230,7 @@
 	self.isSelecting = NO;
 	self.isErasing = NO;
 }
+
 
 - (IBAction)startErasing:(id)sender
 {
@@ -248,6 +248,7 @@
 	[PSSelectionHelper resetSelection];
 	[self refreshInterfaceAfterDataChange:YES selectionChange:YES];
 }
+
 
 - (IBAction)createGroupFromCurrentSelection:(id)sender
 {
@@ -292,6 +293,7 @@
 	[self refreshInterfaceAfterDataChange:YES selectionChange:YES];
 }
 
+
 - (IBAction)markCurrentSelectionNotVisible:(id)sender
 {
 	[self.rootGroup applyToSelectedSubTrees:^(PSDrawingGroup *g) {
@@ -310,34 +312,13 @@
 	[self refreshInterfaceAfterDataChange:YES selectionChange:YES];
 }
 
+
 - (IBAction)redo:(id)sender
 {
 	[PSDataModel redo];
 	[self.rootGroup jumpToTime:self.timelineSlider.value];
 	[PSSelectionHelper resetSelection];
 	[self refreshInterfaceAfterDataChange:YES selectionChange:YES];
-}
-
-
-
-- (void)setPlaying:(BOOL)playing
-{
-	if(!playing && self.timelineSlider.playing)
-	{
-		// PAUSE
-		[self.renderingController stopPlaying];
-		self.timelineSlider.playing = NO;
-	}
-	else if(playing && !self.timelineSlider.playing)
-	{
-		// PLAY!
-		float time = self.timelineSlider.value;
-		[self.renderingController playFromTime:time];
-		self.timelineSlider.value = time;
-		self.timelineSlider.playing = YES;
-	}
-
-	[self refreshInterfaceAfterDataChange:NO selectionChange:NO];
 }
 
 
@@ -416,6 +397,28 @@
  */
 
 
+
+- (void)setPlaying:(BOOL)playing
+{
+	if(!playing && self.timelineSlider.playing)
+	{
+		// PAUSE
+		[self.renderingController stopPlaying];
+		self.timelineSlider.playing = NO;
+	}
+	else if(playing && !self.timelineSlider.playing)
+	{
+		// PLAY!
+		float time = self.timelineSlider.value;
+		[self.renderingController playFromTime:time];
+		self.timelineSlider.value = time;
+		self.timelineSlider.playing = YES;
+	}
+	
+	[self refreshInterfaceAfterDataChange:NO selectionChange:NO];
+}
+
+
 -(void)setCurrentDocument:(PSDrawingDocument *)currentDocument
 {
 	_currentDocument = currentDocument;
@@ -423,11 +426,13 @@
 	self.renderingController.currentDocument = currentDocument;
 }
 
+
 -(void)setRootGroup:(PSDrawingGroup *)rootGroup
 {
 	_rootGroup = rootGroup;
 	[PSSelectionHelper setRootGroup:rootGroup];
 }
+
 
 - (void)setIsReadyToRecord:(BOOL)isReadyToRecord
 {

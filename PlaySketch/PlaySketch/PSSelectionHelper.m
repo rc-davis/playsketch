@@ -194,8 +194,8 @@ int __helperSelectedGroupCount;
  */
 + (void)addSelectionLineFromDict:(NSDictionary*)pointsDict
 {
-	CGPoint from = [[pointsDict objectForKey:@"from"] CGPointValue];
-	CGPoint to = [[pointsDict objectForKey:@"to"] CGPointValue];
+	CGPoint from = [pointsDict[@"from"] CGPointValue];
+	CGPoint to = [pointsDict[@"to"] CGPointValue];
 	[PSSelectionHelper addSelectionLineFrom:from to:to];
 }
 

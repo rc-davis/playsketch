@@ -25,6 +25,8 @@
 #define ANIMATION_DURATION 0.5
 #define DETAIL_ANIM_FRAME (CGRectMake(0, 86, 1024, 576))
 
+
+/* Private properties and function */
 @interface PSDocumentListController ()
 @property(nonatomic,retain)NSMutableArray* documentImages;
 @property(nonatomic,retain)NSMutableArray* documents;
@@ -34,16 +36,25 @@
 - (float)currentIndex;
 @end
 
+
+
 @implementation PSDocumentListController
 
 
 /*
-	This is called after everything in the storyboard is loaded, but right
-	before the view is shown on the screen.
-	This is our chance to refresh the view's state before presenting it
+ ----------------------------------------------------------------------------
+ Standard View Controller Lifecycle Methods
+(read the documentation for UIViewController to see when they are triggered)
+ ----------------------------------------------------------------------------
 */
+
+
 - (void)viewDidLoad
 {
+	// This is called after everything in the storyboard is loaded, but right
+	// before the view is shown on the screen.
+	// This is our chance to refresh the view's state before presenting it
+	
     [super viewDidLoad];
 
 	// Set up the scrollview
@@ -66,6 +77,171 @@
 	
 }
 
+
+- (void)viewDidUnload
+{
+	// This is called right after the view has left the screen.
+	// It gives us the opportunity to free any resources the view was using.
+	// Its actions should be symmetrical to viewDidLoad
+
+	// Release any non-IB instance variables we are holding on to
+	self.documentImages = nil;
+	self.documents = nil;
+
+	[super viewDidUnload];
+}
+
+
+-(void) viewWillAppear:(BOOL)animated
+{
+	// Refresh the selected image before we become visible:
+	// This is in case it was edited while our view wasn't visible
+	int currentI = round([self currentIndex]);
+	if(currentI >= 0 && currentI < self.documents.count)
+	{
+		[self createImageForDocumentAtIndex:currentI];
+	}
+}
+
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+	return UIInterfaceOrientationIsLandscape(interfaceOrientation);
+}
+
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+	// This is called automatically each time we segue away from this view
+	// We can tell which segue triggered this call by looking at [segue identifier]
+	
+	// Check if this is the segue where we are loading up a scene
+	// We are passing the document in as the sender in viewDocument:
+    if ( [[segue identifier] isEqualToString:@"GoToSceneViewController"]
+		&& [sender class] == [PSDrawingDocument class] )
+    {
+		//Set the root scene view controller from the supplied document
+		PSSceneViewController *vc = [segue destinationViewController];
+		vc.currentDocument = (PSDrawingDocument*)sender;
+		vc.rootGroup = ((PSDrawingDocument*)sender).rootGroup;
+		
+	}
+}
+
+
+/*
+ ----------------------------------------------------------------------------
+ IBActions for the storyboard
+ (methods with a return type of "IBAction" can be triggered by buttons in the
+ storyboard editor
+ ----------------------------------------------------------------------------
+ */
+
+-(IBAction)newDocument:(id)sender
+{
+	NSString* newDocName = [NSString stringWithFormat:@"Untitled Animation %d",
+							[PSDataModel allDrawingDocuments].count + 1];
+	PSDrawingDocument* newDocument = [PSDataModel newDrawingDocumentWithName:newDocName];
+	
+	//Scroll to the last item
+	[self scrollToIndex:self.documents.count animated:YES];
+	
+	// Add it to the list and create a button
+	[self.documents addObject:newDocument];
+	[self createImageForDocumentAtIndex:self.documents.count - 1];
+	
+	//Animate the appearance of the button
+	UIImageView* newImage = self.documentImages[self.documentImages.count - 1];
+	CGRect destinationFrame = newImage.frame;
+	CGRect startFrame = [self.scrollView convertRect:self.createDocButton.frame
+											fromView:self.createDocButton.superview];
+	newImage.frame = startFrame;
+	newImage.alpha = 0.0;
+	[UIView animateWithDuration:ANIMATION_DURATION
+						  delay:ANIMATION_DURATION
+						options:0
+					 animations:^{
+						 newImage.frame = destinationFrame;
+						 newImage.alpha = 1.0;
+						 self.docButtonsContainer.alpha = 1.0;}
+					 completion:nil];
+}
+
+
+- (IBAction)openCurrentDocument:(id)sender
+{
+	// Show the document that corresponds to our current offset
+	// Trigger the "GoToSceneViewController segue in the storyboard, passing the
+	// document as the sender
+
+	int currentI = round([self currentIndex]);
+	if(currentI >= 0 && currentI < self.documents.count)
+	{
+		PSDrawingDocument* document = self.documents[currentI];
+		UIImageView* img = self.documentImages[currentI];
+		CGRect startRect = [self.view convertRect:img.frame fromView:self.scrollView];
+		[self.view addSubview:img];
+		img.frame = startRect;
+		
+		// Zoom the image!
+		[UIView animateWithDuration:ANIMATION_DURATION
+						 animations:^{ img.frame = DETAIL_ANIM_FRAME; }];
+		
+		// Call the segue to the storyboard after a delay
+		dispatch_time_t waitTime = dispatch_time(DISPATCH_TIME_NOW, ANIMATION_DURATION * NSEC_PER_SEC);
+		dispatch_after(waitTime, dispatch_get_main_queue(), ^(void){
+			[self performSegueWithIdentifier:@"GoToSceneViewController" sender:document];
+		});
+		
+	}
+}
+
+
+- (IBAction)deleteCurrentDocument:(id)sender
+{
+	int currentI = round([self currentIndex]);
+	if(currentI >= 0 && currentI < self.documents.count)
+	{
+		PSDrawingDocument* docToDelete = self.documents[currentI];
+		UIImageView* docImage = self.documentImages[currentI];
+		[PSDataModel deleteDrawingDocument:docToDelete];
+		[self.documentImages removeObjectAtIndex:currentI];
+		[self.documents removeObjectAtIndex:currentI];
+		
+		
+		// First: Show the current document disappearing
+		[UIView animateWithDuration:ANIMATION_DURATION
+						 animations:^{ docImage.alpha = 0.0; }];
+		
+		
+		// Second: animate the others moving in to take its place
+		// On completion of this animation, clean up the ivars storing the old document
+		[UIView animateWithDuration:ANIMATION_DURATION
+							  delay:ANIMATION_DURATION/2.0
+							options:0
+						 animations:^{
+							 for(int i = currentI; i < self.documentImages.count; i++)
+							 {
+								 UIImageView* img = self.documentImages[i];
+								 CGRect newRect = img.frame;
+								 newRect.origin.x -= DOC_IMAGE_STEP;
+								 img.frame = newRect;
+							 }
+							 self.docButtonsContainer.alpha = (self.documents.count > 0) ? 1.0 : 0.0;
+						 }
+		 
+						 completion:^(BOOL finished){
+							 [self scrollToIndex:MIN(currentI, self.documentImages.count - 1) animated:YES];
+						 }];
+	}
+}
+
+
+/*
+ ----------------------------------------------------------------------------
+ Private helpers
+ ----------------------------------------------------------------------------
+ */
 
 - (void)createImageForDocumentAtIndex:(int)i
 {
@@ -97,6 +273,7 @@
 	self.scrollView.contentSize = newContentSize;
 }
 
+
 - (void)scrollToIndex:(int)i animated:(BOOL)animated
 {
 	CGPoint newOffset = self.scrollView.contentOffset;
@@ -109,6 +286,7 @@
 		self.scrollView.contentOffset = newOffset;
 
 }
+
 
 - (void)scrollToNearest:(BOOL)animated
 {
@@ -123,6 +301,7 @@
 	[self scrollToIndex:requestedIndex animated:animated];
 }
 
+
 - (float)currentIndex
 {
 	CGFloat currentXValueOffset = self.scrollView.contentOffset.x + DOC_IMAGE_SNAP_XVALUE;
@@ -131,156 +310,12 @@
 
 
 /*
-	This is called right after the view has left the screen. 
-	It gives us the opportunity to free any resources the view was using.
-	Its actions should be symmetrical to viewDidLoad
-*/
-- (void)viewDidUnload
-{
-	[super viewDidUnload];
-}
-
-
--(void) viewWillAppear:(BOOL)animated
-{
-	// Refresh the selected image before we become visible:
-	// This is in case it was edited while our view wasn't visible
-	int currentI = round([self currentIndex]);
-	if(currentI >= 0 && currentI < self.documents.count)
-	{
-		[self createImageForDocumentAtIndex:currentI];
-	}
-}
-
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
-	return UIInterfaceOrientationIsLandscape(interfaceOrientation);
-}
-
--(IBAction)newDocument:(id)sender
-{
-	NSString* newDocName = [NSString stringWithFormat:@"Untitled Animation %d",
-							[PSDataModel allDrawingDocuments].count + 1];
-	PSDrawingDocument* newDocument = [PSDataModel newDrawingDocumentWithName:newDocName];
-
-	//Scroll to the last item
-	[self scrollToIndex:self.documents.count animated:YES];
-	
-	// Add it to the list and create a button
-	[self.documents addObject:newDocument];
-	[self createImageForDocumentAtIndex:self.documents.count - 1];
-	
-	//Animate the appearance of the button
-	UIImageView* newImage = self.documentImages[self.documentImages.count - 1];
-	CGRect destinationFrame = newImage.frame;
-	CGRect startFrame = [self.scrollView convertRect:self.createDocButton.frame
-											fromView:self.createDocButton.superview];
-	newImage.frame = startFrame;
-	newImage.alpha = 0.0;
-	[UIView animateWithDuration:ANIMATION_DURATION
-						  delay:ANIMATION_DURATION
-						options:0
-					 animations:^{
-						 newImage.frame = destinationFrame;
-						 newImage.alpha = 1.0;
-						 self.docButtonsContainer.alpha = 1.0;}
-					 completion:nil];
-}
-
-/*
- Show the document that corresponds to our current offset
- Trigger the "GoToSceneViewController segue in the storyboard, passing the
- document as the sender
+ ----------------------------------------------------------------------------
+ Scrollview delegate methods
+ Implementing these let this controller respond to changes in the scrollview,
+ to keep us centred on a button
+ ----------------------------------------------------------------------------
  */
-- (IBAction)openCurrentDocument:(id)sender
-{
-	int currentI = round([self currentIndex]);
-	if(currentI >= 0 && currentI < self.documents.count)
-	{
-		PSDrawingDocument* document = self.documents[currentI];
-		UIImageView* img = self.documentImages[currentI];
-		CGRect startRect = [self.view convertRect:img.frame fromView:self.scrollView];
-		[self.view addSubview:img];
-		img.frame = startRect;
-		
-		// Zoom the image!
-		[UIView animateWithDuration:ANIMATION_DURATION
-						 animations:^{ img.frame = DETAIL_ANIM_FRAME; }];
-
-		// Call the segue to the storyboard after a delay
-		dispatch_time_t waitTime = dispatch_time(DISPATCH_TIME_NOW, ANIMATION_DURATION * NSEC_PER_SEC);
-		dispatch_after(waitTime, dispatch_get_main_queue(), ^(void){
-			[self performSegueWithIdentifier:@"GoToSceneViewController" sender:document];
-		});
-		
-	}
-}
-
-- (IBAction)deleteCurrentDocument:(id)sender
-{
-	int currentI = round([self currentIndex]);
-	if(currentI >= 0 && currentI < self.documents.count)
-	{
-		PSDrawingDocument* docToDelete = self.documents[currentI];
-		UIImageView* docImage = self.documentImages[currentI];
-		[PSDataModel deleteDrawingDocument:docToDelete];
-		[self.documentImages removeObjectAtIndex:currentI];
-		[self.documents removeObjectAtIndex:currentI];
-
-		
-		// First: Show the current document disappearing
-		[UIView animateWithDuration:ANIMATION_DURATION
-						 animations:^{ docImage.alpha = 0.0; }];
-		
-		
-		// Second: animate the others moving in to take its place
-		// On completion of this animation, clean up the ivars storing the old document
-		[UIView animateWithDuration:ANIMATION_DURATION
-							  delay:ANIMATION_DURATION/2.0
-							options:0
-						 animations:^{
-							 for(int i = currentI; i < self.documentImages.count; i++)
-							 {
-								 UIImageView* img = self.documentImages[i];
-								 CGRect newRect = img.frame;
-								 newRect.origin.x -= DOC_IMAGE_STEP;
-								 img.frame = newRect;
-							 }
-							 self.docButtonsContainer.alpha = (self.documents.count > 0) ? 1.0 : 0.0;
-						 }
-						 
-						 completion:^(BOOL finished){
-							 [self scrollToIndex:MIN(currentI, self.documentImages.count - 1) animated:YES];
-						 }];
-	}
-}
-
-
-/*
-	This is called automatically each time we segue away from this view
-	We can tell which segue triggered this call by looking at [segue identifier]
-*/
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-
-	// Check if this is the segue where we are loading up a scene
-	// We are passing the document in as the sender in viewDocument:
-    if ( [[segue identifier] isEqualToString:@"GoToSceneViewController"]
-		&& [sender class] == [PSDrawingDocument class] )
-    {
-		//Set the root scene view controller from the supplied document
-		PSSceneViewController *vc = [segue destinationViewController];
-		vc.currentDocument = (PSDrawingDocument*)sender;
-		vc.rootGroup = ((PSDrawingDocument*)sender).rootGroup;
-
-	}
-}
-
-/*
-	Scrollview delegate methods
-	Implementing these let this controller respond to changes in the scrollview,
-	to keep us centred on a button
-*/
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {

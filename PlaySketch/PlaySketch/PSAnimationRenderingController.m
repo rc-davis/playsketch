@@ -16,20 +16,23 @@
 #import "PSHelpers.h"
 #import "PSGraphicConstants.h"
 
-/* Private Interface */
+/* Private properties and function */
 @interface PSAnimationRenderingController ()
-{
-	GLKMatrix4 _projectionMatrix;
-	NSTimeInterval _currentTimeContinuous;
-}
 @property (strong, nonatomic, retain) EAGLContext* context;
 @property (strong) GLKBaseEffect * effect;
+@property (nonatomic) GLKMatrix4 projectionMatrix;
+@property (nonatomic) NSTimeInterval currentTimeContinuous;
 @end
 
 
-/* Begin Implementation */
-
 @implementation PSAnimationRenderingController
+
+/*
+ ----------------------------------------------------------------------------
+ Standard View Controller Lifecycle Methods
+ (read the documentation for UIViewController to see when they are triggered)
+ ----------------------------------------------------------------------------
+ */
 
 -(BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
 {
@@ -58,6 +61,23 @@
 
 }
 
+- (void)viewDidLayoutSubviews
+{
+	// Generate our projection matrix in response to changes to our view's coordinates
+	_projectionMatrix = GLKMatrix4MakeOrtho(
+											-self.view.bounds.size.width/2.0,
+											self.view.bounds.size.width/2.0,
+											self.view.bounds.size.height/2.0,
+											-self.view.bounds.size.height/2.0,
+											-1024, 1024);
+}
+
+
+/*
+ ----------------------------------------------------------------------------
+ Methods for controlling playback
+ ----------------------------------------------------------------------------
+ */
 
 - (void)playFromTime:(float)time
 {
@@ -80,26 +100,13 @@
 	self.playing = NO;
 }
 
+
 /*
-	Generate our projection matrix in response to updates to our view's coordinates
-*/
-- (void)viewDidLayoutSubviews
-{
-	_projectionMatrix = GLKMatrix4MakeOrtho(
-					-self.view.bounds.size.width/2.0,
-					self.view.bounds.size.width/2.0,
-					self.view.bounds.size.height/2.0,
-					-self.view.bounds.size.height/2.0,
-					-1024, 1024);
-}
-
-
-
-/*	------------
- 
+ ----------------------------------------------------------------------------
  Delegate methods from the GLKView which trigger our rendering
- 
- ------------*/
+ ----------------------------------------------------------------------------
+ */
+
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
 {
 	// Clear the background
@@ -127,8 +134,7 @@
 									toTime:_currentTimeContinuous];
 }
 
-@end
-
+@end //This is the end of the PSAnimationRenderingController implementation
 
 
 

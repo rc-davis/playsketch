@@ -18,11 +18,8 @@
 @property(nonatomic,retain)IBOutlet UIScrollView* scrollView;
 @property(nonatomic,retain)IBOutlet UIView* docButtonsContainer;
 @property(nonatomic,retain)IBOutlet UIButton* createDocButton;
-//@property(nonatomic,retain)IBOutlet UIButton* deleteButton;
-//@property(nonatomic,retain)IBOutlet UIButton* documentNameButton;
 
 - (IBAction)newDocument:(id)sender;
 - (IBAction)openCurrentDocument:(id)sender;
 - (IBAction)deleteCurrentDocument:(id)sender;
-//-(IBAction)startRenameDocument:(id)sender;
 @end
