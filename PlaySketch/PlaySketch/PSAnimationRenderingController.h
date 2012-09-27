@@ -21,9 +21,7 @@
 @interface PSAnimationRenderingController : GLKViewController
 
 @property(nonatomic,retain) PSDrawingDocument* currentDocument;
-@property(nonatomic,retain) PSDrawingGroup* rootGroup;
 @property(nonatomic,retain) PSDrawingLine* currentLine;
-@property(nonatomic, readonly)int currentFrame; // the time frame that we are at right now
 @property(nonatomic)BOOL playing;
 - (void)playFromTime:(float)frame;
 - (void)jumpToTime:(float)time;
@@ -32,14 +30,18 @@
 @end
 
 
-// Use categories to add a render and animation function to our drawing items
+/*
+ These are some methods we are adding to the DrawingGroup and DrawingLine classes.
+ This lets us keep all the rendering-specific code in this file, while still accessing
+ the private data to the data structures
+*/
 @interface PSDrawingGroup ( renderingCategory )
 - (void)jumpToTime:(float)time;
-- (void)renderGroupWithMatrix:(GLKMatrix4)parentModelMatrix uniforms:(GLint*)uniforms overrideColor:(BOOL)overrideColor;
+- (void)renderGroupWithEffect:(GLKBaseEffect*)effect matrix:(GLKMatrix4)parentMatrix isSelected:(BOOL)isSelected;
 - (void)updateWithTimeInterval:(NSTimeInterval)timeSinceLastUpdate toTime:(NSTimeInterval)currentTime;
 @end
 
 @interface PSDrawingLine ( renderingCategory )
-- (void) renderWithUniforms:(GLint*)uniforms overrideColor:(BOOL)overrideColor;
+- (void) renderWithEffect:(GLKBaseEffect*)effect isSelected:(BOOL)isSelected;
 @end
 

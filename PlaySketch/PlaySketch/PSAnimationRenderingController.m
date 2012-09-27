@@ -11,16 +11,6 @@
  
  */
 
-
-enum
-{
-	// indices into _uniforms array for tracking uniform handles in our shaders
-	UNIFORMS_MODELMATRIX,
-	UNIFORMS_BRUSH_COLOR,
-	NUM_UNIFORMS
-};
-
-
 #import "PSAnimationRenderingController.h"
 #import "PSAppDelegate.h"
 #import "PSHelpers.h"
@@ -29,38 +19,29 @@ enum
 /* Private Interface */
 @interface PSAnimationRenderingController ()
 {
-	GLuint _program;
-	GLint _uniforms[NUM_UNIFORMS];
 	GLKMatrix4 _projectionMatrix;
 	NSTimeInterval _currentTimeContinuous;
 }
 @property (strong, nonatomic, retain) EAGLContext* context;
+@property (strong) GLKBaseEffect * effect;
 @end
-
 
 
 /* Begin Implementation */
 
 @implementation PSAnimationRenderingController
-@synthesize context = _context;
-@synthesize currentDocument = _currentDocument;
-@synthesize rootGroup = _rootGroup;
-@synthesize playing = _playing;
-
-
 
 -(BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
 {
 	return UIInterfaceOrientationIsLandscape(toInterfaceOrientation);
 }
 
-
-
 - (void)viewDidLoad
 {
 
 	// Create an OpenGL Rendering Context
 	self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
+	
 	if (!self.context)
 	{
 		[PSHelpers failWithMessage:@"Failed to created an OpenGL context"];
@@ -70,13 +51,11 @@ enum
     GLKView *view = (GLKView *)self.view;
     view.context = self.context;
     [EAGLContext setCurrentContext:self.context];
-	
-	//Compile our shaders for drawing
-	if (! [self loadShaders] )
-	{
-		[PSHelpers failWithMessage:@"Failed to load shaders in PSAnimationRenderingController"];
-	}
-	
+
+	// Create an effect instead of our own shaders
+	self.effect = [[GLKBaseEffect alloc] init];
+	self.effect.useConstantColor = GL_TRUE;
+
 }
 
 
@@ -101,12 +80,6 @@ enum
 	self.playing = NO;
 }
 
-
-- (int)currentFrame
-{
-	return (int)_currentTimeContinuous;
-}
-
 /*
 	Generate our projection matrix in response to updates to our view's coordinates
 */
@@ -129,41 +102,21 @@ enum
  ------------*/
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
 {
-	// TODO: lots of cleanup in this section!!
-	// This gets called a LOT so any efficiency gains are important...
-	
-	// Calculate a projection matrix that will keep self.rootGroup from moving
-	GLKMatrix4 correctionMatrix = GLKMatrix4Multiply(_projectionMatrix,
-													 [self.rootGroup getInverseMatrixToDocumentRoot]);
-	
-	// Try to do as much rendering setup as possible so we don't have to call
-	// on each line/group when we recurse:
-	
-	// Use our custom shaders
-	glUseProgram(_program);
-
 	// Clear the background
 	glClearColor(BACKGROUND_COLOR);
 	glClear(GL_COLOR_BUFFER_BIT);
 	
-	// Set a blend function so our brush will have alpha preserved
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_BLEND);
+	self.effect.transform.projectionMatrix = _projectionMatrix;
 	
-	// Push the projection matrix
-	glUniformMatrix4fv(_uniforms[UNIFORMS_MODELMATRIX], 1, 0, correctionMatrix.m);
-	
-	// Now we can recurse on our root and will only have to push vertices and matrices
-	[self.currentDocument.rootGroup renderGroupWithMatrix:correctionMatrix uniforms:_uniforms overrideColor:NO];
+	// Recurse on our root and will only have to push vertices and matrices
+	[self.currentDocument.rootGroup renderGroupWithEffect:self.effect matrix:GLKMatrix4Identity isSelected:NO];
 	
 	//Draw our selection line on top of everything
 	if(self.currentLine)
 	{
-		//Restore our default matrix
-		glUniformMatrix4fv(_uniforms[UNIFORMS_MODELMATRIX], 1, 0, _projectionMatrix.m);
-		[self.currentLine renderWithUniforms:_uniforms overrideColor:NO];
+		self.effect.transform.modelviewMatrix = GLKMatrix4Identity;
+		[self.currentLine renderWithEffect:self.effect isSelected:NO];
 	}
-
 }
 
 - (void)update
@@ -174,190 +127,9 @@ enum
 									toTime:_currentTimeContinuous];
 }
 
-
-
-/*
- -------------------------------------------------------------------------------
- Helpers for loading, compiling, and linking our shaders
- (These are taken from the XCode template for an OpenGL project, if you want 
- more context, just create a new one and see how its supposed to be used)
- -------------------------------------------------------------------------------
-*/
-
-- (BOOL)loadShaders
-{
-	GLuint vertShader, fragShader;
-	NSString *vertShaderPathname, *fragShaderPathname;
-
-	// Create shader program.
-	_program = glCreateProgram();
-
-	// Create and compile vertex shader.
-	vertShaderPathname = [[NSBundle mainBundle] pathForResource:@"Shader" ofType:@"vsh"];
-	if (![self compileShader:&vertShader type:GL_VERTEX_SHADER file:vertShaderPathname])
-	{
-		NSLog(@"Failed to compile vertex shader");
-		return NO;
-	}
-
-	// Create and compile fragment shader.
-	fragShaderPathname = [[NSBundle mainBundle] pathForResource:@"Shader" ofType:@"fsh"];
-	if (![self compileShader:&fragShader type:GL_FRAGMENT_SHADER file:fragShaderPathname])
-	{
-		NSLog(@"Failed to compile fragment shader");
-		return NO;
-	}
-
-	// Attach vertex shader to program.
-	glAttachShader(_program, vertShader);
-
-	// Attach fragment shader to program.
-	glAttachShader(_program, fragShader);
-
-	// Bind attribute locations.
-	// TODO: need this?
-	// This needs to be done prior to linking.
-	//    glBindAttribLocation(_program, ATTRIB_POSITION, "position");
-
-	// Link program.
-	if (![self linkProgram:_program])
-	{
-		NSLog(@"Failed to link program: %d", _program);
-
-		// Clean up on failure
-		
-		if (vertShader)
-		{
-			glDeleteShader(vertShader);
-			vertShader = 0;
-		}
-
-		if (fragShader)
-		{
-			glDeleteShader(fragShader);
-			fragShader = 0;
-		}
-
-		if (_program)
-		{
-			glDeleteProgram(_program);
-			_program = 0;
-		}
-
-		return NO;
-	}
-
-	// Get uniform locations
-	// This are the addresses we can use later for passing arguments into the shader program
-	_uniforms[UNIFORMS_MODELMATRIX] = glGetUniformLocation(_program, "modelViewProjectionMatrix");
-	_uniforms[UNIFORMS_BRUSH_COLOR] = glGetUniformLocation(_program, "brushColor");
-
-	// Release vertex and fragment shaders.
-	if (vertShader)
-	{
-		glDetachShader(_program, vertShader);
-		glDeleteShader(vertShader);
-	}
-
-	if (fragShader)
-	{
-		glDetachShader(_program, fragShader);
-		glDeleteShader(fragShader);
-	}
-
-	return YES;
-}
-
-- (BOOL)compileShader:(GLuint *)shader type:(GLenum)type file:(NSString *)file
-{
-	GLint status;
-	const GLchar *source;
-
-	source = (GLchar *)[[NSString stringWithContentsOfFile:file encoding:NSUTF8StringEncoding error:nil] UTF8String];
-	if (!source)
-	{
-		NSLog(@"Failed to load vertex shader");
-		return NO;
-	}
-
-	*shader = glCreateShader(type);
-	glShaderSource(*shader, 1, &source, NULL);
-	glCompileShader(*shader);
-
-	#if defined(DEBUG)
-	GLint logLength;
-	glGetShaderiv(*shader, GL_INFO_LOG_LENGTH, &logLength);
-	if (logLength > 0)
-	{
-		GLchar *log = (GLchar *)malloc(logLength);
-		glGetShaderInfoLog(*shader, logLength, &logLength, log);
-		NSLog(@"Shader compile log:\n%s", log);
-		free(log);
-	}
-	#endif
-
-	glGetShaderiv(*shader, GL_COMPILE_STATUS, &status);
-	if (status == 0)
-	{
-		glDeleteShader(*shader);
-		return NO;
-	}
-
-	return YES;
-}
-
-
-- (BOOL)linkProgram:(GLuint)prog
-{
-	GLint status;
-	glLinkProgram(prog);
-
-	#if defined(DEBUG)
-	GLint logLength;
-	glGetProgramiv(prog, GL_INFO_LOG_LENGTH, &logLength);
-	if (logLength > 0)
-	{
-		GLchar *log = (GLchar *)malloc(logLength);
-		glGetProgramInfoLog(prog, logLength, &logLength, log);
-		NSLog(@"Program link log:\n%s", log);
-		free(log);
-	}
-	#endif
-
-	glGetProgramiv(prog, GL_LINK_STATUS, &status);
-	if (status == 0)
-	{
-		return NO;
-	}
-
-	return YES;
-}
-
-
-- (BOOL)validateProgram:(GLuint)prog
-{
-	GLint logLength, status;
-
-	glValidateProgram(prog);
-	glGetProgramiv(prog, GL_INFO_LOG_LENGTH, &logLength);
-	if (logLength > 0)
-	{
-		GLchar *log = (GLchar *)malloc(logLength);
-		glGetProgramInfoLog(prog, logLength, &logLength, log);
-		NSLog(@"Program validate log:\n%s", log);
-		free(log);
-	}
-
-	glGetProgramiv(prog, GL_VALIDATE_STATUS, &status);
-	if (status == 0)
-	{
-		return NO;
-	}
-
-	return YES;
-}
-
 @end
+
+
 
 
 /*	------------
@@ -370,12 +142,10 @@ enum
 	(We are dynamically adding methods to the group and line classes using the 
 	objective-c feature called "Categories")
 
-	TODO: Should these be plain C functions to avoid the overhead of objective-C message passing
-	in the highly time-sensitive render loops?
-	At least with much less message passing
+	If performance is becoming an issue, consider making these plain C functions to avoid the 
+	overhead of objective-C message passing.
 
 	------------*/
-
 
 @implementation PSDrawingGroup ( renderingCategory )
 
@@ -394,31 +164,24 @@ enum
 
 }
 
-- (void)renderGroupWithMatrix:(GLKMatrix4)parentModelMatrix uniforms:(GLint*)uniforms overrideColor:(BOOL)overrideColor
+- (void)renderGroupWithEffect:(GLKBaseEffect*)effect matrix:(GLKMatrix4)parentMatrix isSelected:(BOOL)isSelected
 {
 	// If we are not currently visible, quit now and don't do any work
 	if (!currentSRTPosition.isVisible) return;
 	
-	//Push Matrix
-	GLKMatrix4 ownModelMatrix = GLKMatrix4Multiply(parentModelMatrix, currentModelViewMatrix);
-	glUniformMatrix4fv(uniforms[UNIFORMS_MODELMATRIX], 1, 0, ownModelMatrix.m);
-
+	isSelected = self.isSelected || isSelected;
 	
+	//Push Matrix
+	GLKMatrix4 ownModelMatrix = GLKMatrix4Multiply(parentMatrix, currentModelViewMatrix);
+	effect.transform.modelviewMatrix = ownModelMatrix;
+
 	//Draw our own drawingLines
 	for(PSDrawingLine* drawingItem in self.drawingLines)
-	{
-		//This call makes sure that our object is fetched into memory
-		//It is only necessary because we are caching the points ourselves
-		//Usually this is done automatically when you access properties on the object
-		//TODO: take this out of the draw loop into somewhere else...
-		//		or at least just make an accessor for points
-		[drawingItem renderWithUniforms:uniforms overrideColor:overrideColor || self.isSelected];
-	}
-	
+		[drawingItem renderWithEffect:effect isSelected:isSelected];
+
 	//Recurse on child groups
 	for (PSDrawingGroup* child in self.children)
-		[child renderGroupWithMatrix:ownModelMatrix uniforms:uniforms overrideColor:overrideColor || self.isSelected];
-
+		[child renderGroupWithEffect:effect matrix:ownModelMatrix isSelected:isSelected];
 }
 
 
@@ -490,36 +253,30 @@ enum
  
  */
 @implementation PSDrawingLine ( renderingCategory )
-- (void) renderWithUniforms:(GLint*)uniforms overrideColor:(BOOL)overrideColor
+- (void) renderWithEffect:(GLKBaseEffect*)effect isSelected:(BOOL)isSelected
 {	
+	// Set the brush color
+	if(isSelected)
+	{
+		effect.constantColor = GLKVector4Make(SELECTION_COLOR);
+	}
+	else
+	{
+		float r,g,b,a;
+		[PSHelpers  int64ToColor:[self.color unsignedLongLongValue] toR:&r g:&g b:&b a:&a];
+		effect.constantColor = GLKVector4Make(r, g, b, a);
+	}
+
+	[effect prepareToDraw];
+	
 	//Pass the vertices
 	glEnableVertexAttribArray(GLKVertexAttribPosition);
 	glVertexAttribPointer(GLKVertexAttribPosition, 2, GL_FLOAT, GL_FALSE, 0,(void *)self.points);
-
-	
-	// Set the brush color
-	UInt64 colorAsInt = [self.color unsignedLongLongValue];
-	float r,g,b,a;
-	[PSHelpers  int64ToColor:colorAsInt toR:&r g:&g b:&b a:&a];
-	if(overrideColor)
-	{
-		r = 1.0;
-		g = 0.0;
-		b = 0.5;
-	}
-	glUniform4f(uniforms[UNIFORMS_BRUSH_COLOR], r, g, b, a);
 	
 	// do actual drawing!
-	glEnable(GL_TEXTURE_2D);
-	glEnable (GL_BLEND);
-	glBlendFunc (GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, self.pointCount);
-	glDisable(GL_TEXTURE_2D);
 	glDisableVertexAttribArray(GLKVertexAttribPosition);
 
 }
 
 @end
-
-
-

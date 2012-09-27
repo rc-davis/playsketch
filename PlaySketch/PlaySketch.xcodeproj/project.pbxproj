@@ -18,8 +18,6 @@
 		462E8854161414940078F336 /* documents.png in Resources */ = {isa = PBXBuildFile; fileRef = 462E8853161414940078F336 /* documents.png */; };
 		462E8857161417CD0078F336 /* play.png in Resources */ = {isa = PBXBuildFile; fileRef = 462E8855161417CD0078F336 /* play.png */; };
 		462E8858161417CD0078F336 /* pause.png in Resources */ = {isa = PBXBuildFile; fileRef = 462E8856161417CD0078F336 /* pause.png */; };
-		4633559315B6D820001AE6CD /* Shader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 4625EA1E15B6D55100316216 /* Shader.fsh */; };
-		4633559415B6D820001AE6CD /* Shader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 4625EA2115B6D56900316216 /* Shader.vsh */; };
 		4649EE89160D5D9F00FAE620 /* pen_fountain.png in Resources */ = {isa = PBXBuildFile; fileRef = 4649EE85160D5D9F00FAE620 /* pen_fountain.png */; };
 		4649EE8A160D5D9F00FAE620 /* pen_thin.png in Resources */ = {isa = PBXBuildFile; fileRef = 4649EE86160D5D9F00FAE620 /* pen_thin.png */; };
 		4649EE8B160D5D9F00FAE620 /* pen_medium.png in Resources */ = {isa = PBXBuildFile; fileRef = 4649EE87160D5D9F00FAE620 /* pen_medium.png */; };
@@ -96,8 +94,6 @@
 		46186F6E15D78D3200A1E1A2 /* character.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = character.png; sourceTree = "<group>"; };
 		46186F7215D78F6600A1E1A2 /* record_down.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = record_down.png; sourceTree = "<group>"; };
 		46186F7515D792B900A1E1A2 /* record_up.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = record_up.png; sourceTree = "<group>"; };
-		4625EA1E15B6D55100316216 /* Shader.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = Shader.fsh; sourceTree = "<group>"; };
-		4625EA2115B6D56900316216 /* Shader.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = Shader.vsh; sourceTree = "<group>"; };
 		462E88491613FB430078F336 /* PSGraphicConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PSGraphicConstants.h; sourceTree = "<group>"; };
 		462E884B161411C00078F336 /* redo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = redo.png; sourceTree = "<group>"; };
 		462E884C161411C00078F336 /* undo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = undo.png; sourceTree = "<group>"; };
@@ -106,7 +102,6 @@
 		462E8853161414940078F336 /* documents.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = documents.png; sourceTree = "<group>"; };
 		462E8855161417CD0078F336 /* play.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = play.png; sourceTree = "<group>"; };
 		462E8856161417CD0078F336 /* pause.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pause.png; sourceTree = "<group>"; };
-		4634AD1015B80730009A6E95 /* Brush.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Brush.png; sourceTree = "<group>"; };
 		4649EE85160D5D9F00FAE620 /* pen_fountain.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pen_fountain.png; sourceTree = "<group>"; };
 		4649EE86160D5D9F00FAE620 /* pen_thin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pen_thin.png; sourceTree = "<group>"; };
 		4649EE87160D5D9F00FAE620 /* pen_medium.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pen_medium.png; sourceTree = "<group>"; };
@@ -225,16 +220,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		463355E615B7AAA2001AE6CD /* Line Drawing */ = {
-			isa = PBXGroup;
-			children = (
-				4634AD1015B80730009A6E95 /* Brush.png */,
-				4625EA1E15B6D55100316216 /* Shader.fsh */,
-				4625EA2115B6D56900316216 /* Shader.vsh */,
-			);
-			name = "Line Drawing";
-			sourceTree = "<group>";
-		};
 		467E4E3E15B4232900F70C1E /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
@@ -401,7 +386,6 @@
 			isa = PBXGroup;
 			children = (
 				469E009C15C2438000EE7EC9 /* Images */,
-				463355E615B7AAA2001AE6CD /* Line Drawing */,
 				46F7A64215B014E700C7B374 /* PlaySketch-Info.plist */,
 				46F7A64315B014E700C7B374 /* InfoPlist.strings */,
 				46F7A64615B014E700C7B374 /* main.m */,
@@ -502,8 +486,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4633559315B6D820001AE6CD /* Shader.fsh in Resources */,
-				4633559415B6D820001AE6CD /* Shader.vsh in Resources */,
 				46F7A64515B014E700C7B374 /* InfoPlist.strings in Resources */,
 				46F7A67315B0188600C7B374 /* Pending work.txt in Resources */,
 				46BF25AC15B0266A00834681 /* SketchInterface.storyboard in Resources */,

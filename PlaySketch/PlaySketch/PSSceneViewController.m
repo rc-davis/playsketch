@@ -420,11 +420,8 @@
 -(void)setRootGroup:(PSDrawingGroup *)rootGroup
 {
 	_rootGroup = rootGroup;
-	//Also tell the rendering controller about the group to render it
-	self.renderingController.rootGroup = rootGroup;
 	[PSSelectionHelper setRootGroup:rootGroup];
 }
-
 
 - (void)setIsReadyToRecord:(BOOL)isReadyToRecord
 {
