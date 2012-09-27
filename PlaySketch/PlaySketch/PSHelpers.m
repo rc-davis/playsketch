@@ -16,7 +16,7 @@
 
 @implementation PSHelpers
 
-+(void)failInternal:(NSString*)title message:(NSString*)message
++ (void)failInternal:(NSString*)title message:(NSString*)message
 {
 	[[[UIAlertView alloc] initWithTitle:title
 								message:[NSString stringWithFormat:@"Note the message:\n%@\n(no guarantees after this point)", message]
@@ -27,18 +27,18 @@
 }
 
 
-+(void)assert:(BOOL)expression withMessage:(NSString*)message
++ (void)assert:(BOOL)expression withMessage:(NSString*)message
 {
 	if ( ! ( expression ) )
 		[PSHelpers failInternal:@"ASSERTION FAILED" message:message];
 }
 
-+(void)failWithMessage:(NSString*)message
++ (void)failWithMessage:(NSString*)message
 {
 	[PSHelpers failInternal:@"FAILURE" message:message];
 }
 
-+(void)NYIWithmessage:(NSString*)message
++ (void)NYIWithmessage:(NSString*)message
 {
 	[PSHelpers failInternal:@"NOT YET IMPLEMENTED" message:message];
 }

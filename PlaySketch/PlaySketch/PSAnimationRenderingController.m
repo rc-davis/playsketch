@@ -34,7 +34,7 @@
  ----------------------------------------------------------------------------
  */
 
--(BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
 {
 	return UIInterfaceOrientationIsLandscape(toInterfaceOrientation);
 }

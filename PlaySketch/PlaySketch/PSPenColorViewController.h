@@ -14,8 +14,8 @@
 #import <UIKit/UIKit.h>
 
 @protocol PSPenColorChangeDelegate
--(void)penColorChanged:(UIColor*)newColor;
--(void)penWeightChanged:(int)newWeight;
+- (void)penColorChanged:(UIColor*)newColor;
+- (void)penWeightChanged:(int)newWeight;
 @end
 
 @interface PSPenColorViewController : UIViewController

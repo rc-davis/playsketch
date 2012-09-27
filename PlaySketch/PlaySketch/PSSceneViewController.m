@@ -124,7 +124,7 @@
 }
 
 
--(void) viewWillDisappear:(BOOL)animated
+- (void) viewWillDisappear:(BOOL)animated
 {
 	// Save a preview image of our drawing before going away!
 	// First we snapshot the contents of our rendering view,
@@ -150,7 +150,7 @@
  ----------------------------------------------------------------------------
  */
 
--(IBAction)dismissSceneView:(id)sender
+- (IBAction)dismissSceneView:(id)sender
 {
 	[self dismissModalViewControllerAnimated:YES];
 }
@@ -419,7 +419,7 @@
 }
 
 
--(void)setCurrentDocument:(PSDrawingDocument *)currentDocument
+- (void)setCurrentDocument:(PSDrawingDocument *)currentDocument
 {
 	_currentDocument = currentDocument;
 	//Also tell the rendering controller about the document to render it
@@ -427,7 +427,7 @@
 }
 
 
--(void)setRootGroup:(PSDrawingGroup *)rootGroup
+- (void)setRootGroup:(PSDrawingGroup *)rootGroup
 {
 	_rootGroup = rootGroup;
 	[PSSelectionHelper setRootGroup:rootGroup];
@@ -463,7 +463,7 @@
 /*	
  Provide a PSDrawingLine based on whether we are selecting or drawing
  */
--(PSDrawingLine*)newLineToDrawTo:(id)drawingView
+- (PSDrawingLine*)newLineToDrawTo:(id)drawingView
 {
 	// If the manipulator is visible, clear the current selection and don't start a line
 	if(!self.manipulator.hidden)
@@ -494,7 +494,7 @@
 }
 
 
--(void)addedToLine:(PSDrawingLine*)line fromPoint:(CGPoint)from toPoint:(CGPoint)to inDrawingView:(id)drawingView
+- (void)addedToLine:(PSDrawingLine*)line fromPoint:(CGPoint)from toPoint:(CGPoint)to inDrawingView:(id)drawingView
 {
 	if (self.isSelecting)
 	{
@@ -514,7 +514,7 @@
 }
 
 
--(void)finishedDrawingLine:(PSDrawingLine*)line inDrawingView:(id)drawingView
+- (void)finishedDrawingLine:(PSDrawingLine*)line inDrawingView:(id)drawingView
 {
 	if (self.isErasing && self.insideEraseGroup)
 	{
@@ -568,13 +568,13 @@
 }
 
 
--(void)cancelledDrawingLine:(PSDrawingLine*)line inDrawingView:(id)drawingView
+- (void)cancelledDrawingLine:(PSDrawingLine*)line inDrawingView:(id)drawingView
 {
 	self.renderingController.currentLine = nil;
 	[PSSelectionHelper resetSelection];
 }
 
--(void)movedAt:(CGPoint)p inDrawingView:(id)drawingView
+- (void)movedAt:(CGPoint)p inDrawingView:(id)drawingView
 {
 	// We only care about this when we are erasing.
 	// For drawing and selecting, we let the drawingView build a line
@@ -591,7 +591,7 @@
 }
 
 
--(void)whileDrawingLine:(PSDrawingLine *)line tappedAt:(CGPoint)p tapCount:(int)tapCount inDrawingView:(id)drawingView
+- (void)whileDrawingLine:(PSDrawingLine *)line tappedAt:(CGPoint)p tapCount:(int)tapCount inDrawingView:(id)drawingView
 {
 	if (self.isErasing ) return; // No need for any selection while erasing
 
@@ -616,7 +616,7 @@
  ----------------------------------------------------------------------------
  */
 
--(void)manipulatorDidStartInteraction:(id)sender
+- (void)manipulatorDidStartInteraction:(id)sender
 						willTranslate:(BOOL)isTranslating
 						   willRotate:(BOOL)isRotating
 							willScale:(BOOL)isScaling
@@ -635,7 +635,7 @@
 	}
 }
 
--(void)manipulator:(id)sender
+- (void)manipulator:(id)sender
    didTranslateByX:(float)dX
 			andY:(float)dY
 		  rotation:(float)dRotation
@@ -685,7 +685,7 @@
 	}
 }
 
--(void)manipulatorDidStopInteraction:(id)sender
+- (void)manipulatorDidStopInteraction:(id)sender
 					  wasTranslating:(BOOL)isTranslating
 						 wasRotating:(BOOL)isRotating
 						  wasScaling:(BOOL)isScaling
@@ -721,7 +721,7 @@
  Called by when our pen colours change
  ----------------------------------------------------------------------------
  */
--(void)penColorChanged:(UIColor*)newColor
+- (void)penColorChanged:(UIColor*)newColor
 {
 	self.currentColor = [PSHelpers colorToInt64:newColor];
 	self.startDrawingButton.backgroundColor = newColor;
@@ -730,7 +730,7 @@
 		[self.penPopoverController dismissPopoverAnimated:YES];
 }
 
--(void)penWeightChanged:(int)newWeight
+- (void)penWeightChanged:(int)newWeight
 {
 	self.penWeight = newWeight;
 	[self startDrawing:nil];

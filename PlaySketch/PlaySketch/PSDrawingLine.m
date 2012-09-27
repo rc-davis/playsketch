@@ -37,7 +37,7 @@
 @synthesize penWeight = _penWeight;
 
 
--(CGPoint*)points
+- (CGPoint*)points
 {
 	if (_mutablePoints )
 		return (CGPoint*)_mutablePoints.bytes;
@@ -52,7 +52,7 @@
 	return [_mutablePoints mutableBytes];
 }
 
--(int)pointCount
+- (int)pointCount
 {
 	if ( _mutablePoints )
 		return _mutablePoints.length / sizeof(CGPoint);
@@ -64,7 +64,7 @@
 /*
  Add a new point to the current line
 */
--(void)addPoint:(CGPoint)p
+- (void)addPoint:(CGPoint)p
 {
 	[self mutablePointData]; // Create our bytes
 	[_mutablePoints appendBytes:&p length:sizeof(CGPoint)];
@@ -75,7 +75,7 @@
  Add a new line segment starting at the last point
  This uses some interpolation logic to achieve a constant frequency of points
  */
--(void)addLineTo:(CGPoint)to
+- (void)addLineTo:(CGPoint)to
 {
 	int pointCount = self.pointCount;
 

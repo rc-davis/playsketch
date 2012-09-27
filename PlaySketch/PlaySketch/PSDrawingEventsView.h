@@ -21,12 +21,12 @@
 	whose only skill should be turning touches into points
 */
 @protocol PSDrawingEventsViewDrawingDelegate <NSObject>
--(PSDrawingLine*)newLineToDrawTo:(id)drawingView;
--(void)addedToLine:(PSDrawingLine*)line fromPoint:(CGPoint)from toPoint:(CGPoint)to inDrawingView:(id)drawingView;
--(void)finishedDrawingLine:(PSDrawingLine*)line inDrawingView:(id)drawingView;
--(void)cancelledDrawingLine:(PSDrawingLine*)line inDrawingView:(id)drawingView;
--(void)movedAt:(CGPoint)p inDrawingView:(id)drawingView;
--(void)whileDrawingLine:(PSDrawingLine*)line tappedAt:(CGPoint)p tapCount:(int)tapCount inDrawingView:(id)drawingView;
+- (PSDrawingLine*)newLineToDrawTo:(id)drawingView;
+- (void)addedToLine:(PSDrawingLine*)line fromPoint:(CGPoint)from toPoint:(CGPoint)to inDrawingView:(id)drawingView;
+- (void)finishedDrawingLine:(PSDrawingLine*)line inDrawingView:(id)drawingView;
+- (void)cancelledDrawingLine:(PSDrawingLine*)line inDrawingView:(id)drawingView;
+- (void)movedAt:(CGPoint)p inDrawingView:(id)drawingView;
+- (void)whileDrawingLine:(PSDrawingLine*)line tappedAt:(CGPoint)p tapCount:(int)tapCount inDrawingView:(id)drawingView;
 @end
 
 

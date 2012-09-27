@@ -17,19 +17,19 @@
 
 // Private functions:
 @interface PSDataModel ()
-+(NSManagedObjectContext*)context;
++ (NSManagedObjectContext*)context;
 @end
 
 
 @implementation PSDataModel
 
-+(void)save
++ (void)save
 {
 	[[PSDataModel context] save:nil];
 	NSLog(@"SAVING");
 }
 
-+(NSArray*)allDrawingDocuments;
++ (NSArray*)allDrawingDocuments;
 {
 	// Search the data store for all PSDrawingDocuments
 	NSFetchRequest* request = [NSFetchRequest fetchRequestWithEntityName:@"PSDrawingDocument"];
@@ -38,7 +38,7 @@
 }
 
 
-+(PSDrawingDocument*)newDrawingDocumentWithName:(NSString*)name
++ (PSDrawingDocument*)newDrawingDocumentWithName:(NSString*)name
 {
 	//Create a new root object
 	PSDrawingDocument* newDocument = (PSDrawingDocument*)[NSEntityDescription 
@@ -57,7 +57,7 @@
 }
 
 
-+(PSDrawingGroup*)newDrawingGroupWithParent:(PSDrawingGroup*)parent
++ (PSDrawingGroup*)newDrawingGroupWithParent:(PSDrawingGroup*)parent
 {
 	//Create a new root object
 	PSDrawingGroup* newGroup = (PSDrawingGroup*)[NSEntityDescription 
@@ -68,7 +68,7 @@
 }
 
 
-+(PSDrawingLine*)newLineInGroup:(PSDrawingGroup*)group withWeight:(int)weight
++ (PSDrawingLine*)newLineInGroup:(PSDrawingGroup*)group withWeight:(int)weight
 {
 	PSDrawingLine* newLine = (PSDrawingLine*)[NSEntityDescription 
 											  insertNewObjectForEntityForName:@"PSDrawingLine" inManagedObjectContext:[PSDataModel context]];
@@ -78,7 +78,7 @@
 }
 
 
-+(PSDrawingLine*)newTemporaryLineWithWeight:(int)weight andColor:(UInt64)color
++ (PSDrawingLine*)newTemporaryLineWithWeight:(int)weight andColor:(UInt64)color
 {
 	// Note: Something funny is happening here!
 	// When we create an object normally, it is created with a specific "managedObjectContext",
@@ -105,7 +105,7 @@
 }
 
 
-+(void)deleteDrawingDocument:(PSDrawingDocument*)doc
++ (void)deleteDrawingDocument:(PSDrawingDocument*)doc
 {
 	
 	[[PSDataModel context] deleteObject:doc];
@@ -114,13 +114,13 @@
 }
 
 
-+(void)deleteDrawingGroup:(PSDrawingGroup*)group
++ (void)deleteDrawingGroup:(PSDrawingGroup*)group
 {
 	[[PSDataModel context] deleteObject:group];
 }
 
 
-+(void)deleteDrawingLine:(PSDrawingLine*)line
++ (void)deleteDrawingLine:(PSDrawingLine*)line
 {
 
 	[[PSDataModel context] deleteObject:line];
@@ -167,7 +167,7 @@
 	[[PSDataModel context] insertObject:line];
 }
 
-+(NSManagedObjectContext*)context
++ (NSManagedObjectContext*)context
 {
 	static NSManagedObjectContext* __context; // A static singleton for the class
 	

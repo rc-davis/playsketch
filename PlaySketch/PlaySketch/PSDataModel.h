@@ -31,15 +31,15 @@
 @interface PSDataModel : NSObject
 
 
-+(void)save;
-+(NSArray*)allDrawingDocuments;
-+(PSDrawingDocument*)newDrawingDocumentWithName:(NSString*)name;
-+(PSDrawingGroup*)newDrawingGroupWithParent:(PSDrawingGroup*)parent;
-+(PSDrawingLine*)newLineInGroup:(PSDrawingGroup*)group withWeight:(int)weight;
-+(PSDrawingLine*)newTemporaryLineWithWeight:(int)weight andColor:(UInt64)color;
-+(void)deleteDrawingDocument:(PSDrawingDocument*)doc;
-+(void)deleteDrawingGroup:(PSDrawingGroup*)group;
-+(void)deleteDrawingLine:(PSDrawingLine*)line;
++ (void)save;
++ (NSArray*)allDrawingDocuments;
++ (PSDrawingDocument*)newDrawingDocumentWithName:(NSString*)name;
++ (PSDrawingGroup*)newDrawingGroupWithParent:(PSDrawingGroup*)parent;
++ (PSDrawingLine*)newLineInGroup:(PSDrawingGroup*)group withWeight:(int)weight;
++ (PSDrawingLine*)newTemporaryLineWithWeight:(int)weight andColor:(UInt64)color;
++ (void)deleteDrawingDocument:(PSDrawingDocument*)doc;
++ (void)deleteDrawingGroup:(PSDrawingGroup*)group;
++ (void)deleteDrawingLine:(PSDrawingLine*)line;
 + (BOOL)canUndo;
 + (BOOL)canRedo;
 + (void)undo;

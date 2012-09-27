@@ -127,7 +127,7 @@
 }
 
 
--(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
 	UITouch* t = [touches anyObject];
 	CGPoint p = [t locationInView:self];
@@ -153,7 +153,7 @@
 
 }
 
--(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
 	UITouch* t = [touches anyObject];
 	CGPoint p = [t locationInView:self];
@@ -221,7 +221,7 @@
 
 }
 
--(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
 	UITouch* t = [touches anyObject];
 
@@ -242,7 +242,7 @@
 }
 
 
--(void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
+- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
 {
 	UITouch* t = [touches anyObject];
 	

@@ -92,7 +92,7 @@
 }
 
 
--(void) viewWillAppear:(BOOL)animated
+- (void) viewWillAppear:(BOOL)animated
 {
 	// Refresh the selected image before we become visible:
 	// This is in case it was edited while our view wasn't visible
@@ -137,7 +137,7 @@
  ----------------------------------------------------------------------------
  */
 
--(IBAction)newDocument:(id)sender
+- (IBAction)newDocument:(id)sender
 {
 	NSString* newDocName = [NSString stringWithFormat:@"Untitled Animation %d",
 							[PSDataModel allDrawingDocuments].count + 1];
@@ -331,7 +331,7 @@
 }
 
 
--(void)scrollViewDidScroll:(UIScrollView *)scrollView
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
 	CGFloat floatIndex = [self currentIndex];
 	CGFloat pcntOff = fabsf(floatIndex - round(floatIndex))*2.0; // 0 = hit, 1 = miss

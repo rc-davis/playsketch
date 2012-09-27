@@ -16,7 +16,7 @@
 
 @implementation PSDrawingEventsView
 
--(void)awakeFromNib
+- (void)awakeFromNib
 {
 	CGRect newBounds = self.bounds;
 	newBounds.origin = CGPointMake(-self.bounds.size.width/2.0,
@@ -26,7 +26,7 @@
 
 
 
--(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
 	CGPoint p = [[touches anyObject] locationInView:self];
 	
@@ -42,7 +42,7 @@
 }		
 
 
--(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
 	UITouch* touch = [touches anyObject];
 	CGPoint p = [touch locationInView:self];
@@ -61,7 +61,7 @@
 		[self.drawingDelegate movedAt:p inDrawingView:self];
 }
 
--(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
 	UITouch* t = [touches anyObject];
 	
@@ -89,7 +89,7 @@
 	self.currentLine = nil;
 }
 
--(void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
+- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
 {
 	if(self.drawingDelegate)
 		[self.drawingDelegate cancelledDrawingLine:self.currentLine inDrawingView:self];

@@ -16,5 +16,5 @@
 @class PSTimelineSlider;
 
 @interface PSTimelineLabelView : UIView
--(void)setLabelsForTimelineSlider:(PSTimelineSlider*)slider;
+- (void)setLabelsForTimelineSlider:(PSTimelineSlider*)slider;
 @end

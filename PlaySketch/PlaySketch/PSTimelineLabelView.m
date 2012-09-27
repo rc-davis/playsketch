@@ -19,7 +19,7 @@
 @implementation PSTimelineLabelView
 
 
--(void)setLabelsForTimelineSlider:(PSTimelineSlider*)slider
+- (void)setLabelsForTimelineSlider:(PSTimelineSlider*)slider
 {
 	// Get rid of the old labels
 	for (UIView* v in self.subviews)

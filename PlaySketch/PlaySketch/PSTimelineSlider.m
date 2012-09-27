@@ -28,7 +28,7 @@
 	[self.labelView setLabelsForTimelineSlider:self];
 }
 
--(void)setPlaying:(BOOL)playing
+- (void)setPlaying:(BOOL)playing
 {
 	if (playing && !_playing)
 	{
@@ -52,7 +52,7 @@
 	_playing = playing;
 }
 
--(void)timerUpdate
+- (void)timerUpdate
 {
 	self.value += self.timer.timeInterval;
 	

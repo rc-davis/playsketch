@@ -289,7 +289,7 @@
  This is called when our object comes out of storage
  Copy our data into our cached c-arrays for faster access
  */
--(void)awakeFromFetch
+- (void)awakeFromFetch
 {
 	[super awakeFromFetch];
 	currentSRTPosition = SRTPositionZero();
