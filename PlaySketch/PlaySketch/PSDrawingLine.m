@@ -25,6 +25,7 @@
 {
 	NSMutableData* _mutablePoints;
 }
+- (CGPoint*)mutablePointData;
 - (void)addCircleAt:(CGPoint)p withSize:(CGFloat)size;
 @end
 
@@ -44,6 +45,13 @@
 		return (CGPoint*)self.pointsAsData.bytes;
 }
 
+- (CGPoint*)mutablePointData
+{
+	if(_mutablePoints == nil)
+		_mutablePoints = [NSMutableData dataWithData:self.pointsAsData];
+	return [_mutablePoints mutableBytes];
+}
+
 -(int)pointCount
 {
 	if ( _mutablePoints )
@@ -58,9 +66,7 @@
 */
 -(void)addPoint:(CGPoint)p
 {
-	if (_mutablePoints == nil)
-		_mutablePoints = [NSMutableData dataWithData:self.pointsAsData];
-	
+	[self mutablePointData]; // Create our bytes
 	[_mutablePoints appendBytes:&p length:sizeof(CGPoint)];
 }
 
@@ -191,11 +197,9 @@
 
 - (void)applyTransform:(CGAffineTransform)transform
 {
-	if (_mutablePoints == nil)
-		_mutablePoints = [NSMutableData dataWithData:self.pointsAsData];
-	
+
 	int pointCount = self.pointCount;
-	CGPoint* points = (CGPoint*)_mutablePoints.bytes;
+	CGPoint* points = [self mutablePointData];
 	for(int i = 0; i < pointCount; i++)
 		points[i] = CGPointApplyAffineTransform(points[i], transform);
 }
@@ -225,11 +229,8 @@
 - (BOOL)eraseAtPoint:(CGPoint)p
 {
 	// Go through points and look for ones to erase
-	if (_mutablePoints == nil)
-		_mutablePoints = [NSMutableData dataWithData:self.pointsAsData];
-	
 	int pointCount = self.pointCount;
-	CGPoint* points = [_mutablePoints mutableBytes];
+	CGPoint* points = [self mutablePointData];
 
 	//look for data to discard at the start of the line
 	int firstKeep = 0;
@@ -307,5 +308,9 @@
 	
 }
 
+- (void)doneMutatingPoints
+{
+	self.pointsAsData = _mutablePoints;
+}
 
 @end

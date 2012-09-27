@@ -152,6 +152,16 @@
 	[[PSDataModel context].undoManager removeAllActions];
 }
 
++ (void)beginUndoGroup
+{
+	[[PSDataModel context].undoManager beginUndoGrouping];
+}
+
++ (void)endUndoGroup
+{
+	[[PSDataModel context].undoManager endUndoGrouping];
+}
+
 + (void)makeTemporaryLinePermanent:(PSDrawingLine*)line
 {
 	[[PSDataModel context] insertObject:line];

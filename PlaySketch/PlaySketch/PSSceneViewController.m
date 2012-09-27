@@ -40,6 +40,7 @@
 @property(nonatomic) UInt64 currentColor; // the drawing color as an int
 @property(nonatomic) int penWeight;
 @property(nonatomic,retain) PSRecordingSession* recordingSession;
+@property(nonatomic)BOOL insideEraseGroup;
 - (void)refreshInterfaceAfterDataChange:(BOOL)dataMayHaveChanged selectionChange:(BOOL)selectionMayHaveChanged;
 - (void)highlightButton:(UIButton*)b on:(BOOL)highlight;
 @end
@@ -68,6 +69,7 @@
 	// Start off in drawing mode
 	self.isReadyToRecord = NO;
 	self.isRecording = NO;
+	self.insideEraseGroup = NO;
 	[self startDrawing:nil];
 
 	
@@ -506,7 +508,18 @@
 
 -(void)finishedDrawingLine:(PSDrawingLine*)line inDrawingView:(id)drawingView
 {
-	if ( line && self.isSelecting )
+	if (self.isErasing && self.insideEraseGroup)
+	{
+		// If we are erasing, finish off the undo group so it will all be undone togther
+		[self.rootGroup applyToAllSubTrees:^(PSDrawingGroup* g, BOOL s) {
+			for (PSDrawingLine* l in g.drawingLines)
+				[l doneMutatingPoints];
+		}];
+		[PSDataModel save];
+		[PSDataModel endUndoGroup];
+		self.insideEraseGroup = NO;
+	}
+	else if ( line && self.isSelecting )
 	{
 		[PSSelectionHelper finishLassoSelection];
 	}
@@ -559,6 +572,12 @@
 	// For drawing and selecting, we let the drawingView build a line
 	if(self.isErasing)
 	{
+		if(!self.insideEraseGroup)
+		{
+			[PSDataModel beginUndoGroup];
+			self.insideEraseGroup = YES;
+		}
+
 		[self.rootGroup eraseAtPoint:p];
 	}
 }

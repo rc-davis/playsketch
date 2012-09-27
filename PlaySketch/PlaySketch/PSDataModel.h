@@ -45,6 +45,8 @@
 + (void)undo;
 + (void)redo;
 + (void)clearUndoStack;
++ (void)beginUndoGroup;
++ (void)endUndoGroup;
 + (void)makeTemporaryLinePermanent:(PSDrawingLine*)line;
 +(void)DEBUG_printTotalObjectCount;
 +(void)DEBUG_generateTestShapesIntoGroup:(PSDrawingGroup*)rootGroup;
