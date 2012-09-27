@@ -24,7 +24,7 @@
 #define MOTION_PATH_STROKE_COLOR 0.5, 0.5, 0.5, 1.0
 
 // Widget appearances
-#define HIGHLIGHTED_BUTTON_UICOLOR [UIColor yellowColor]
+#define HIGHLIGHTED_BUTTON_UICOLOR argsToUIColor(SELECTION_COLOR)
 #define RECORD_BUTTON_PULSE_UP_UICOLOR [UIColor colorWithRed:0.504 green:0.010 blue:0.021 alpha:1.0]
 #define RECORD_BUTTON_PULSE_DOWN_UICOLOR [UIColor colorWithRed:1.000 green:0.019 blue:.041 alpha:1.00]
 #define TIMELINE_LABEL_UICOLOR [UIColor lightGrayColor]

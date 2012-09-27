@@ -23,7 +23,7 @@
 #define DOC_END_PADDING (1024.0 - DOC_IMAGE_STEP/2.0)
 #define DOC_IMAGE_SNAP_XVALUE (1024.0 - (DOC_IMAGE_FRAME).size.width/2.0 - 20.0)
 #define ANIMATION_DURATION 0.5
-#define DETAIL_ANIM_FRAME (CGRectMake(20, 82, 984, 598))
+#define DETAIL_ANIM_FRAME (CGRectMake(0, 86, 1024, 576))
 
 @interface PSDocumentListController ()
 @property(nonatomic,retain)NSMutableArray* documentImages;
