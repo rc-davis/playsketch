@@ -34,6 +34,264 @@
 @synthesize isSelected;
 
 
+- (SRTPosition*)positions
+{
+	if (_mutablePositionsAsData != nil)
+		return (SRTPosition*)_mutablePositionsAsData.bytes;
+	else
+		return (SRTPosition*)self.positionsAsData.bytes;
+	
+}
+
+
+- (int)positionCount
+{
+	if (_mutablePositionsAsData != nil)
+		return _mutablePositionsAsData.length / sizeof(SRTPosition);
+	else
+		return self.positionsAsData.length / sizeof(SRTPosition);
+}
+
+
+- (void)setPosition:(SRTPosition)p atIndex:(int)i
+{
+	self.mutablePositionBytes[i] = p;
+}
+
+
+- (void)doneMutatingPositions
+{
+	// This copies our data back from the mutable bytes to the normal bytes
+	// This marks the object as dirty to core data
+	// Doing this is an atomic action that gets added to the UNDO stack, too!
+	if(_mutablePositionsAsData)
+		self.positionsAsData = _mutablePositionsAsData;
+	
+}
+
+
+- (void)pauseUpdatesOfTranslation:(BOOL)translation rotation:(BOOL)rotation scale:(BOOL)scale
+{
+	_pausedTranslation = translation;
+	_pausedRotation = rotation;
+	_pausedScale = scale;
+}
+
+
+- (void)unpauseAll
+{
+	[self pauseUpdatesOfTranslation:NO rotation:NO scale:NO];
+}
+
+
+- (CGPoint)currentOriginInWorldCoordinates
+{
+	// I don't think this will work properly for nested groups!
+	return CGPointFromGLKVector2(currentSRTPosition.location);
+}
+
+
+- (CGRect)currentBoundingRect
+{
+	
+	CGPoint min = CGPointMake(1e100, 1e100);
+	CGPoint max = CGPointMake(-1e100, -1e100);
+	for (PSDrawingLine* line in self.drawingLines)
+	{
+		CGRect lineRect = [line boundingRect];
+		if(!CGRectIsNull(lineRect))
+		{
+			min.x = MIN(min.x, CGRectGetMinX(lineRect));
+			min.y = MIN(min.y, CGRectGetMinY(lineRect));
+			max.x = MAX(max.x, CGRectGetMaxX(lineRect));
+			max.y = MAX(max.y, CGRectGetMaxY(lineRect));
+		}
+	}
+	
+	for (PSDrawingGroup* g in self.children)
+	{
+		SRTPosition p = g.currentCachedPosition;
+		min.x = MIN(min.x, p.location.x);
+		min.y = MIN(min.y, p.location.y);
+		max.x = MAX(max.x, p.location.x);
+		max.y = MAX(max.y, p.location.y);
+	}
+	
+	return CGRectMake(min.x, min.y, max.x - min.x, max.y - min.y);
+}
+
+
+- (GLKMatrix4)currentModelViewMatrix
+{
+	return currentModelViewMatrix;
+}
+
+
+- (BOOL)hitsPoint:(CGPoint)p
+{
+	// return true if any line in this group or its children is hit
+	// p is assumed to be in this group's parent's coordinate system
+	CGPoint fixedP = [self translatePointFromParentCoordinates:p];
+	
+	for (PSDrawingLine* l in self.drawingLines)
+		if ([l hitsPoint:fixedP])
+			return YES;
+	
+	for (PSDrawingGroup* g in self.children)
+		if ([g hitsPoint:fixedP])
+			return YES;
+	
+	return NO;
+}
+
+
+- (CGPoint)translatePointFromParentCoordinates:(CGPoint)p
+{
+	bool isInvertable;
+	GLKMatrix4 selfInverted = GLKMatrix4Invert(currentModelViewMatrix, &isInvertable);
+	if(!isInvertable) NSLog(@"!!!! SHOULD ALWAYS BE INVERTABLE!!!");
+	GLKVector4 v4 = GLKMatrix4MultiplyVector4(selfInverted, GLKVector4FromCGPoint(p));
+	return CGPointFromGLKVector4(v4);
+}
+
+
+- (void)getStateAtTime:(float)time
+			  position:(SRTPosition*)pPosition
+				  rate:(SRTRate*)pRate
+		   helperIndex:(int*)pIndex
+{
+	int positionCount = self.positionCount;
+	SRTPosition* positions = self.positions;
+	SRTPosition resultPosition;
+	SRTRate resultRate;
+	int resultIndex;
+	
+	if ( positionCount == 0 )
+	{
+		resultPosition = SRTPositionZero();
+		resultRate = SRTRateZero();
+		resultIndex = -1;
+	}
+	else
+	{
+		
+		// find i that upper-bounds our requested time
+		int i = 0;
+		while( i + 1 < positionCount && positions[i].timeStamp < time)
+			i++;
+		
+		if(positions[i].timeStamp == time)
+		{
+			// If we are right on a position keyframe, return that keyframe
+			// Interpolate the Rate if there is a following keyframe to interpolate to
+			resultPosition = positions[i];
+			resultRate = (i + 1 < positionCount) ?	SRTRateInterpolate(positions[i], positions[i+1]) :
+			SRTRateZero();
+			resultIndex = i;
+		}
+		else if( (positions[i].timeStamp > time && i == 0 ) ||
+				(positions[i].timeStamp < time && i == positionCount - 1) )
+		{
+			// If we are before the first keyframe or after the last keyframe,
+			// return the current keyframe and set no rate of motion
+			resultPosition = positions[i];
+			resultRate = SRTRateZero();
+			resultIndex = i;
+		}
+		else
+		{
+			// Otherwise, we are between two keyframes, so just interpolation the
+			// position and the rate of motion
+			resultPosition = SRTPositionInterpolate(time, positions[i-1], positions[i]);
+			resultRate = SRTRateInterpolate(positions[i-1], positions[i]);
+			resultIndex = i - 1;
+		}
+	}
+	
+	//Return results
+	if(pPosition) *pPosition = resultPosition;
+	if(pRate) *pRate = resultRate;
+	if(pIndex) *pIndex = resultIndex;
+	
+}
+
+
+- (void)applyToAllSubTrees:( void ( ^ )( PSDrawingGroup*, BOOL) )functionToApply
+{
+	[self applyToAllSubTrees:functionToApply parentIsSelected:self.isSelected];
+}
+
+
+- (void)applyToAllSubTrees:(void (^)(PSDrawingGroup *, BOOL))functionToApply parentIsSelected:(BOOL)parentSelected
+{
+	functionToApply(self, self.isSelected || parentSelected);
+	
+	for (PSDrawingGroup* c in self.children)
+		[c applyToAllSubTrees:functionToApply parentIsSelected:self.isSelected || parentSelected];
+}
+
+
+- (void)applyToSelectedSubTrees:( void ( ^ )( PSDrawingGroup* g ) )functionToApply
+{
+	if(self.isSelected)
+		functionToApply(self);
+	else
+		for (PSDrawingGroup* c in self.children)
+			[c applyToSelectedSubTrees:functionToApply];
+}
+
+
+- (void)applyTransformToLines:(CGAffineTransform)transform
+{
+	/*	Brute-force adjusting the points of the lines in this group
+	 Very slow and destructive to the original point information.
+	 Use sparingly, only to manipulate the basic data and not
+	 just to adjust the display of a group.
+	 */
+	
+	for (PSDrawingLine* line in self.drawingLines)
+		[line applyTransform:transform];
+}
+
+
+- (void)applyTransformToPath:(CGAffineTransform)transform
+{
+	SRTPosition* positions = self.mutablePositionBytes;
+	SRTPosition transformAsDelta = SRTPositionFromTransform(transform);
+	
+	for(int i = 0; i < self.positionCount; i++)
+	{
+		SRTPosition p = positions[i];
+		p.location.x += transformAsDelta.location.x;
+		p.location.y += transformAsDelta.location.y;
+		p.origin.x += transformAsDelta.origin.x;
+		p.origin.y += transformAsDelta.origin.y;
+		p.rotation += transformAsDelta.rotation;
+		p.scale *= transformAsDelta.scale;
+		positions[i] = p;
+	}
+}
+
+
+- (void)centerOnCurrentBoundingBox
+{
+	// 1. Figure out the point we want to center on (in the parent's coordinates)
+	CGPoint newCenter = CGRectGetCenter([self currentBoundingRect]);
+	CGAffineTransform offsetForward = CGAffineTransformMakeTranslation(newCenter.x, newCenter.y);
+	CGAffineTransform offsetBackward = CGAffineTransformMakeTranslation(-newCenter.x, -newCenter.y);
+	
+	// 2. Fix up our lines
+	[self applyTransformToLines:offsetBackward];
+	
+	// 3. Fix up our own location
+	[self applyTransformToPath:offsetForward];
+	
+	// 4. Fix our our children's locations
+	for (PSDrawingGroup* g in self.children)
+		[g applyTransformToPath:offsetBackward];
+}
+
+
 - (int)addPosition:(SRTPosition)position withInterpolation:(BOOL)shouldInterpolate
 {
 	const int FPS_MULTIPLE = 4;
@@ -149,278 +407,41 @@
 }
 
 
-- (void)pauseUpdatesOfTranslation:(BOOL)translation rotation:(BOOL)rotation scale:(BOOL)scale
+- (void)setVisibility:(BOOL)visible atTime:(float)time
 {
-	_pausedTranslation = translation;
-	_pausedRotation = rotation;
-	_pausedScale = scale;
-}
-
-- (void)unpauseAll
-{
-	[self pauseUpdatesOfTranslation:NO rotation:NO scale:NO];
-}
-
-- (SRTPosition*)positions
-{
-	if (_mutablePositionsAsData != nil)
-		return (SRTPosition*)_mutablePositionsAsData.bytes;
+	// STEP 1: add a new keyframe to set the visibility at time
+	SRTPosition pos;
+	[self getStateAtTime:time position:&pos rate:nil helperIndex:nil];
+	
+	// If there is already a visibility keyframe at this point, clear it instead of setting a new one
+	if (pos.timeStamp != time)
+		pos.keyframeType = SRTKeyframeMake(NO, NO, NO, YES);
+	else if (SRTKeyframeIsVisibility(pos.keyframeType))
+		pos.keyframeType = SRTKeyframeRemove(pos.keyframeType, NO, NO, NO, YES);
 	else
-		return (SRTPosition*)self.positionsAsData.bytes;
-
-}
-
-
-- (void)doneMutatingPositions
-{
-	// This will also mark the object as dirty
-	if(_mutablePositionsAsData)
-		self.positionsAsData = _mutablePositionsAsData;
+		pos.keyframeType = SRTKeyframeAdd(pos.keyframeType, NO, NO, NO, YES);
 	
-}
-
-- (int)positionCount
-{
-	if (_mutablePositionsAsData != nil)
-		return _mutablePositionsAsData.length / sizeof(SRTPosition);
-	else
-		return self.positionsAsData.length / sizeof(SRTPosition);
-}
-
-
-- (void)getStateAtTime:(float)time
-			  position:(SRTPosition*)pPosition
-				  rate:(SRTRate*)pRate
-		   helperIndex:(int*)pIndex
-{
-	int positionCount = self.positionCount;
-	SRTPosition* positions = self.positions;
-	SRTPosition resultPosition;
-	SRTRate resultRate;
-	int resultIndex;
+	pos.isVisible = visible;
+	pos.timeStamp = time;
 	
-	if ( positionCount == 0 )
+	// Add it to the list
+	int i = [self addPosition:pos withInterpolation:NO];
+	
+	// STEP 2: Move forward until the next visibility keyframe and change the visibility
+	SRTPosition* positions = [self mutablePositionBytes];
+	i += 1;
+	while (i < self.positionCount && !SRTKeyframeIsVisibility(positions[i].keyframeType))
 	{
-		resultPosition = SRTPositionZero();
-		resultRate = SRTRateZero();
-		resultIndex = -1;
-	}
-	else
-	{
-	
-		// find i that upper-bounds our requested time
-		int i = 0;
-		while( i + 1 < positionCount && positions[i].timeStamp < time)
-			i++;
-		
-		if(positions[i].timeStamp == time)
-		{
-			// If we are right on a position keyframe, return that keyframe
-			// Interpolate the Rate if there is a following keyframe to interpolate to
-			resultPosition = positions[i];
-			resultRate = (i + 1 < positionCount) ?	SRTRateInterpolate(positions[i], positions[i+1]) :
-													SRTRateZero();
-			resultIndex = i;
-		}
-		else if( (positions[i].timeStamp > time && i == 0 ) ||
-				 (positions[i].timeStamp < time && i == positionCount - 1) )
-		{
-			// If we are before the first keyframe or after the last keyframe,
-			// return the current keyframe and set no rate of motion
-			resultPosition = positions[i];
-			resultRate = SRTRateZero();
-			resultIndex = i;
-		}
-		else
-		{
-			// Otherwise, we are between two keyframes, so just interpolation the
-			// position and the rate of motion
-			resultPosition = SRTPositionInterpolate(time, positions[i-1], positions[i]);
-			resultRate = SRTRateInterpolate(positions[i-1], positions[i]);
-			resultIndex = i - 1;
-		}
+		positions[i].isVisible = visible;
+		i++;
 	}
 	
-	//Return results
-	if(pPosition) *pPosition = resultPosition;
-	if(pRate) *pRate = resultRate;
-	if(pIndex) *pIndex = resultIndex;
-
-}
-
-- (CGPoint)currentOriginInWorldCoordinates
-{
-	// I don't think this will work properly for nested groups!
-	return CGPointFromGLKVector2(currentSRTPosition.location);
-}
-
-
-- (SRTPosition)currentCachedPosition
-{
-	return currentSRTPosition;
-}
-
-- (void)setCurrentCachedPosition:(SRTPosition)position
-{
-	// This is a bit scary since it lets you set the position the group is currently
-	// display at. This doesn't change the model, just the current display
-	// You shouldn't have to set this explictly from outside the group class very often
-	currentSRTPosition = position;
-}
-
-/*
- This is called the first time our object is inserted into a store
- Create our transient C-style points here
- */
-- (void)awakeFromInsert
-{
-	[super awakeFromInsert];
-	currentSRTPosition = SRTPositionZero();
-	currentSRTRate = SRTRateZero();
-	currentPositionIndex = 0;
-	currentModelViewMatrix = GLKMatrix4Identity;
-	self.isSelected = NO;
-	_mutablePositionsAsData = nil;
-	[self unpauseAll];
-}
-
-
-/*
- This is called when our object comes out of storage
- Copy our data into our cached c-arrays for faster access
- */
-- (void)awakeFromFetch
-{
-	[super awakeFromFetch];
-	currentSRTPosition = SRTPositionZero();
-	currentSRTRate = SRTRateZero();
-	currentPositionIndex = 0;
-	currentModelViewMatrix = GLKMatrix4Identity;
-	self.isSelected = NO;
-	_mutablePositionsAsData = nil;
-	[self unpauseAll];
-}
-
-
-/*
- This is called after undo/redo types of events
- Copy our pointsAsData back into our points buffer after the change
- */
-- (void)awakeFromSnapshotEvents:(NSSnapshotEventType)flags
-{
-	[super awakeFromSnapshotEvents:flags];
-	[self unpauseAll];
-	self.isSelected = NO;
-	_mutablePositionsAsData = nil;
-}
-
-
-/*
- This is called when it is time to save this object
- Before the save, we copy the transient points data into the structure
- */
-- (void)willSave
-{
-	if (_mutablePositionsAsData != nil)
-	{
-		self.positionsAsData = _mutablePositionsAsData;
-		_mutablePositionsAsData = nil;
-	}
-}
-
-
-
-- (void)centerOnCurrentBoundingBox
-{
-	// 1. Figure out the point we want to center on (in the parent's coordinates)
-	CGPoint newCenter = CGRectGetCenter([self currentBoundingRect]);
-	CGAffineTransform offsetForward = CGAffineTransformMakeTranslation(newCenter.x, newCenter.y);
-	CGAffineTransform offsetBackward = CGAffineTransformMakeTranslation(-newCenter.x, -newCenter.y);
+	// STEP 3:If we ended by hitting the next visibility keyframe, remove it since it is redundant now
+	if(i < self.positionCount)
+		positions[i].keyframeType = SRTKeyframeRemove(positions[i].keyframeType, NO, NO, NO, YES);
 	
-	// 2. Fix up our lines
-	[self applyTransformToLines:offsetBackward];
 	
-	// 3. Fix up our own location
-	[self applyTransformToPath:offsetForward];
-
-	// 4. Fix our our children's locations
-	for (PSDrawingGroup* g in self.children)
-		[g applyTransformToPath:offsetBackward];
-}
-
-
-- (void)applyTransformToLines:(CGAffineTransform)transform
-{
-	/*	Brute-force adjusting the points of the lines in this group
-		Very slow and destructive to the original point information.
-		Use sparingly, only to manipulate the basic data and not 
-		just to adjust the display of a group.
-	*/
-	
-	for (PSDrawingLine* line in self.drawingLines)
-		[line applyTransform:transform];
-}
-
-
-- (void)applyTransformToPath:(CGAffineTransform)transform
-{
-	SRTPosition* positions = self.mutablePositionBytes;
-	SRTPosition transformAsDelta = SRTPositionFromTransform(transform);
-
-	for(int i = 0; i < self.positionCount; i++)
-	{
-		SRTPosition p = positions[i];
-		p.location.x += transformAsDelta.location.x;
-		p.location.y += transformAsDelta.location.y;
-		p.origin.x += transformAsDelta.origin.x;
-		p.origin.y += transformAsDelta.origin.y;
-		p.rotation += transformAsDelta.rotation;
-		p.scale *= transformAsDelta.scale;
-		positions[i] = p;
-	}
-}
-
-
-- (CGRect)currentBoundingRect
-{
-	
-	CGPoint min = CGPointMake(1e100, 1e100);
-	CGPoint max = CGPointMake(-1e100, -1e100);
-	for (PSDrawingLine* line in self.drawingLines)
-	{
-		CGRect lineRect = [line boundingRect];
-		if(!CGRectIsNull(lineRect))
-		{			
-			min.x = MIN(min.x, CGRectGetMinX(lineRect));
-			min.y = MIN(min.y, CGRectGetMinY(lineRect));
-			max.x = MAX(max.x, CGRectGetMaxX(lineRect));
-			max.y = MAX(max.y, CGRectGetMaxY(lineRect));
-		}
-	}
-	
-	for (PSDrawingGroup* g in self.children)
-	{
-		SRTPosition p = g.currentCachedPosition;
-		min.x = MIN(min.x, p.location.x);
-		min.y = MIN(min.y, p.location.y);
-		max.x = MAX(max.x, p.location.x);
-		max.y = MAX(max.y, p.location.y);
-	}
-	
-	return CGRectMake(min.x, min.y, max.x - min.x, max.y - min.y);
-}
-
-
-- (SRTPosition*)mutablePositionBytes
-{
-	if ( _mutablePositionsAsData == nil )
-		_mutablePositionsAsData = [NSMutableData dataWithData:self.positionsAsData];
-	return (SRTPosition*)_mutablePositionsAsData.bytes;
-}
-
-- (GLKMatrix4)currentModelViewMatrix
-{
-	return currentModelViewMatrix;
+	currentSRTPosition = pos;
 }
 
 
@@ -441,32 +462,6 @@
 	return (self.drawingLines.count == 0 && self.children.count == 0);
 }
 
-- (CGPoint)translatePointFromParentCoordinates:(CGPoint)p
-{
-	bool isInvertable;
-	GLKMatrix4 selfInverted = GLKMatrix4Invert(currentModelViewMatrix, &isInvertable);
-	if(!isInvertable) NSLog(@"!!!! SHOULD ALWAYS BE INVERTABLE!!!");
-	GLKVector4 v4 = GLKMatrix4MultiplyVector4(selfInverted, GLKVector4FromCGPoint(p));
-	return CGPointFromGLKVector4(v4);
-}
-
-- (BOOL)hitsPoint:(CGPoint)p
-{
-	// return true if any line in this group or its children is hit
-	// p is assumed to be in this group's parent's coordinate system
-	CGPoint fixedP = [self translatePointFromParentCoordinates:p];
-	
-	for (PSDrawingLine* l in self.drawingLines)
-		if ([l hitsPoint:fixedP])
-			return YES;
-	
-	for (PSDrawingGroup* g in self.children)
-		if ([g hitsPoint:fixedP])
-			return YES;
-	
-	return NO;
-}
-
 
 - (void)deleteSelectedChildren
 {
@@ -479,23 +474,25 @@
 	}
 }
 
+
 - (PSDrawingGroup*)mergeSelectedChildrenIntoNewGroup
 {
 	// Create a new group to hold the children
 	PSDrawingGroup* newGroup = [PSDataModel newDrawingGroupWithParent:self];
-
+	
 	// Collect the groups
 	NSMutableArray* selected = [NSMutableArray array];
 	[self applyToSelectedSubTrees:^(PSDrawingGroup *g) {
 		[selected addObject:g];
 	}];
-
+	
 	// Add them to the new group
 	for (PSDrawingGroup* g in selected)
 		g.parent = newGroup;
-
+	
 	return newGroup;
 }
+
 
 - (PSDrawingGroup*)topLevelSelectedChild
 {
@@ -503,7 +500,7 @@
 	for (PSDrawingGroup* g in self.children)
 		if (g.isSelected)
 			return g;
-
+	
 	for (PSDrawingGroup* g in self.children)
 	{
 		PSDrawingGroup* result = [g topLevelSelectedChild];
@@ -533,7 +530,7 @@
 		   usingInterpolation:(BOOL)interpolate
 {
 	[self applyToSelectedSubTrees:^(PSDrawingGroup *g) {
-
+		
 		// Start with our current position and apply these deltas
 		SRTPosition position = g.currentCachedPosition;
 		position.location.x += dX;
@@ -550,29 +547,6 @@
 	}];
 }
 
-- (void)applyToAllSubTrees:( void ( ^ )( PSDrawingGroup*, BOOL) )functionToApply
-{
-	[self applyToAllSubTrees:functionToApply parentIsSelected:self.isSelected];
-}
-
-- (void)applyToAllSubTrees:(void (^)(PSDrawingGroup *, BOOL))functionToApply parentIsSelected:(BOOL)parentSelected
-{
-	functionToApply(self, self.isSelected || parentSelected);
-
-	for (PSDrawingGroup* c in self.children)
-		[c applyToAllSubTrees:functionToApply parentIsSelected:self.isSelected || parentSelected];
-}
-
-- (void)applyToSelectedSubTrees:( void ( ^ )( PSDrawingGroup* g ) )functionToApply
-{
-	if(self.isSelected)
-		functionToApply(self);
-	else
-		for (PSDrawingGroup* c in self.children)
-			[c applyToSelectedSubTrees:functionToApply];
-}
-
-
 
 - (PSRecordingSession*)startSelectedGroupsRecordingTranslation:(BOOL)isTranslating
 													  rotation:(BOOL)isRotating
@@ -587,64 +561,104 @@
 	
 	// Add each selected group to the session
 	[self applyToSelectedSubTrees:^(PSDrawingGroup *g) {
-
+		
 		[session addGroupToSession:g];
-
+		
 	}];
-
+	
 	return session;
 }
 
 
-- (void)setVisibility:(BOOL)visible atTime:(float)time
-{
-	// STEP 1: add a new keyframe to set the visibility at time
-	SRTPosition pos;
-	[self getStateAtTime:time position:&pos rate:nil helperIndex:nil];
-	
-	// If there is already a visibility keyframe at this point, clear it instead of setting a new one
-	if (pos.timeStamp != time)
-		pos.keyframeType = SRTKeyframeMake(NO, NO, NO, YES);
-	else if (SRTKeyframeIsVisibility(pos.keyframeType))
-		pos.keyframeType = SRTKeyframeRemove(pos.keyframeType, NO, NO, NO, YES);
-	else
-		pos.keyframeType = SRTKeyframeAdd(pos.keyframeType, NO, NO, NO, YES);
+/*
+ ----------------------------------------------------------------------------
+ NSManagedObject methods
+ NSmanagedObject is the superclass of all Core Data objects
+ We can override some methods to customize behavior on different events, like
+ when they are retrieved from the database, or before they are saved
+ Read the documentation for NSManagedObject to get more information
+ ----------------------------------------------------------------------------
+ */
 
-	pos.isVisible = visible;
-	pos.timeStamp = time;
-	
-	// Add it to the list
-	int i = [self addPosition:pos withInterpolation:NO];
-	
-	// STEP 2: Move forward until the next visibility keyframe and change the visibility
-	SRTPosition* positions = [self mutablePositionBytes];
-	i += 1;
-	while (i < self.positionCount && !SRTKeyframeIsVisibility(positions[i].keyframeType))
+
+/*
+ This is called the first time our object is inserted into a store (database)
+ */
+- (void)awakeFromInsert
+{
+	[super awakeFromInsert];
+	currentSRTPosition = SRTPositionZero();
+	currentSRTRate = SRTRateZero();
+	currentPositionIndex = 0;
+	currentModelViewMatrix = GLKMatrix4Identity;
+	self.isSelected = NO;
+	_mutablePositionsAsData = nil;
+	[self unpauseAll];
+}
+
+
+/*
+ This is called when our object comes out of storage
+ */
+- (void)awakeFromFetch
+{
+	[super awakeFromFetch];
+	currentSRTPosition = SRTPositionZero();
+	currentSRTRate = SRTRateZero();
+	currentPositionIndex = 0;
+	currentModelViewMatrix = GLKMatrix4Identity;
+	self.isSelected = NO;
+	_mutablePositionsAsData = nil;
+	[self unpauseAll];
+}
+
+
+/*
+ This is called after undo/redo types of events
+ Clear our mutable points data array so it will be regenerated if needed
+ */
+- (void)awakeFromSnapshotEvents:(NSSnapshotEventType)flags
+{
+	[super awakeFromSnapshotEvents:flags];
+	[self unpauseAll];
+	self.isSelected = NO;
+	_mutablePositionsAsData = nil;
+}
+
+
+/*
+ This is called when it is time to save this object
+ Before the save, we move our mutable points back so they will be saved
+ */
+- (void)willSave
+{
+	if (_mutablePositionsAsData != nil)
 	{
-		positions[i].isVisible = visible;
-		i++;
+		self.positionsAsData = _mutablePositionsAsData;
+		_mutablePositionsAsData = nil;
 	}
-	
-	// STEP 3:If we ended by hitting the next visibility keyframe, remove it since it is redundant now
-	if(i < self.positionCount)
-		positions[i].keyframeType = SRTKeyframeRemove(positions[i].keyframeType, NO, NO, NO, YES);
-	
-	
-	currentSRTPosition = pos;
 }
 
 
-- (void)printSelected:(int)depth
+// Get an NSMutableData object so we can write to our positions list
+- (SRTPosition*)mutablePositionBytes
 {
-	NSLog(@"%d:\t------------ %@", depth, (self.isSelected ? @"SELECTED" : @"NO!"));
-	for (PSDrawingGroup* g in self.children)
-		[g printSelected:depth+1];
-	
+	if ( _mutablePositionsAsData == nil )
+		_mutablePositionsAsData = [NSMutableData dataWithData:self.positionsAsData];
+	return (SRTPosition*)_mutablePositionsAsData.bytes;
 }
 
-- (void)setPosition:(SRTPosition)p atIndex:(int)i
+- (SRTPosition)currentCachedPosition
 {
-	self.mutablePositionBytes[i] = p;
+	return currentSRTPosition;
+}
+
+- (void)setCurrentCachedPosition:(SRTPosition)position
+{
+	// This is a bit scary since it lets you set the position the group is currently
+	// display at. This doesn't change the model, just the current display
+	// You shouldn't have to set this explictly from outside the group class very often
+	currentSRTPosition = position;
 }
 
 @end

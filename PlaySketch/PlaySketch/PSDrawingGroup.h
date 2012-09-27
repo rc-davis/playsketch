@@ -31,51 +31,45 @@
 	BOOL _pausedScale;
 	BOOL _pausedRotation;
 }
-
 @property (nonatomic, retain) NSString * name;
 @property (nonatomic, retain) NSArray *children;
 @property (nonatomic, retain) NSArray *drawingLines;
 @property (nonatomic, retain) NSData *positionsAsData;
 @property (nonatomic, retain) PSDrawingGroup *parent;
 @property (atomic) BOOL isSelected;
+@property () SRTPosition currentCachedPosition;
 @end
+
 
 @interface PSDrawingGroup (CoreDataGeneratedAccessors)
 
-- (int)addPosition:(SRTPosition)position withInterpolation:(BOOL)shouldInterpolate;
+- (SRTPosition*)positions;
+- (int)positionCount;
+- (void)setPosition:(SRTPosition)p atIndex:(int)i;
+- (void)doneMutatingPositions;
 - (void)pauseUpdatesOfTranslation:(BOOL)translation rotation:(BOOL)rotation scale:(BOOL)scale;
 - (void)unpauseAll;
-- (SRTPosition*)positions;
-- (void)doneMutatingPositions;
-- (int)positionCount;
+- (CGPoint)currentOriginInWorldCoordinates;
+- (CGRect)currentBoundingRect;
+- (GLKMatrix4)currentModelViewMatrix;
+- (BOOL)hitsPoint:(CGPoint)p;
+- (CGPoint)translatePointFromParentCoordinates:(CGPoint)p;
 - (void)getStateAtTime:(float)time
 			  position:(SRTPosition*)pPosition
 				  rate:(SRTRate*)pRate
 		   helperIndex:(int*)pIndex;
-- (CGPoint)currentOriginInWorldCoordinates;
-- (SRTPosition)currentCachedPosition;
-- (void)setCurrentCachedPosition:(SRTPosition)position;
-
-
-- (void)centerOnCurrentBoundingBox;
+- (void)applyToAllSubTrees:( void ( ^ )( PSDrawingGroup *, BOOL) )functionToApply;
+- (void)applyToSelectedSubTrees:( void ( ^ )( PSDrawingGroup* g ) )functionToApply;
 - (void)applyTransformToLines:(CGAffineTransform)transform;
 - (void)applyTransformToPath:(CGAffineTransform)transform;
-- (CGRect)currentBoundingRect;
-
-- (GLKMatrix4)currentModelViewMatrix;
-
+- (void)centerOnCurrentBoundingBox;
+- (int)addPosition:(SRTPosition)position withInterpolation:(BOOL)shouldInterpolate;
+- (void)setVisibility:(BOOL)visible atTime:(float)time;
 - (BOOL)eraseAtPoint:(CGPoint)p;
-- (BOOL)hitsPoint:(CGPoint)p;
-
 - (void)deleteSelectedChildren;
 - (PSDrawingGroup*)mergeSelectedChildrenIntoNewGroup;
 - (PSDrawingGroup*)topLevelSelectedChild;
 - (void)breakUpGroupAndMergeIntoParent;
-
-- (void)applyToAllSubTrees:( void ( ^ )( PSDrawingGroup *, BOOL) )functionToApply;
-- (void)applyToSelectedSubTrees:( void ( ^ )( PSDrawingGroup* g ) )functionToApply;
-
-
 - (void)transformSelectionByX:(float)dX
 						 andY:(float)dY
 					 rotation:(float)dRotation
@@ -84,19 +78,9 @@
 					   atTime:(float)time
 			   addingKeyframe:(SRTKeyframeType)keyframeType
 		   usingInterpolation:(BOOL)interpolate;
-
-
-- (CGPoint)translatePointFromParentCoordinates:(CGPoint)p;
-
 - (PSRecordingSession*)startSelectedGroupsRecordingTranslation:(BOOL)isTranslating
-											rotation:(BOOL)isRotating
-											 scaling:(BOOL)isScaling
-											  atTime:(float)time;
-
-
-- (void)setVisibility:(BOOL)visible atTime:(float)time;
-
-- (void)printSelected:(int)depth;
-- (void)setPosition:(SRTPosition)p atIndex:(int)i;
+													  rotation:(BOOL)isRotating
+													   scaling:(BOOL)isScaling
+														atTime:(float)time;
 
 @end
