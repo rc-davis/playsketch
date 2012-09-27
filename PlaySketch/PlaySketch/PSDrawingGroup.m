@@ -250,7 +250,7 @@
 
 - (CGPoint)currentOriginInWorldCoordinates
 {
-	// TODO: I don't think this will work properly for nested groups!
+	// I don't think this will work properly for nested groups!
 	return CGPointFromGLKVector2(currentSRTPosition.location);
 }
 
@@ -262,8 +262,10 @@
 
 - (void)setCurrentCachedPosition:(SRTPosition)position
 {
+	// This is a bit scary since it lets you set the position the group is currently
+	// display at. This doesn't change the model, just the current display
+	// You shouldn't have to set this explictly from outside the group class very often
 	currentSRTPosition = position;
-	//TODO, this is so ugly
 }
 
 /*
@@ -422,23 +424,6 @@
 }
 
 
-
-/*
-	TODO: This really requires some explanation....
-	(Trying to get a projection matrix that will keep this group from moving)
-*/
-- (GLKMatrix4)getInverseMatrixToDocumentRoot
-{
-	GLKMatrix4 parentInverted = (self.parent == nil) ?
-										GLKMatrix4Identity :
-										[self.parent getInverseMatrixToDocumentRoot];
-	
-	bool isInvertable;
-	GLKMatrix4 selfInverted = GLKMatrix4Invert(currentModelViewMatrix, &isInvertable);
-	if(!isInvertable) NSLog(@"!!!! SHOULD ALWAYS BE INVERTABLE!!!");
-	return GLKMatrix4Multiply(selfInverted, parentInverted);
-}
-
 - (BOOL)eraseAtPoint:(CGPoint)p
 {
 	// Bring it into our coordinates
@@ -508,7 +493,6 @@
 	// Add them to the new group
 	for (PSDrawingGroup* g in selected)
 		g.parent = newGroup;
-		// TODO: we probably should displace the selected groups to keep them from jumping around?
 
 	return newGroup;
 }

@@ -96,8 +96,13 @@
 - (void)viewDidUnload
 {
     [super viewDidUnload];
-	
-	//TODO: zero out our references
+
+	// Zero out the non-IB references we are keeping
+	self.currentDocument = nil;
+	self.rootGroup = nil;
+	self.penPopoverController = nil;
+	self.penController = nil;
+	self.recordingSession = nil;
 }
 
 
@@ -623,12 +628,6 @@
 		[self setPlaying:YES];
 		self.selectionOverlayButtons.recordPulsing = YES;
 	}
-	
-	// We would like to keep the motion paths updating in realtime while we
-	// record, but that's too expensive until we optimize the path updating
-	// So instead we just hide
-	self.motionPathView.hidden = YES;
-	
 }
 
 -(void)manipulator:(id)sender
@@ -704,12 +703,6 @@
 		self.selectionOverlayButtons.recordPulsing = NO;
 	}
 	
-	// We would rather be doing this real-time instead of at the end of the interaction
-	// TODO: fix up motion paths!
-	//	[self.motionPathView addLineForGroup:manipulator.group];
-	self.motionPathView.hidden = NO;
-	
-	//TODO: this should only be called if something changed?
 	[self.rootGroup applyToSelectedSubTrees:^(PSDrawingGroup *g) {[g doneMutatingPositions];}];
 	[PSDataModel save];
 	

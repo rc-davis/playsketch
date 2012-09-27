@@ -166,8 +166,6 @@ int __helperSelectedGroupCount;
 	BOOL allChildrenSelected = YES;
 	for (PSDrawingGroup* g in group.children)
 	{
-		// TODO: We'll need to push the group's current matrix before recursing
-		// to accomodate when the animation has moved the lines to a different position.
 		GLKMatrix4 childMatrix = GLKMatrix4Multiply(currentModelViewMatrix, g.currentModelViewMatrix);
 		
 		[self updateSelectionOnGroup:g

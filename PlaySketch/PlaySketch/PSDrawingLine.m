@@ -207,7 +207,6 @@
 
 - (CGRect)boundingRect
 {
-	//TODO: WE SHOULD BE CACHING THIS INSTEAD OF BRUTE-FORCING IT
 	int pointCount = self.pointCount;
 	CGPoint* points = self.points;
 
@@ -287,9 +286,9 @@
 }
 
 
+// This assumes p is already in the line's coordinate space
 - (BOOL)hitsPoint:(CGPoint)p
 {
-	//TODO: This does NOT take transforms into account!
 	float HIT_DISTANCE = 20.0;
 	CGPoint* points = self.points;
 	int pointCount = self.pointCount;

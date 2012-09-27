@@ -70,9 +70,6 @@
 							 sourcePixelBufferAttributes:adapterAttributes];
 		[self.videoWriter addInput:self.videoWriterInput];
 		
-		
-		// Avoid having to set all of our timestamps?
-		// TODO: can we get rid of this?
 		self.videoWriterInput.expectsMediaDataInRealTime = YES;
 		
 	}

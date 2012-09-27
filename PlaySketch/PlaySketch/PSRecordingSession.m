@@ -108,7 +108,7 @@
 		
 		newFrame = g.positions[nextIndex];
 
-		// TODO: I think there's some bugs in how we are setting keyframes in here
+		// TODO: I think there's some bad bugs in how we are setting keyframes in here
 		// We probably need to do something smarter for which keyframes we are setting
 		// I think we're being too aggressive about erasing pre-existing keyframes
 		newFrame.keyframeType = SRTKeyframeTypeNone();

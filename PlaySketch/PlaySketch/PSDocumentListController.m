@@ -62,7 +62,6 @@
 		[self newDocument:nil];
 	}
 	
-	// TODO: Open up our last open document
 	[self scrollToIndex:0 animated:NO];
 	
 }
@@ -139,7 +138,6 @@
 - (void)viewDidUnload
 {
 	[super viewDidUnload];
-	// TODO: unload our images?
 }
 
 

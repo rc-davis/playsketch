@@ -166,8 +166,6 @@ static inline SRTKeyframeType SRTKeyframeAdd2(SRTKeyframeType keyframe1, SRTKeyf
 static inline SRTPosition SRTPositionInterpolate(float time, SRTPosition p1, SRTPosition p2)
 {
 	[PSHelpers assert:(p1.timeStamp != p2.timeStamp) withMessage:@"Should be different times"];
-
-//	TODO: Shouldn't have to disable this assert
 	[PSHelpers assert:(p1.timeStamp <= time &&
 					   p2.timeStamp >= time) withMessage:@"time should be within range"];
 
@@ -241,11 +239,6 @@ static inline SRTPosition SRTPositionFromTransform(CGAffineTransform t)
 	CGPoint p2Parent = CGPointApplyAffineTransform(p2, t);	
 	p.rotation = atan2f(p2Parent.y - p1Parent.y, p2Parent.x - p1Parent.x);
 	p.scale = hypotf(p1Parent.x - p2Parent.x, p1Parent.y - p2Parent.y)/hypotf(p1.x - p2.x, p1.y - p2.y);
-	
-	// TODO: I don't think we need to use the origin points at all (yet?)
-	p.origin.x = 0;
-	p.origin.y = 0;
-	
 	
 	return p;
 }
