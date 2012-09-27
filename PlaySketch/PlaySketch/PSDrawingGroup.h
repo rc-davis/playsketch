@@ -33,7 +33,6 @@
 }
 
 @property (nonatomic, retain) NSString * name;
-@property (nonatomic, retain) NSNumber * explicitCharacter;
 @property (nonatomic, retain) NSArray *children;
 @property (nonatomic, retain) NSArray *drawingLines;
 @property (nonatomic, retain) NSData *positionsAsData;

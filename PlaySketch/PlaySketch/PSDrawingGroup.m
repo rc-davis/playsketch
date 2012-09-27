@@ -27,7 +27,6 @@
 @implementation PSDrawingGroup
 
 @dynamic name;
-@dynamic explicitCharacter;
 @dynamic children;
 @dynamic drawingLines;
 @dynamic positionsAsData;
