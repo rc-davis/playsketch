@@ -105,12 +105,23 @@
 		newFrame.keyframeType = SRTKeyframeTypeNone();
 
 		int nextIndex = [g addPosition:newFrame withInterpolation:NO];
+		
+		newFrame = g.positions[nextIndex];
+
+		// TODO: I think there's some bugs in how we are setting keyframes in here
+		// We probably need to do something smarter for which keyframes we are setting
+		// I think we're being too aggressive about erasing pre-existing keyframes
+		newFrame.keyframeType = SRTKeyframeTypeNone();
+		[g setPosition:newFrame atIndex:nextIndex];
+		
+		
 		g.currentCachedPosition = newFrame;
 		
 		// Clean up between the two to make sure we don't get jumping around
 		for(int j = lastIndex + 1; j < nextIndex; j++)
 		{
 			SRTPosition newP = [self maskedCopyFrom:positions[lastIndex] to:positions[j]];
+			newP.keyframeType = SRTKeyframeTypeNone();
 			newP.isVisible = YES;
 			[g setPosition:newP atIndex:j];
 		}
@@ -141,11 +152,21 @@
 													self.overwriteTranslation, NO);
 
 		int newLastIndex = [g addPosition:lastPosition withInterpolation:NO];
+		g.currentCachedPosition = lastPosition;
 
+		// 3. Remove any keyframes between lastIndex and newLastIndex
+		for(int j = lastIndex + 1; j < newLastIndex; j++)
+		{
+			SRTPosition newP = [self maskedCopyFrom:positions[lastIndex] to:positions[j]];
+			newP.keyframeType = SRTKeyframeTypeNone();
+			[g setPosition:newP atIndex:j];
+		}
+		
 		// 3. Clean up from here to the end of the data
-		for(int j = lastIndex + 1; j < g.positionCount; j++)
+		for(int j = newLastIndex + 1; j < g.positionCount; j++)
 		{
 			SRTPosition newP = [self maskedCopyFrom:positions[newLastIndex] to:positions[j]];
+			newP.keyframeType = SRTKeyframeTypeNone();
 			[g setPosition:newP atIndex:j];
 		}
 		

@@ -45,17 +45,14 @@
 	// in the timeline will not be affected by this step
 	position.timeStamp = roundf(position.timeStamp * (FPS_MULTIPLE*POSITION_FPS))
 						/(FPS_MULTIPLE*POSITION_FPS);
-	
 
 	// For interpolation, save a copy of what the position was at this time before we change it
-	//TODO: THIS SHOULD BE MORE EFFICIENT!! DON'T JUST CALL getStateAtTime!!
 	SRTPosition previousPositionAtTime = SRTPositionZero();
 	if(shouldInterpolate)
 		[self getStateAtTime:position.timeStamp
 					position:&previousPositionAtTime
 						rate:nil
 				 helperIndex:nil];
-	
 	
 	// Get a handle to a mutable version of our positions list
 	int currentPositionCount = self.positionCount;
@@ -85,6 +82,11 @@
 		
 		currentPositionIndex++;
 	}
+	
+	// If this time is already a keyframe, tag the new position as a keyframe too
+	if(overwriting)
+		position.keyframeType = SRTKeyframeAdd2(position.keyframeType,
+												currentPositions[newIndex].keyframeType);
 	
 	//Write the new one
 	currentPositions[newIndex] = position;
