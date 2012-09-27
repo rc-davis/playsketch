@@ -444,11 +444,11 @@
 	// Bring it into our coordinates
 	CGPoint fixedP = [self translatePointFromParentCoordinates:p];
 	
-	for (PSDrawingLine* l in [self.drawingLines allObjects])
+	for (PSDrawingLine* l in [self.drawingLines copy])
 		if([l eraseAtPoint:fixedP])
 			[PSDataModel deleteDrawingLine:l];
 	
-	for (PSDrawingGroup* g in [self.children allObjects])
+	for (PSDrawingGroup* g in [self.children copy])
 		if([g eraseAtPoint:fixedP])
 			[PSDataModel deleteDrawingGroup:g];
 	

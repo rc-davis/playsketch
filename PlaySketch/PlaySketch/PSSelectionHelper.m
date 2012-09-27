@@ -57,7 +57,7 @@ int __helperSelectedGroupCount;
 	 Only top-level children will be selected
 	 */
 	
-	for (PSDrawingGroup* g in __helperRootGroup.children)
+	for (PSDrawingGroup* g in [__helperRootGroup.children reverseObjectEnumerator])
 	{
 		if([g hitsPoint:tapPoint])
 		{

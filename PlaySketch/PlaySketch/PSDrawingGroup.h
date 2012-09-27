@@ -34,8 +34,8 @@
 
 @property (nonatomic, retain) NSString * name;
 @property (nonatomic, retain) NSNumber * explicitCharacter;
-@property (nonatomic, retain) NSSet *children;
-@property (nonatomic, retain) NSSet *drawingLines;
+@property (nonatomic, retain) NSArray *children;
+@property (nonatomic, retain) NSArray *drawingLines;
 @property (nonatomic, retain) NSData *positionsAsData;
 @property (nonatomic, retain) PSDrawingGroup *parent;
 @property (atomic) BOOL isSelected;
