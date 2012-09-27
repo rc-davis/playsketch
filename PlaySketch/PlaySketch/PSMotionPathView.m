@@ -13,7 +13,8 @@
 
 #import "PSMotionPathView.h"
 #import "PSDrawingGroup.h"
-#import "PSAnimationRenderingController.h" // For SELECTION_PEN_COLOR
+#import "PSAnimationRenderingController.h"
+#import "PSGraphicConstants.h"
 
 @implementation PSMotionPathView
 
@@ -38,8 +39,8 @@
 
 - (void)drawRect:(CGRect)rect
 {
-	[[UIColor colorWithWhite:0.5 alpha:1.0] setStroke];
-	[SELECTION_PEN_COLOR setFill];
+	[argsToUIColor(MOTION_PATH_STROKE_COLOR) setStroke];
+	[argsToUIColor(SELECTION_COLOR) setFill];
 
 	// Go through all the nodes that are selected and draw a path for them
 	// This isn't as terrible as this seems, since it is only called when something changes

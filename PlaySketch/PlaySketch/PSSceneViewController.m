@@ -24,6 +24,7 @@
 #import "PSMotionPathView.h"
 #import "PSRecordingSession.h"
 #import "PSKeyframeView.h"
+#import "PSGraphicConstants.h"
 #import <QuartzCore/QuartzCore.h>
 
 
@@ -385,7 +386,7 @@
 	if(highlight)
 	{
 		b.layer.shadowRadius = 10.0;
-		b.layer.shadowColor = [UIColor whiteColor].CGColor;
+		b.layer.shadowColor = HIGHLIGHTED_BUTTON_UICOLOR.CGColor;
 		b.layer.shadowOffset = CGSizeMake(0,0);
 		b.layer.shadowOpacity = 1.0;
 	}
@@ -470,7 +471,7 @@
 	// Read the comments on newTemporaryLineWithWeight:andColor: for an explanation
 	// of why this line has to be "temporary"
 	int weight = self.isSelecting ? SELECTION_PEN_WEIGHT : self.penWeight;
-	UInt64 color = self.isSelecting ? [PSHelpers colorToInt64:SELECTION_PEN_COLOR] : self.currentColor;
+	UInt64 color = self.isSelecting ? [PSHelpers colorToInt64:argsToUIColor(SELECTION_COLOR)] : self.currentColor;
 	PSDrawingLine* newLine = [PSDataModel newTemporaryLineWithWeight:weight andColor:color];
 	
 	// Start a new selection set helper to keep track of what's being selected

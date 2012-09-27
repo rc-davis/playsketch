@@ -13,6 +13,7 @@
 
 #import "PSGroupOverlayButtons.h"
 #import "PSDrawingGroup.h"
+#import "PSGraphicConstants.h"
 
 @implementation PSGroupOverlayButtons
 
@@ -59,8 +60,8 @@
 
 - (void)setRecordPulsing:(BOOL)recordPulsing
 {
-	UIColor* color1 = [UIColor colorWithRed:0.504 green:0.010 blue:0.021 alpha:1.000];
-	UIColor* color2 = [UIColor colorWithRed:1.000 green:0.019 blue:0.041 alpha:1.000];
+	UIColor* color1 = RECORD_BUTTON_PULSE_UP_UICOLOR;
+	UIColor* color2 = RECORD_BUTTON_PULSE_DOWN_UICOLOR;
 	
 	if (recordPulsing && !_recordPulsing)
 	{

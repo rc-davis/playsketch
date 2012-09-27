@@ -11,14 +11,6 @@
  
  */
 
-#define PSANIM_BACKGROUND_COLOR 1.0, 0.977, 0.842, 1.00
-#define PSANIM_LINE_COLOR 0.5, 0.35, 0, 1.0
-#define PSANIM_SELECTION_LOOP_COLOR 1.000, 1.000, 0.012, 1.0
-#define PSANIM_SELECTED_LINE_COLOR 0.933, 0.000, 0.012, 0.6
-#define SELECTION_PEN_COLOR ([UIColor colorWithRed:1.0 green:0.0 blue:0.5 alpha:1.0])
-#define SELECTION_PEN_WEIGHT 2
-
-
 #import <UIKit/UIKit.h>
 #import <GLKit/GLKit.h>
 #import "PSDrawingGroup.h"

@@ -24,6 +24,7 @@ enum
 #import "PSAnimationRenderingController.h"
 #import "PSAppDelegate.h"
 #import "PSHelpers.h"
+#import "PSGraphicConstants.h"
 
 /* Private Interface */
 @interface PSAnimationRenderingController ()
@@ -142,7 +143,7 @@ enum
 	glUseProgram(_program);
 
 	// Clear the background
-	glClearColor(PSANIM_BACKGROUND_COLOR);
+	glClearColor(BACKGROUND_COLOR);
 	glClear(GL_COLOR_BUFFER_BIT);
 	
 	// Set a blend function so our brush will have alpha preserved
@@ -151,9 +152,6 @@ enum
 	
 	// Push the projection matrix
 	glUniformMatrix4fv(_uniforms[UNIFORMS_MODELMATRIX], 1, 0, correctionMatrix.m);
-	
-	// Set the brush's color
-	glUniform4f(_uniforms[UNIFORMS_BRUSH_COLOR], PSANIM_LINE_COLOR);
 	
 	// Now we can recurse on our root and will only have to push vertices and matrices
 	[self.currentDocument.rootGroup renderGroupWithMatrix:correctionMatrix uniforms:_uniforms overrideColor:NO];

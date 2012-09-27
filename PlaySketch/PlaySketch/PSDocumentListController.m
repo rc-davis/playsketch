@@ -15,6 +15,7 @@
 #import "PSDocumentListController.h"
 #import "PSDataModel.h"
 #import "PSSceneViewController.h"
+#import "PSGraphicConstants.h"
 #import <QuartzCore/QuartzCore.h>
 
 #define DOC_IMAGE_FRAME (CGRectMake(0, 0, 480.0, 270.0))
@@ -22,7 +23,6 @@
 #define DOC_END_PADDING (1024.0 - DOC_IMAGE_STEP/2.0)
 #define DOC_IMAGE_SNAP_XVALUE (1024.0 - (DOC_IMAGE_FRAME).size.width/2.0 - 20.0)
 #define ANIMATION_DURATION 0.5
-#define BACKGROUND_COLOR ([UIColor colorWithRed:1.000 green:0.977 blue:0.842 alpha:1.000])
 #define DETAIL_ANIM_FRAME (CGRectMake(20, 82, 984, 598))
 
 @interface PSDocumentListController ()
@@ -82,7 +82,6 @@
 	[self.scrollView addSubview:b];
 	[self.documentImages insertObject:b atIndex:i];
 	
-	b.backgroundColor = [UIColor redColor];
 	b.center = CGPointMake( DOC_END_PADDING + DOC_IMAGE_STEP * (i + 0.5),
 						   self.scrollView.frame.size.height/2.0 );
 
@@ -91,7 +90,7 @@
 	if(imageData)
 		b.image = [UIImage imageWithData:imageData];
 	else
-		b.backgroundColor = BACKGROUND_COLOR;
+		b.backgroundColor = argsToUIColor(BACKGROUND_COLOR);
 
 	//Make sure everything is in view
 	CGSize newContentSize = self.scrollView.contentSize;

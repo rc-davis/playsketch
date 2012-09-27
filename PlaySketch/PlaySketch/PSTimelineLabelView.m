@@ -13,6 +13,7 @@
 
 #import "PSTimelineLabelView.h"
 #import "PSTimelineSlider.h"
+#import "PSGraphicConstants.h"
 
 
 @implementation PSTimelineLabelView
@@ -43,11 +44,10 @@
 		UILabel* label = [[UILabel alloc] initWithFrame:r];
 		label.text = [NSString stringWithFormat:@"%d", i];
 		label.textAlignment = NSTextAlignmentCenter;
-		label.textColor = [UIColor lightGrayColor];
-		label.backgroundColor = [UIColor darkGrayColor];
+		label.textColor = TIMELINE_LABEL_UICOLOR;
+		label.backgroundColor = TIMELINE_BACKGROUND_UICOLOR;
 		[self addSubview:label];
 	}
-
 }
 
 

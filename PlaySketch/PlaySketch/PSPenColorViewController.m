@@ -13,6 +13,7 @@
 
 #import "PSPenColorViewController.h"
 #import <QuartzCore/QuartzCore.h>
+#import "PSGraphicConstants.h"
 
 @implementation PSPenColorViewController
 
@@ -24,7 +25,7 @@
 
 	UIButton* b = (UIButton*)sender;
 	b.layer.shadowRadius = 10.0;
-	b.layer.shadowColor = [UIColor yellowColor].CGColor;
+	b.layer.shadowColor = HIGHLIGHTED_BUTTON_UICOLOR.CGColor;
 	b.layer.shadowOffset = CGSizeMake(0,0);
 	b.layer.shadowOpacity = 1.0;
 	
@@ -39,7 +40,7 @@
 	
 	UIButton* b = (UIButton*)sender;
 	b.layer.shadowRadius = 10.0;
-	b.layer.shadowColor = [UIColor yellowColor].CGColor;
+	b.layer.shadowColor = HIGHLIGHTED_BUTTON_UICOLOR.CGColor;
 	b.layer.shadowOffset = CGSizeMake(0,0);
 	b.layer.shadowOpacity = 1.0;
 	

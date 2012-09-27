@@ -91,6 +91,7 @@
 		46186F7515D792B900A1E1A2 /* record_up.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = record_up.png; sourceTree = "<group>"; };
 		4625EA1E15B6D55100316216 /* Shader.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = Shader.fsh; sourceTree = "<group>"; };
 		4625EA2115B6D56900316216 /* Shader.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = Shader.vsh; sourceTree = "<group>"; };
+		462E88491613FB430078F336 /* PSGraphicConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PSGraphicConstants.h; sourceTree = "<group>"; };
 		4634AD1015B80730009A6E95 /* Brush.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Brush.png; sourceTree = "<group>"; };
 		4649EE85160D5D9F00FAE620 /* pen_fountain.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pen_fountain.png; sourceTree = "<group>"; };
 		4649EE86160D5D9F00FAE620 /* pen_thin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pen_thin.png; sourceTree = "<group>"; };
@@ -233,6 +234,7 @@
 				46F1735115DB7AEE00F787AC /* PSGLKitVideoExporter.m */,
 				464AF3841611600C009090D0 /* PSRecordingSession.h */,
 				464AF3851611600C009090D0 /* PSRecordingSession.m */,
+				462E88491613FB430078F336 /* PSGraphicConstants.h */,
 			);
 			name = Helpers;
 			sourceTree = "<group>";

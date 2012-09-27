@@ -14,7 +14,7 @@
 #import "PSKeyframeView.h"
 #import "PSDataModel.h"
 #import <QuartzCore/QuartzCore.h>
-#import "PSAnimationRenderingController.h" //for the pen colours to use
+#import "PSGraphicConstants.h"
 
 
 /* Private helper class for doing the drawing */
@@ -53,8 +53,8 @@
 	
 	
 	// Draw them all
-	[self drawKeyframes:xOffsetsUnselected withColor:[UIColor grayColor]];
-	[self drawKeyframes:xOffsetsSelected withColor:SELECTION_PEN_COLOR];
+	[self drawKeyframes:xOffsetsUnselected withColor:TIMELINE_KEYFRAME_UNSELECTED_UICOLOR];
+	[self drawKeyframes:xOffsetsSelected withColor:argsToUIColor(SELECTION_COLOR)];
 	
 }
 
