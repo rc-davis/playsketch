@@ -76,7 +76,6 @@
 		46F7A65915B014E700C7B374 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46F7A63E15B014E700C7B374 /* CoreData.framework */; };
 		46F7A66115B014E700C7B374 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 46F7A65F15B014E700C7B374 /* InfoPlist.strings */; };
 		46F7A66415B014E700C7B374 /* PlaySketchTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 46F7A66315B014E700C7B374 /* PlaySketchTests.m */; };
-		46F7A67315B0188600C7B374 /* Pending work.txt in Resources */ = {isa = PBXBuildFile; fileRef = 46F7A67215B0188600C7B374 /* Pending work.txt */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -185,7 +184,6 @@
 		46F7A66015B014E700C7B374 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		46F7A66215B014E700C7B374 /* PlaySketchTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PlaySketchTests.h; sourceTree = "<group>"; };
 		46F7A66315B014E700C7B374 /* PlaySketchTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PlaySketchTests.m; sourceTree = "<group>"; };
-		46F7A67215B0188600C7B374 /* Pending work.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "Pending work.txt"; path = "../Pending work.txt"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -335,7 +333,6 @@
 		46F7A62915B014E600C7B374 = {
 			isa = PBXGroup;
 			children = (
-				46F7A67215B0188600C7B374 /* Pending work.txt */,
 				46F7A64015B014E700C7B374 /* PlaySketch */,
 				46F7A65C15B014E700C7B374 /* PlaySketchTests */,
 				46F7A63715B014E700C7B374 /* Frameworks */,
@@ -487,7 +484,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				46F7A64515B014E700C7B374 /* InfoPlist.strings in Resources */,
-				46F7A67315B0188600C7B374 /* Pending work.txt in Resources */,
 				46BF25AC15B0266A00834681 /* SketchInterface.storyboard in Resources */,
 				469E009A15C2437500EE7EC9 /* lasso.png in Resources */,
 				46186F6F15D78D3200A1E1A2 /* character.png in Resources */,
@@ -678,12 +674,12 @@
 		46F7A66815B014E700C7B374 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer: Ryder Ziola (QKH6WJ23CX)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PlaySketch/PlaySketch-Prefix.pch";
 				INFOPLIST_FILE = "PlaySketch/PlaySketch-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "AEA162A0-A47C-4656-8D5C-FEDEA52419A3";
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -691,14 +687,14 @@
 		46F7A66915B014E700C7B374 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer: Ryder Ziola (QKH6WJ23CX)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Ryder Ziola (QKH6WJ23CX)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PlaySketch/PlaySketch-Prefix.pch";
 				INFOPLIST_FILE = "PlaySketch/PlaySketch-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "FD1DB85D-883A-45D9-9293-5D483E4DDE7D";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "AEA162A0-A47C-4656-8D5C-FEDEA52419A3";
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
