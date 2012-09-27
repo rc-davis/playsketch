@@ -21,11 +21,6 @@
 @end
 
 @implementation PSVideoExportControllerViewController
-@synthesize progressIndicator = _progressIndicator;
-@synthesize renderingController = _renderingController;
-@synthesize completionLabel = _completionLabel;
-@synthesize completionButton = _completionButton;
-
 
 - (void)viewWillAppear:(BOOL)animated
 {

@@ -310,7 +310,7 @@
 
 - (void)doneMutatingPoints
 {
-	self.pointsAsData = _mutablePoints;
+	self.pointsAsData = _mutablePoints;;
 }
 
 @end

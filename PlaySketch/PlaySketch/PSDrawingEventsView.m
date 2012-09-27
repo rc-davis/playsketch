@@ -15,8 +15,6 @@
 #import "PSDrawingEventsView.h"
 
 @implementation PSDrawingEventsView
-@synthesize drawingDelegate = _drawingDelegate;
-@synthesize currentLine = _currentLine;
 
 -(void)awakeFromNib
 {

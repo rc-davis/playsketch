@@ -30,10 +30,6 @@
 
 
 @implementation PSGLKitVideoExporter
-@synthesize videoWriter = _videoWriter;
-@synthesize videoWriterInput = _videoWriterInput;
-@synthesize pixelAdaptor = _pixelAdaptor;
-@synthesize view = _view;
 
 
 - (id)initWithView:(GLKView*)view toPath:(NSString*)path

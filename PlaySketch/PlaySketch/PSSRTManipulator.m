@@ -39,7 +39,6 @@
 
 
 @implementation PSSRTManipulator
-@synthesize delegate = _delegate;
 
 - (id)initAtLocation:(CGPoint)center
 {

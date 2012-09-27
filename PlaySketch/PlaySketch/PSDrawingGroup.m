@@ -34,7 +34,6 @@
 @synthesize isSelected;
 
 
-
 - (int)addPosition:(SRTPosition)position withInterpolation:(BOOL)shouldInterpolate
 {
 	const int FPS_MULTIPLE = 4;
@@ -278,7 +277,7 @@
 	currentSRTRate = SRTRateZero();
 	currentPositionIndex = 0;
 	currentModelViewMatrix = GLKMatrix4Identity;
-	isSelected = NO;
+	self.isSelected = NO;
 	_mutablePositionsAsData = nil;
 	[self unpauseAll];
 }
@@ -295,7 +294,7 @@
 	currentSRTRate = SRTRateZero();
 	currentPositionIndex = 0;
 	currentModelViewMatrix = GLKMatrix4Identity;
-	isSelected = NO;
+	self.isSelected = NO;
 	_mutablePositionsAsData = nil;
 	[self unpauseAll];
 }
@@ -309,7 +308,7 @@
 {
 	[super awakeFromSnapshotEvents:flags];
 	[self unpauseAll];
-	isSelected = NO;
+	self.isSelected = NO;
 	_mutablePositionsAsData = nil;
 }
 

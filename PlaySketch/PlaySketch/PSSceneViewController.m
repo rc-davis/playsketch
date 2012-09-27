@@ -403,9 +403,10 @@
 /*
  ----------------------------------------------------------------------------
  Property Setters
- @synthesize generates a default pair of get/set methods
+ @property generates a default pair of get/set methods
  You can override any of them here to customize behavior
  These are also called if you use dot-notaion: foo.currentDocument
+ The real instance variable is called _currentDocument, by default.
  ----------------------------------------------------------------------------
  */
 
