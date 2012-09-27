@@ -18,7 +18,7 @@
 
 
 // Drawing colours
-#define BACKGROUND_COLOR 1.0, 0.977, 0.842, 1.00
+#define BACKGROUND_COLOR 0.996, 0.949, 0.98, 1.0
 #define SELECTION_COLOR 1.0, 0.0, 0.5, 1.0
 #define SELECTION_PEN_WEIGHT 2
 #define MOTION_PATH_STROKE_COLOR 0.5, 0.5, 0.5, 1.0
