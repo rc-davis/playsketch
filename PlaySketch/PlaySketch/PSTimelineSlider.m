@@ -38,11 +38,15 @@
 												selector:@selector(timerUpdate)
 												userInfo:nil
 												 repeats:YES];
+	
+		[self.playButton setImage:[UIImage imageNamed:@"pause"] forState:UIControlStateNormal];
 	}
 	else if (!playing && _playing)
 	{
 		[self.timer invalidate];
 		self.timer = nil;
+		
+		[self.playButton setImage:[UIImage imageNamed:@"play"] forState:UIControlStateNormal];
 	}
 	
 	_playing = playing;

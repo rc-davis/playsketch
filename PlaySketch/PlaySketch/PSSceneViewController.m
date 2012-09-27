@@ -345,8 +345,8 @@
 - (void)refreshInterfaceAfterDataChange:(BOOL)dataMayHaveChanged selectionChange:(BOOL)selectionMayHaveChanged
 {
 	//Refresh the undo/redo buttons
-	self.undoButton.hidden = ![PSDataModel canUndo];
-	self.redoButton.hidden = ![PSDataModel canRedo];
+	self.undoButton.enabled = [PSDataModel canUndo];
+	self.redoButton.enabled = [PSDataModel canRedo];
 
 	// Hide/show the manipulator
 	BOOL shouldShow =	[PSSelectionHelper selectedGroupCount] > 0 &&

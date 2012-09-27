@@ -18,6 +18,7 @@
 @interface PSTimelineSlider : UISlider
 @property(nonatomic) BOOL playing; //starts and stops animation
 @property(nonatomic,retain)IBOutlet PSTimelineLabelView* labelView;
+@property(nonatomic,retain)IBOutlet UIButton* playButton;
 - (float)xOffsetForTime:(float)time;
 - (BOOL)nearEndOfTimeline:(float)time;
 - (void)expandTimeline;
