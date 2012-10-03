@@ -73,7 +73,7 @@ The important files are:
     answer any questions you have on this. After changing this data model, you'll need to update the code in the classes
     that correspond to the entities you've changed. Our schema currently looks like this:
 
-    ![Playsketch's schema](https://raw.github.com/ryderziola/playsketch/master/supporting%20files/documentation/schema_image.png)
+    ![Playsketch's schema](https://raw.github.com/richardcd73/playsketch/master/supporting%20files/documentation/schema_image.png)
 
   - **PSDrawingDocument**: A top-level document. It has a name (currently unused), a duration, a preview image, and 
     (most importantly) a root group, which anchors the scene graph for the document.
